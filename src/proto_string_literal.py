@@ -6,7 +6,7 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 class ProtoStringLiteral(ProtoNode):
     QUOTES = ['"', "'"]
 
-    def __init__(self, val: str, quote=QUOTES[0]):
+    def __init__(self, val: str, quote: str = QUOTES[0]):
         self.val = val
         self.quote = quote
 
@@ -14,7 +14,7 @@ class ProtoStringLiteral(ProtoNode):
         return self.val == other.val
 
     def __str__(self) -> str:
-        return f"<ProtoStringLiteral val='{self.val}'>"
+        return f"<ProtoStringLiteral val={self.serialize()}>"
 
     def __repr__(self) -> str:
         return str(self)

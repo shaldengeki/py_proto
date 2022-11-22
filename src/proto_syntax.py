@@ -18,7 +18,7 @@ class ProtoSyntax(ProtoNode):
         return self.syntax == other.syntax
 
     def __str__(self) -> str:
-        return f"<ProtoSyntax syntax={self.syntax}>"
+        return f"<ProtoSyntax syntax={self.syntax.serialize()}>"
 
     def __repr__(self) -> str:
         return str(self)
