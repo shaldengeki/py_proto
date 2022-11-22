@@ -47,9 +47,10 @@ class ProtoSyntax(ProtoNode):
 class ProtoImport(ProtoNode):
     def __init__(self, path: str, weak: bool = False):
         self.path = path
+        self.weak = weak
 
     def __eq__(self, other) -> bool:
-        return self.path == other.path
+        return self.path == other.path and self.weak == other.weak
 
     def __str__(self) -> str:
         return f"<ProtoImport path='{self.path}'>"
