@@ -33,6 +33,14 @@ py_test(
 )
 
 py_test(
+    name = "float_test",
+    srcs = ["float_test.py"],
+    deps = [
+        "//src:proto_float",
+    ],
+)
+
+py_test(
     name = "constant_test",
     srcs = ["constant_test.py"],
     deps = [

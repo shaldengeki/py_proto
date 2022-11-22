@@ -74,11 +74,16 @@ class ProtoInt(ProtoNode):
             for i, c in enumerate(proto_source):
                 if c not in ProtoInt.DECIMAL | set("."):
                     if c in ProtoIdentifier.ALL:
-                        raise ValueError(f"Proto has invalid decimal: {proto_source}")
+                        return None
                     i -= 1
                     break
+            try:
+                value = int(proto_source[: i + 1])
+            except ValueError:
+                return None
+
             return ParsedProtoNode(
-                ProtoInt(int(proto_source[: i + 1]), ProtoIntSign.POSITIVE),
+                ProtoInt(value, ProtoIntSign.POSITIVE),
                 proto_source[i + 1 :],
             )
 

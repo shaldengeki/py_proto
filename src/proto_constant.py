@@ -1,6 +1,7 @@
 from typing import Optional
 
 from src.proto_bool import ProtoBool
+from src.proto_float import ProtoFloat, ProtoFloatSign
 from src.proto_identifier import ProtoIdentifier
 from src.proto_int import ProtoInt, ProtoIntSign
 from src.proto_node import ParsedProtoNode, ProtoNode
@@ -33,13 +34,25 @@ class ProtoConstant(ProtoNode):
                 match.remaining_source.strip(),
             )
 
-        # TODO: handle float
         sign = ProtoIntSign.POSITIVE
         if proto_source.startswith("+") or proto_source.startswith("-"):
             sign = next(x for x in ProtoIntSign if x.value == proto_source[0])
             match = ProtoInt.match(proto_source[1:])
         else:
             match = ProtoInt.match(proto_source)
+        if match is not None:
+            match.node.sign = sign
+            return ParsedProtoNode(
+                ProtoConstant(match.node),
+                match.remaining_source.strip(),
+            )
+
+        sign = ProtoFloatSign.POSITIVE
+        if proto_source.startswith("+") or proto_source.startswith("-"):
+            sign = next(x for x in ProtoFloatSign if x.value == proto_source[0])
+            match = ProtoFloat.match(proto_source[1:])
+        else:
+            match = ProtoFloat.match(proto_source)
         if match is not None:
             match.node.sign = sign
             return ParsedProtoNode(
