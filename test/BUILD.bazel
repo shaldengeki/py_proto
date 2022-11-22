@@ -17,6 +17,34 @@ py_test(
 )
 
 py_test(
+    name = "bool_test",
+    srcs = ["bool_test.py"],
+    deps = [
+        "//src:proto_bool",
+    ],
+)
+
+py_test(
+    name = "int_test",
+    srcs = ["int_test.py"],
+    deps = [
+        "//src:proto_int",
+    ],
+)
+
+py_test(
+    name = "constant_test",
+    srcs = ["constant_test.py"],
+    deps = [
+        "//src:proto_bool",
+        "//src:proto_constant",
+        "//src:proto_identifier",
+        "//src:proto_int",
+        "//src:proto_string_literal",
+    ],
+)
+
+py_test(
     name = "syntax_test",
     srcs = ["syntax_test.py"],
     deps = [
