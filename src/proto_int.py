@@ -20,7 +20,7 @@ class ProtoInt(ProtoNode):
         self.sign = sign
 
     def __eq__(self, other: "ProtoInt") -> bool:
-        return self.value == other.value
+        return self.value == other.value and self.sign == other.sign
 
     def __str__(self) -> str:
         return f"<ProtoInt value={self.value} sign={self.sign}>"
@@ -35,28 +35,52 @@ class ProtoInt(ProtoNode):
 
         if proto_source.startswith("0"):
             # Octal or hex.
-            pass
+            proto_source = proto_source[1:]
+            if proto_source.startswith("x") or proto_source.startswith("X"):
+                # Hex.
+                proto_source = proto_source[1:]
+                for i, c in enumerate(proto_source):
+                    if c not in ProtoInt.HEX:
+                        if c in ProtoIdentifier.ALL:
+                            raise ValueError(f"Proto has invalid hex: {proto_source}")
+                        i -= 1
+                        break
+                try:
+                    value = int(f"0x{proto_source[:i + 1]}", 16)
+                except ValueError:
+                    raise ValueError(f"Proto has invalid hex: {proto_source}")
+                return ParsedProtoNode(
+                    ProtoInt(value, ProtoIntSign.POSITIVE),
+                    proto_source[i + 1 :].strip(),
+                )
+            else:
+                # Octal.
+                for i, c in enumerate(proto_source):
+                    if c not in ProtoInt.OCTAL:
+                        if c in ProtoIdentifier.ALL:
+                            raise ValueError(f"Proto has invalid octal: {proto_source}")
+                        i -= 1
+                        break
+                try:
+                    value = int(f"0{proto_source[:i + 1]}", 8)
+                except ValueError:
+                    raise ValueError(f"Proto has invalid octal: {proto_source}")
+                return ParsedProtoNode(
+                    ProtoInt(value, ProtoIntSign.POSITIVE),
+                    proto_source[i + 1 :].strip(),
+                )
         else:
             # Decimal.
             for i, c in enumerate(proto_source):
-                if c not in ProtoInt.DECIMAL:
-                    return ParsedProtoNode(
-                        ProtoInt(int(proto_source[:i]), ProtoIntSign.POSITIVE),
-                        proto_source[i:].strip(),
-                    )
+                if c not in ProtoInt.DECIMAL | set("."):
+                    if c in ProtoIdentifier.ALL:
+                        raise ValueError(f"Proto has invalid decimal: {proto_source}")
+                    i -= 1
+                    break
             return ParsedProtoNode(
-                ProtoInt(int(proto_source), ProtoIntSign.POSITIVE), ""
+                ProtoInt(int(proto_source[: i + 1]), ProtoIntSign.POSITIVE),
+                proto_source[i + 1 :],
             )
-
-        if proto_source.startswith("true") and (
-            len(proto_source) == 4 or proto_source[4] not in ProtoIdentifier.ALL
-        ):
-            return ParsedProtoNode(ProtoInt(True), proto_source[4:].strip())
-        elif proto_source.startswith("false") and (
-            len(proto_source) == 5 or proto_source[5] not in ProtoIdentifier.ALL
-        ):
-            return ParsedProtoNode(ProtoInt(False), proto_source[5:].strip())
-        return None
 
     def serialize(self) -> str:
         if self.sign == ProtoIntSign.NEGATIVE:

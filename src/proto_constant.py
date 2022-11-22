@@ -41,8 +41,9 @@ class ProtoConstant(ProtoNode):
         else:
             match = ProtoInt.match(proto_source)
         if match is not None:
+            match.node.sign = sign
             return ParsedProtoNode(
-                ProtoInt(match.node, sign),
+                ProtoConstant(match.node),
                 match.remaining_source.strip(),
             )
 
