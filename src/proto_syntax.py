@@ -27,12 +27,12 @@ class ProtoSyntax(ProtoNode):
     def match(proto_source: str) -> Optional["ParsedProtoNode"]:
         if not proto_source.startswith("syntax = "):
             return None
-        parts = proto_source.split(";")
-        proto_source = ";".join(parts[1:])
-        syntax_line = parts[0][9:]
-        match = ProtoStringLiteral.match(syntax_line)
+        proto_source = proto_source[9:]
+        match = ProtoStringLiteral.match(proto_source)
         if match is None:
-            raise ValueError(f"Proto has invalid syntax syntax: {';'.join(parts)}")
+            raise ValueError(f"Proto has invalid syntax syntax: {proto_source}")
+        if not match.remaining_source.startswith(";"):
+            raise ValueError(f"Proto has invalid syntax: {proto_source}")
         try:
             syntax_type = ProtoSyntaxType[match.node.val.upper()]
         except KeyError:
@@ -42,7 +42,7 @@ class ProtoSyntax(ProtoNode):
 
         return ParsedProtoNode(
             ProtoSyntax(syntax_type),
-            proto_source.strip(),
+            match.remaining_source.strip(),
         )
 
     def serialize(self) -> str:
