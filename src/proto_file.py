@@ -45,7 +45,7 @@ class ProtoSyntax(ProtoNode):
 
 
 class ProtoImport(ProtoNode):
-    def __init__(self, path: str):
+    def __init__(self, path: str, weak: bool = False):
         self.path = path
 
     def __eq__(self, other) -> bool:
@@ -68,11 +68,18 @@ class ProtoImport(ProtoNode):
             raise ValueError(f"Proto has invalid import syntax: {';'.join(parts)}")
         proto_source = ";".join(parts[1:])
 
+        weak = False
+        if import_line.startswith("weak"):
+            weak = True
+            import_line = import_line[5:]
+
         if import_line[0] not in ('"', "'"):
             raise ValueError(f"Proto has invalid import syntax: {import_line}")
         import_path = import_line[1:-1]
 
-        return ParsedProtoNode(ProtoImport(import_path), proto_source.strip())
+        return ParsedProtoNode(
+            ProtoImport(import_path, weak=weak), proto_source.strip()
+        )
 
 
 class ProtoOption(ProtoNode):
