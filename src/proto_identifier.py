@@ -4,6 +4,11 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ProtoIdentifier(ProtoNode):
+    ALPHABETICAL = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+    STARTING = ALPHABETICAL | set(".")
+    PART = ALPHABETICAL | set("0123456789_")
+    ALL = PART | set(".")
+
     def __init__(self, identifier: str):
         self.identifier = identifier
 
@@ -18,13 +23,7 @@ class ProtoIdentifier(ProtoNode):
 
     @staticmethod
     def match(proto_source: str) -> Optional["ParsedProtoNode"]:
-        starting_characters = set(
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz."
-        )
-        all_characters = set("0123456789_") | starting_characters
-        part_characters = all_characters - set(".")
-
-        if proto_source[0] not in starting_characters:
+        if proto_source[0] not in ProtoIdentifier.STARTING:
             return None
 
         in_part = True
@@ -34,10 +33,10 @@ class ProtoIdentifier(ProtoNode):
                     raise ValueError(f"Proto has invalid identifier: {proto_source}")
                 in_part = False
             else:
-                if not in_part and c not in starting_characters:
+                if not in_part and c not in ProtoIdentifier.STARTING:
                     raise ValueError(f"Proto has invalid identifier: {proto_source}")
 
-                if c in part_characters:
+                if c in ProtoIdentifier.PART:
                     in_part = True
                 else:
                     return ParsedProtoNode(
