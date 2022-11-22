@@ -23,6 +23,20 @@ class EnumTest(unittest.TestCase):
         self.assertIsNotNone(parsed_spaced_enum)
         self.assertEqual(parsed_spaced_enum.node.name, ProtoIdentifier("FooEnum"))
 
+    def test_enum_empty_statements(self):
+        empty_statement_enum = ProtoEnum.match(
+            dedent(
+                """
+            enum FooEnum {
+                ;
+                ;
+            }
+        """.strip()
+            )
+        )
+        self.assertIsNotNone(empty_statement_enum)
+        self.assertEqual(empty_statement_enum.node.name, ProtoIdentifier("FooEnum"))
+
 
 if __name__ == "__main__":
     unittest.main()
