@@ -21,7 +21,6 @@ py_test(
     name = "import_test",
     srcs = ["import_test.py"],
     deps = [
-        "//src:parser",
         "//src:proto_import",
     ],
 )
@@ -30,7 +29,6 @@ py_test(
     name = "package_test",
     srcs = ["package_test.py"],
     deps = [
-        "//src:parser",
         "//src:proto_package",
     ],
 )

@@ -18,8 +18,12 @@ class ProtoPackage(ProtoNode):
 
     @staticmethod
     def match(proto_source: str) -> Optional["ParsedProtoNode"]:
-        if not proto_source.startswith("package "):
+        if not proto_source.startswith("package"):
             return None
+
+        if not proto_source.startswith("package "):
+            raise ValueError(f"Proto has invalid package: {proto_source}")
+
         proto_source = proto_source[8:]
         parts = proto_source.split(";")
         package = parts[0]
