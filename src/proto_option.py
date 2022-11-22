@@ -6,7 +6,7 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ProtoOption(ProtoNode):
-    def __init__(self, name: str, value: ProtoConstant):
+    def __init__(self, name: ProtoIdentifier, value: ProtoConstant):
         self.name = name
         self.value = value
 
@@ -34,14 +34,15 @@ class ProtoOption(ProtoNode):
                     f"Proto has invalid option when expecting ): {proto_source}"
                 )
 
-            name_parts.append(f"({match.node})")
-            proto_source = match.remaining_source
+            name_parts.append(ProtoIdentifier(f"({match.node.identifier})"))
+            proto_source = match.remaining_source[1:]
 
-        while match is not None:
+        while True:
             match = ProtoIdentifier.match(proto_source)
-            if match is not None:
-                name_parts.append(match.node)
-                proto_source = match.remaining_source
+            if match is None:
+                break
+            name_parts.append(match.node)
+            proto_source = match.remaining_source
 
         proto_source = proto_source.strip()
         if not proto_source.startswith("="):
@@ -63,7 +64,8 @@ class ProtoOption(ProtoNode):
 
         return ParsedProtoNode(
             ProtoOption(
-                name="".join(x.identifier for x in name_parts), value=match.node
+                name=ProtoIdentifier("".join(x.identifier for x in name_parts)),
+                value=match.node,
             ),
             proto_source[1:],
         )

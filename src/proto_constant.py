@@ -9,11 +9,9 @@ from src.proto_string_literal import ProtoStringLiteral
 
 
 class ProtoConstant(ProtoNode):
-    # constant = fullIdent | ( [ "-" | "+" ] intLit ) | ( [ "-" | "+" ] floatLit ) | strLit | boolLit
     def __init__(
         self, value: ProtoIdentifier | ProtoStringLiteral | int | float | ProtoBool
     ):
-        # TODO: handle floats and ints
         self.value = value
 
     def __eq__(self, other: "ProtoConstant") -> bool:

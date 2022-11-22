@@ -22,6 +22,10 @@ class ProtoFloat(ProtoNode):
         self.sign = sign
 
     def __eq__(self, other: "ProtoFloat") -> bool:
+        # Handle nan.
+        if self.value != self.value:
+            return other.value != other.value
+
         return self.value == other.value and self.sign == other.sign
 
     def __str__(self) -> str:
@@ -70,7 +74,11 @@ class ProtoFloat(ProtoNode):
             elif decimal_started:
                 precision += 1
 
-        base = round(float(proto_source[: i + 1]), precision)
+        try:
+            base = round(float(proto_source[: i + 1]), precision)
+        except ValueError:
+            return None
+
         proto_source = proto_source[i + 1 :]
 
         sign = 1

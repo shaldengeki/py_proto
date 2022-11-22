@@ -34,10 +34,10 @@ class ProtoSyntax(ProtoNode):
         if not match.remaining_source.startswith(";"):
             raise ValueError(f"Proto has invalid syntax: {proto_source}")
         try:
-            syntax_type = ProtoSyntaxType[match.node.val.upper()]
+            syntax_type = ProtoSyntaxType[match.node.value.upper()]
         except KeyError:
             raise ValueError(
-                f"Proto has unknown syntax type: {match.node.val}, must be one of: {[proto_type.name for proto_type in ProtoSyntaxType]}"
+                f"Proto has unknown syntax type: {match.node.value}, must be one of: {[proto_type.name for proto_type in ProtoSyntaxType]}"
             )
 
         return ParsedProtoNode(
