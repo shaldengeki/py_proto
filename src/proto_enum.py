@@ -5,10 +5,13 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ProtoEnum(ProtoNode):
-    def __init__(self, name: str):
+    def __init__(self, name: ProtoIdentifier):
         self.name = name
 
     def __eq__(self, other: "ProtoEnum") -> bool:
+        if not isinstance(other, ProtoEnum):
+            return False
+
         return self.name == other.name
 
     def __str__(self) -> str:
