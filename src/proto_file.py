@@ -45,15 +45,20 @@ class ProtoSyntax(ProtoNode):
 
 
 class ProtoImport(ProtoNode):
-    def __init__(self, path: str, weak: bool = False):
+    def __init__(self, path: str, weak: bool = False, public: bool = False):
         self.path = path
         self.weak = weak
+        self.public = public
 
     def __eq__(self, other) -> bool:
-        return self.path == other.path and self.weak == other.weak
+        return (
+            self.path == other.path
+            and self.weak == other.weak
+            and self.public == other.public
+        )
 
     def __str__(self) -> str:
-        return f"<ProtoImport path='{self.path}'>"
+        return f"<ProtoImport path='{self.path} weak={self.weak} public={self.public}'>"
 
     def __repr__(self) -> str:
         return str(self)
@@ -70,16 +75,23 @@ class ProtoImport(ProtoNode):
         proto_source = ";".join(parts[1:])
 
         weak = False
-        if import_line.startswith("weak"):
+        if import_line.startswith("weak "):
             weak = True
             import_line = import_line[5:]
+
+        public = False
+        if import_line.startswith("public "):
+            if weak:
+                raise ValueError(f"Proto has invalid import syntax: {';'.join(parts)}")
+            public = True
+            import_line = import_line[7:]
 
         if import_line[0] not in ('"', "'"):
             raise ValueError(f"Proto has invalid import syntax: {import_line}")
         import_path = import_line[1:-1]
 
         return ParsedProtoNode(
-            ProtoImport(import_path, weak=weak), proto_source.strip()
+            ProtoImport(import_path, weak=weak, public=public), proto_source.strip()
         )
 
 

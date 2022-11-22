@@ -102,6 +102,87 @@ class ImportTest(unittest.TestCase):
             ],
         )
 
+    def test_public_default(self):
+        self.assertEqual(
+            Parser.loads(
+                dedent(
+                    """syntax = 'proto3';
+                import "foo.proto";
+                """
+                )
+            ).imports,
+            [ProtoImport("foo.proto", public=False)],
+        )
+
+    def test_public_import(self):
+        self.assertEqual(
+            Parser.loads(
+                dedent(
+                    """syntax = 'proto3';
+                import public "foo.proto";
+                """
+                )
+            ).imports,
+            [ProtoImport("foo.proto", public=True)],
+        )
+        self.assertEqual(
+            Parser.loads(
+                dedent(
+                    """syntax = 'proto3';
+                import public 'foo.proto';
+                """
+                )
+            ).imports,
+            [ProtoImport("foo.proto", public=True)],
+        )
+
+    def test_public_typoed_import(self):
+        with self.assertRaises(ParseError):
+            Parser.loads(
+                dedent(
+                    """syntax = 'proto3';
+                    import publik "foo.proto";
+                """
+                )
+            )
+
+    def test_public_weak_mutually_exclusive(self):
+        with self.assertRaises(ParseError):
+            Parser.loads(
+                dedent(
+                    """syntax = 'proto3';
+                    import weak public "foo.proto";
+                """
+                )
+            )
+
+        with self.assertRaises(ParseError):
+            Parser.loads(
+                dedent(
+                    """syntax = 'proto3';
+                    import public weak "foo.proto";
+                """
+                )
+            )
+
+    def test_public_mixed_imports(self):
+        self.assertEqual(
+            Parser.loads(
+                dedent(
+                    """syntax = 'proto3';
+                import "foo.proto";
+                import public "bar/baz.proto";
+                import public "bat.proto";
+                """
+                )
+            ).imports,
+            [
+                ProtoImport("foo.proto", weak=False),
+                ProtoImport("bar/baz.proto", weak=False, public=True),
+                ProtoImport("bat.proto", weak=False, public=True),
+            ],
+        )
+
     def test_multiple_imports(self):
         self.assertEqual(
             Parser.loads(
