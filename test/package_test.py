@@ -16,6 +16,15 @@ class PackageTest(unittest.TestCase):
             ProtoPackage.match("package")
 
         with self.assertRaises(ValueError):
+            ProtoPackage.match("package;")
+
+        with self.assertRaises(ValueError):
+            ProtoPackage.match("package ")
+
+        with self.assertRaises(ValueError):
+            ProtoPackage.match("package ;")
+
+        with self.assertRaises(ValueError):
             ProtoPackage.match("packagefoo")
 
         with self.assertRaises(ValueError):

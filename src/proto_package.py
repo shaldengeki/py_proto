@@ -27,10 +27,15 @@ class ProtoPackage(ProtoNode):
         proto_source = proto_source[8:]
         parts = proto_source.split(";")
         package = parts[0]
+
         if len(parts) == 1:
             raise ValueError(
                 f"Proto has invalid package declaration syntax: {';'.join(parts)}"
             )
+
+        if not package:
+            raise ValueError(f"Proto cannot have empty package: {proto_source}")
+
         proto_source = ";".join(parts[1:])
 
         if package.startswith(".") or package.endswith("."):
