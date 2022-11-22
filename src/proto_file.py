@@ -64,6 +64,8 @@ class ProtoImport(ProtoNode):
         proto_source = proto_source[7:]
         parts = proto_source.split(";")
         import_line = parts[0]
+        if len(parts) == 1:
+            raise ValueError(f"Proto has invalid import syntax: {';'.join(parts)}")
         proto_source = ";".join(parts[1:])
 
         if import_line[0] not in ('"', "'"):
