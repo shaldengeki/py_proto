@@ -19,10 +19,10 @@ class ProtoIdentifier(ProtoNode):
     @staticmethod
     def match(proto_source: str) -> Optional["ParsedProtoNode"]:
         starting_characters = set(
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz.".split()
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz."
         )
-        all_characters = set("0123456789".split()) + starting_characters
-        part_characters = all_characters - "."
+        all_characters = set("0123456789_") | starting_characters
+        part_characters = all_characters - set(".")
 
         if proto_source[0] not in starting_characters:
             return None
@@ -34,13 +34,20 @@ class ProtoIdentifier(ProtoNode):
                     raise ValueError(f"Proto has invalid identifier: {proto_source}")
                 in_part = False
             else:
+                if not in_part and c not in starting_characters:
+                    raise ValueError(f"Proto has invalid identifier: {proto_source}")
+
                 if c in part_characters:
                     in_part = True
                 else:
                     return ParsedProtoNode(
                         ProtoIdentifier(proto_source[:i]), proto_source[i:]
                     )
-        raise ValueError(f"Proto has invalid identifier: {proto_source}")
+
+        if not in_part:
+            raise ValueError(f"Proto has invalid identifier: {proto_source}")
+
+        return ParsedProtoNode(ProtoIdentifier(proto_source), "")
 
     def serialize(self) -> str:
         return self.identifier
