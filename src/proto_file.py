@@ -25,6 +25,40 @@ class ProtoNode:
         raise NotImplementedError
 
 
+class ProtoStringLiteral(ProtoNode):
+    QUOTES = {'"', "'"}
+
+    def __init__(self, val: str):
+        self.val = val
+
+    def __eq__(self, other) -> bool:
+        return self.val == other.val
+
+    def __str__(self) -> str:
+        return f"<ProtoStringLiteral val='{self.val}'>"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    @staticmethod
+    def match(proto_source: str) -> Optional["ParsedProtoNode"]:
+        if not any(proto_source.startswith(c) for c in ProtoStringLiteral.QUOTES):
+            return None
+        escaped = False
+        starting_quote = proto_source[0]
+        for i, c in enumerate(proto_source[1:]):
+            if c == "\\":
+                escaped = True
+                continue
+            if c == starting_quote and not escaped:
+                return ParsedProtoNode(
+                    ProtoStringLiteral(proto_source[1 : i + 1]),
+                    proto_source[i + 2 :].strip(),
+                )
+            escaped = False
+        return None
+
+
 class ProtoSyntaxTypes(Enum):
     PROTO2 = "proto2"
     PROTO3 = "proto3"
@@ -36,10 +70,13 @@ class ProtoSyntax(ProtoNode):
         if not proto_source.startswith("syntax = "):
             return None
         parts = proto_source.split(";")
-        syntax_line = parts[0]
         proto_source = ";".join(parts[1:])
+        syntax_line = parts[0][9:]
+        match = ProtoStringLiteral.match(syntax_line)
+        if match is None:
+            raise ValueError(f"Proto has invalid syntax syntax: {';'.join(parts)}")
         return ParsedProtoNode(
-            ProtoSyntaxTypes[syntax_line.split("syntax = ")[1][1:-1].upper()],
+            ProtoSyntaxTypes[match.node.val.upper()],
             proto_source.strip(),
         )
 
