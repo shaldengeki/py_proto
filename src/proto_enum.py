@@ -73,5 +73,9 @@ class ProtoEnum(ProtoNode):
 
         return ParsedProtoNode(ProtoEnum(enum_name, nodes=parsed_tree), proto_source)
 
+    @property
+    def options(self) -> list[ProtoOption]:
+        return [node for node in self.nodes if isinstance(node, ProtoOption)]
+
     def serialize(self) -> str:
         return "\n".join([f"enum {self.name} {{", "\}"])
