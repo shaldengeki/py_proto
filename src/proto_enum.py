@@ -32,7 +32,7 @@ class ProtoEnumValue(ProtoNode):
         )
 
     def __str__(self) -> str:
-        return f"<ProtoEnumValue identifier={self.identifier.serialize()}, value={self.value.serialize()}, options={self.options}>"
+        return f"<ProtoEnumValue identifier={self.identifier}, value={self.value}, options={self.options}>"
 
     def __repr__(self) -> str:
         return str(self)
