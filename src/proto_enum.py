@@ -159,4 +159,9 @@ class ProtoEnum(ProtoNode):
         return [node for node in self.nodes if isinstance(node, ProtoOption)]
 
     def serialize(self) -> str:
-        return "\n".join([f"enum {self.name} {{", "\}"])
+        serialize_parts = (
+            [f"enum {self.name.serialize()} {{"]
+            + [n.serialize() for n in self.nodes]
+            + ["}"]
+        )
+        return "\n".join(serialize_parts)

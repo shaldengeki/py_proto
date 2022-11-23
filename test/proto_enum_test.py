@@ -46,6 +46,20 @@ class EnumTest(unittest.TestCase):
                 ),
             ],
         )
+        self.assertEqual(
+            parsed_enum_multiple_values.node.serialize(),
+            dedent(
+                """
+            enum FooEnum {
+            FE_NEGATIVE = -1;
+            FE_UNDEFINED = 0;
+            option java_package = "foobar";
+            FE_VALONE = 1;
+            FE_VALTWO = 2;
+            }
+            """
+            ).strip(),
+        )
 
     def test_empty_enum(self):
         parsed_empty_enum = ProtoEnum.match("""enum FooEnum {}""")
