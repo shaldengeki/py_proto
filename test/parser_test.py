@@ -145,6 +145,13 @@ class IntTest(unittest.TestCase):
 
                 option java_package = "my.test.package";
                 option (fully.qualified).option = .314159265e1;
+
+                enum MyAwesomeEnum {
+                    MAE_UNSPECIFIED = 0;
+                    option allow_alias = true;
+                    MAE_STARTED = 1;
+                    MAE_RUNNING = 2;
+                }
                 """
             )
         )
@@ -162,6 +169,13 @@ class IntTest(unittest.TestCase):
 
                     option java_package = "my.test.package";
                     option (fully.qualified).option = 3.14159265;
+
+                    enum MyAwesomeEnum {
+                    MAE_UNSPECIFIED = 0;
+                    option allow_alias = true;
+                    MAE_STARTED = 1;
+                    MAE_RUNNING = 2;
+                    }
                     """
             ).strip(),
         )
