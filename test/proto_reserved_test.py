@@ -7,6 +7,7 @@ from src.proto_reserved import ProtoReserved, ProtoReservedRange
 class ReservedTest(unittest.TestCase):
     def test_reserved_range_single_int(self):
         self.assertEqual(ProtoReservedRange.match("42").node.serialize(), "42")
+        self.assertEqual(ProtoReservedRange.match("-1").node.serialize(), "-1")
 
     def test_reserved_range_invalid_non_ints(self):
         self.assertIsNone(ProtoReservedRange.match("42.5"))
@@ -16,6 +17,9 @@ class ReservedTest(unittest.TestCase):
     def test_reserved_range_int_range(self):
         self.assertEqual(ProtoReservedRange.match("1 to 1").node.serialize(), "1 to 1")
         self.assertEqual(ProtoReservedRange.match("1 to 7").node.serialize(), "1 to 7")
+        self.assertEqual(
+            ProtoReservedRange.match("-100 to -5").node.serialize(), "-100 to -5"
+        )
 
     def test_reserved_range_invalid_range(self):
         with self.assertRaises(ValueError):

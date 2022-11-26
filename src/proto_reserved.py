@@ -1,9 +1,8 @@
 from enum import Enum
-from operator import xor
 from typing import Optional
 
 from src.proto_identifier import ProtoIdentifier
-from src.proto_int import ProtoInt
+from src.proto_int import ProtoInt, ProtoIntSign
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 
@@ -42,10 +41,16 @@ class ProtoReservedRange:
 
     @staticmethod
     def match(proto_source: str) -> Optional["ParsedProtoNode"]:
-        match = ProtoInt.match(proto_source)
+        sign = ProtoIntSign.POSITIVE
+        if proto_source.startswith("-") and proto_source != "-":
+            sign = next(x for x in ProtoIntSign if x.value == proto_source[0])
+            match = ProtoInt.match(proto_source[1:])
+        else:
+            match = ProtoInt.match(proto_source)
         if match is None:
             return None
 
+        match.node.sign = sign
         min = match.node
         proto_source = match.remaining_source
 
@@ -58,11 +63,17 @@ class ProtoReservedRange:
                     proto_source[3:].strip(),
                 )
             else:
-                match = ProtoInt.match(proto_source)
+                sign = ProtoIntSign.POSITIVE
+                if proto_source.startswith("-"):
+                    sign = next(x for x in ProtoIntSign if x.value == proto_source[0])
+                    match = ProtoInt.match(proto_source[1:])
+                else:
+                    match = ProtoInt.match(proto_source)
                 if match is None:
                     raise ValueError(
                         f"Proto source has invalid reserved range, expecting int for max: {proto_source}"
                     )
+                match.node.sign = sign
                 max = match.node
                 proto_source = match.remaining_source
 
@@ -86,10 +97,16 @@ class ProtoReserved(ProtoNode):
         ranges: Optional[list[ProtoReservedRange]] = None,
         fields: Optional[list[ProtoIdentifier]] = None,
     ):
-        if not xor(ranges, fields):
+        if (not ranges and not fields) or (ranges and fields):
             raise ValueError(
                 "Exactly one of ranges or fields must be set in a ProtoReserved"
             )
+
+        if ranges is None:
+            ranges = []
+
+        if fields is None:
+            fields = []
 
         self.ranges = ranges
         self.fields = fields
@@ -111,7 +128,58 @@ class ProtoReserved(ProtoNode):
         if not proto_source.startswith("reserved "):
             return None
 
-        return None
+        proto_source = proto_source[9:].strip()
+
+        ranges = []
+        fields = []
+        while True:
+            if proto_source[0] == ";":
+                proto_source = proto_source[1:].strip()
+                break
+            if not proto_source:
+                raise ValueError(
+                    "Proto source has invalid reserved syntax, does not contain ;"
+                )
+            if proto_source[0] == ",":
+                proto_source = proto_source[1:].strip()
+            match = ProtoReservedRange.match(proto_source)
+            if match is not None:
+                ranges.append(match.node)
+                proto_source = match.remaining_source
+            else:
+                # Maybe this is a field identifier.
+                if not proto_source.startswith("'") and not proto_source.startswith(
+                    '"'
+                ):
+                    raise ValueError(
+                        f"Proto source has invalid reserved syntax, expecting quote for field identifier: {proto_source}"
+                    )
+                quote_type = proto_source[0]
+                proto_source = proto_source[1:]
+                match = ProtoIdentifier.match(proto_source)
+                if match is None:
+                    raise ValueError(
+                        f"Proto source has invalid reserved syntax, expecting field identifier: {proto_source}"
+                    )
+
+                match.node.identifier = (
+                    f"{quote_type}{match.node.identifier}{quote_type}"
+                )
+
+                fields.append(match.node)
+                proto_source = match.remaining_source
+                if not proto_source.startswith(quote_type):
+                    raise ValueError(
+                        f"Proto source has invalid reserved syntax, expecting closing quote {quote_type}: {proto_source}"
+                    )
+                proto_source = proto_source[1:].strip()
+
+        return ParsedProtoNode(ProtoReserved(ranges, fields), proto_source.strip())
 
     def serialize(self) -> str:
-        return self.identifier
+        serialize_parts = [
+            "reserved",
+            ", ".join(r.serialize() for r in self.ranges)
+            + ", ".join(f.serialize() for f in self.fields),
+        ]
+        return " ".join(serialize_parts) + ";"

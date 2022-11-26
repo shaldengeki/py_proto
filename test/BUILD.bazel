@@ -107,6 +107,7 @@ py_test(
         "//src:proto_enum",
         "//src:proto_identifier",
         "//src:proto_option",
+        "//src:proto_reserved",
         "//src:proto_string_literal",
     ],
 )
