@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from src.proto_identifier import ProtoIdentifier
+from src.proto_identifier import ProtoFullIdentifier
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 
@@ -44,7 +44,7 @@ class ProtoInt(ProtoNode):
                 proto_source = proto_source[1:]
                 for i, c in enumerate(proto_source):
                     if c not in ProtoInt.HEX:
-                        if c in ProtoIdentifier.ALL:
+                        if c in ProtoFullIdentifier.ALL:
                             raise ValueError(f"Proto has invalid hex: {proto_source}")
                         i -= 1
                         break
@@ -60,7 +60,7 @@ class ProtoInt(ProtoNode):
                 # Octal.
                 for i, c in enumerate(proto_source):
                     if c not in ProtoInt.OCTAL:
-                        if c in ProtoIdentifier.ALL:
+                        if c in ProtoFullIdentifier.ALL:
                             raise ValueError(f"Proto has invalid octal: {proto_source}")
                         i -= 1
                         break
@@ -76,7 +76,7 @@ class ProtoInt(ProtoNode):
             # Decimal.
             for i, c in enumerate(proto_source):
                 if c not in ProtoInt.DECIMAL | set("."):
-                    if c in ProtoIdentifier.ALL:
+                    if c in ProtoFullIdentifier.ALL:
                         return None
                     i -= 1
                     break
