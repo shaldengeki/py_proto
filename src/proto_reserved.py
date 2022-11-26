@@ -108,6 +108,9 @@ class ProtoReserved(ProtoNode):
 
     @staticmethod
     def match(proto_source: str) -> Optional["ParsedProtoNode"]:
+        if not proto_source.startswith("reserved "):
+            return None
+
         return None
 
     def serialize(self) -> str:
