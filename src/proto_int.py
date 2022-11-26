@@ -31,12 +31,18 @@ class ProtoInt(ProtoNode):
     def __repr__(self) -> str:
         return str(self)
 
+    def __int__(self):
+        value = self.value
+        if self.sign == ProtoIntSign.NEGATIVE:
+            value *= -1
+        return value
+
     @staticmethod
     def match(proto_source: str) -> Optional["ParsedProtoNode"]:
         if proto_source[0] not in ProtoInt.DECIMAL:
             return None
 
-        if proto_source.startswith("0"):
+        if proto_source != "0" and proto_source.startswith("0"):
             # Octal or hex.
             proto_source = proto_source[1:]
             if proto_source.startswith("x") or proto_source.startswith("X"):
@@ -87,7 +93,7 @@ class ProtoInt(ProtoNode):
 
             return ParsedProtoNode(
                 ProtoInt(value, ProtoIntSign.POSITIVE),
-                proto_source[i + 1 :],
+                proto_source[i + 1 :].strip(),
             )
 
     def serialize(self) -> str:

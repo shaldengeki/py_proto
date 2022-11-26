@@ -66,6 +66,14 @@ py_test(
 )
 
 py_test(
+    name = "proto_reserved_test",
+    srcs = ["proto_reserved_test.py"],
+    deps = [
+        "//src:proto_reserved",
+    ],
+)
+
+py_test(
     name = "proto_syntax_test",
     srcs = ["proto_syntax_test.py"],
     deps = [
