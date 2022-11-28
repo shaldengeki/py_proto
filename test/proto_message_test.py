@@ -34,7 +34,7 @@ class MessageTest(unittest.TestCase):
                 message NestedMessage {}
                 reserved "a";
                 reserved 1 to 3;
-                repeated string some_field = 4 [ .bar.baz = "bat", baz.bat = -100 ];
+                repeated string some_field = 4 [ (bar.baz).bat = "bat", baz.bat = -100 ];
                 bool some_bool_field = 5;
             }
         """.strip()
@@ -82,7 +82,7 @@ class MessageTest(unittest.TestCase):
                     None,
                     [
                         ProtoMessageFieldOption(
-                            ProtoIdentifier(".bar.baz"),
+                            ProtoIdentifier("(bar.baz).bat"),
                             ProtoConstant(ProtoStringLiteral("bat")),
                         ),
                         ProtoMessageFieldOption(
@@ -115,7 +115,7 @@ class MessageTest(unittest.TestCase):
             }
             reserved "a";
             reserved 1 to 3;
-            repeated string some_field = 4 [ .bar.baz = "bat", baz.bat = -100 ];
+            repeated string some_field = 4 [ (bar.baz).bat = "bat", baz.bat = -100 ];
             bool some_bool_field = 5;
             }
             """

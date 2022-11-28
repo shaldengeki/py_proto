@@ -174,7 +174,7 @@ class ProtoMessageField(ProtoNode):
             serialized_parts.append("repeated")
 
         if self.type == ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE:
-            serialized_parts.append(self.enum_or_message_type_name)
+            serialized_parts.append(self.enum_or_message_type_name.serialize())
         else:
             serialized_parts.append(self.type.value)
 
