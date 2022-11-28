@@ -19,7 +19,7 @@
 - [ ] [Message support](https://developers.google.com/protocol-buffers/docs/reference/proto3-spec#message_definition)
   - [x] Empty message
   - [x] Empty statements
-  - [ ] Options
+  - [x] Options
   - [ ] Fields
     - [ ] Basic fields
     - [ ] Field options

@@ -39,6 +39,7 @@ class IntTest(unittest.TestCase):
                 }
 
                 message MyAwesomeMessage {
+                    option (bar).baz = 1.2;
                 }
                 """
             )
@@ -95,7 +96,12 @@ class IntTest(unittest.TestCase):
         self.assertIn(
             ProtoMessage(
                 ProtoIdentifier("MyAwesomeMessage"),
-                [],
+                [
+                    ProtoOption(
+                        ProtoIdentifier("(bar).baz"),
+                        ProtoConstant(ProtoFloat(1.2, ProtoFloatSign.POSITIVE)),
+                    )
+                ],
             ),
             proto_file.nodes,
         )
@@ -165,6 +171,7 @@ class IntTest(unittest.TestCase):
                 }
 
                 message MyAwesomeMessage {
+                    option (bar).baz = 1.2;
                 }
                 """
             )
@@ -192,6 +199,7 @@ class IntTest(unittest.TestCase):
                     }
 
                     message MyAwesomeMessage {
+                    option (bar).baz = 1.2;
                     }
                     """
             ).strip(),

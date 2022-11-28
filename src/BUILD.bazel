@@ -127,6 +127,7 @@ py_library(
     deps = [
         ":proto_identifier",
         ":proto_node",
+        ":proto_option",
     ],
 )
 

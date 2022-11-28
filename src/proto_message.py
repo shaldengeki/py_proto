@@ -2,6 +2,7 @@ from typing import Optional
 
 from src.proto_identifier import ProtoIdentifier
 from src.proto_node import ParsedProtoNode, ProtoNode
+from src.proto_option import ProtoOption
 
 
 class ProtoMessage(ProtoNode):
@@ -23,7 +24,7 @@ class ProtoMessage(ProtoNode):
 
     @staticmethod
     def parse_partial_content(partial_message_content: str) -> ParsedProtoNode:
-        for node_type in []:
+        for node_type in (ProtoOption,):
             try:
                 match_result = node_type.match(partial_message_content)
             except (ValueError, IndexError, TypeError):
@@ -71,6 +72,10 @@ class ProtoMessage(ProtoNode):
             proto_source = match_result.remaining_source.strip()
 
         return ParsedProtoNode(ProtoMessage(enum_name, nodes=parsed_tree), proto_source)
+
+    @property
+    def options(self) -> list[ProtoOption]:
+        return [node for node in self.nodes if isinstance(node, ProtoOption)]
 
     def serialize(self) -> str:
         serialize_parts = (
