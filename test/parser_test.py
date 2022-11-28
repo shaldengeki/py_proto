@@ -45,6 +45,8 @@ class IntTest(unittest.TestCase):
                         MNE_NEGATIVE = -1;
                         MNE_POSITIVE = 2;
                     }
+                    message MyNestedMessage {
+                    }
                 }
                 """
             )
@@ -123,6 +125,7 @@ class IntTest(unittest.TestCase):
                             ),
                         ],
                     ),
+                    ProtoMessage(ProtoIdentifier("MyNestedMessage"), []),
                 ],
             ),
             proto_file.nodes,
@@ -199,6 +202,7 @@ class IntTest(unittest.TestCase):
                         MNE_NEGATIVE = -1;
                         MNE_POSITIVE = 2;
                     }
+                    message MyNestedMessage {}
                 }
                 """
             )
@@ -231,6 +235,8 @@ class IntTest(unittest.TestCase):
                     MNE_UNDEFINED = 0;
                     MNE_NEGATIVE = -1;
                     MNE_POSITIVE = 2;
+                    }
+                    message MyNestedMessage {
                     }
                     }
                     """

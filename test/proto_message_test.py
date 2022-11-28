@@ -25,6 +25,7 @@ class MessageTest(unittest.TestCase):
                     ME_VALONE = 1;
                     ME_VALTWO = 2;
                 }
+                message NestedMessage {}
             }
         """.strip()
             )
@@ -53,6 +54,7 @@ class MessageTest(unittest.TestCase):
                         ),
                     ],
                 ),
+                ProtoMessage(ProtoIdentifier("NestedMessage"), []),
             ],
         )
         self.assertEqual(
@@ -65,6 +67,8 @@ class MessageTest(unittest.TestCase):
             ME_UNDEFINED = 0;
             ME_VALONE = 1;
             ME_VALTWO = 2;
+            }
+            message NestedMessage {
             }
             }
             """
@@ -168,6 +172,26 @@ class MessageTest(unittest.TestCase):
                             ),
                         ],
                     )
+                ],
+            ),
+        )
+
+    def test_message_nested_message(self):
+        parsed_message_with_enum = ProtoMessage.match(
+            dedent(
+                """
+            message FooMessage {
+                message NestedMessage {}
+            }
+        """.strip()
+            )
+        )
+        self.assertEqual(
+            parsed_message_with_enum.node,
+            ProtoMessage(
+                ProtoIdentifier("FooMessage"),
+                [
+                    ProtoMessage(ProtoIdentifier("NestedMessage"), []),
                 ],
             ),
         )

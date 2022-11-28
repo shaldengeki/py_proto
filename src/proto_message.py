@@ -28,6 +28,7 @@ class ProtoMessage(ProtoNode):
         for node_type in (
             ProtoEnum,
             ProtoOption,
+            ProtoMessage,
         ):
             try:
                 match_result = node_type.match(partial_message_content)
