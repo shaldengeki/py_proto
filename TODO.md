@@ -32,7 +32,7 @@
       - [ ] Map options
     - [ ] Reserveds
   - [ ] Nested messages
-  - [ ] Nested enums
+  - [x] Nested enums
 - [ ] [Service support](https://developers.google.com/protocol-buffers/docs/reference/proto3-spec#service_definition)
   - [ ] Empty service
   - [ ] Empty statements

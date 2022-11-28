@@ -40,6 +40,11 @@ class IntTest(unittest.TestCase):
 
                 message MyAwesomeMessage {
                     option (bar).baz = 1.2;
+                    enum MyNestedEnum {
+                        MNE_UNDEFINED = 0;
+                        MNE_NEGATIVE = -1;
+                        MNE_POSITIVE = 2;
+                    }
                 }
                 """
             )
@@ -100,7 +105,24 @@ class IntTest(unittest.TestCase):
                     ProtoOption(
                         ProtoIdentifier("(bar).baz"),
                         ProtoConstant(ProtoFloat(1.2, ProtoFloatSign.POSITIVE)),
-                    )
+                    ),
+                    ProtoEnum(
+                        ProtoIdentifier("MyNestedEnum"),
+                        [
+                            ProtoEnumValue(
+                                ProtoIdentifier("MNE_UNDEFINED"),
+                                ProtoInt(0, ProtoIntSign.POSITIVE),
+                            ),
+                            ProtoEnumValue(
+                                ProtoIdentifier("MNE_NEGATIVE"),
+                                ProtoInt(1, ProtoIntSign.NEGATIVE),
+                            ),
+                            ProtoEnumValue(
+                                ProtoIdentifier("MNE_POSITIVE"),
+                                ProtoInt(2, ProtoIntSign.POSITIVE),
+                            ),
+                        ],
+                    ),
                 ],
             ),
             proto_file.nodes,
@@ -172,6 +194,11 @@ class IntTest(unittest.TestCase):
 
                 message MyAwesomeMessage {
                     option (bar).baz = 1.2;
+                    enum MyNestedEnum {
+                        MNE_UNDEFINED = 0;
+                        MNE_NEGATIVE = -1;
+                        MNE_POSITIVE = 2;
+                    }
                 }
                 """
             )
@@ -200,6 +227,11 @@ class IntTest(unittest.TestCase):
 
                     message MyAwesomeMessage {
                     option (bar).baz = 1.2;
+                    enum MyNestedEnum {
+                    MNE_UNDEFINED = 0;
+                    MNE_NEGATIVE = -1;
+                    MNE_POSITIVE = 2;
+                    }
                     }
                     """
             ).strip(),

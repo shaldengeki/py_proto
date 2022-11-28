@@ -1,5 +1,6 @@
 from typing import Optional
 
+from src.proto_enum import ProtoEnum
 from src.proto_identifier import ProtoIdentifier
 from src.proto_node import ParsedProtoNode, ProtoNode
 from src.proto_option import ProtoOption
@@ -24,7 +25,10 @@ class ProtoMessage(ProtoNode):
 
     @staticmethod
     def parse_partial_content(partial_message_content: str) -> ParsedProtoNode:
-        for node_type in (ProtoOption,):
+        for node_type in (
+            ProtoEnum,
+            ProtoOption,
+        ):
             try:
                 match_result = node_type.match(partial_message_content)
             except (ValueError, IndexError, TypeError):

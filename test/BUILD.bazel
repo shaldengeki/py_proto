@@ -104,7 +104,9 @@ py_test(
     deps = [
         "//src:proto_bool",
         "//src:proto_constant",
+        "//src:proto_enum",
         "//src:proto_identifier",
+        "//src:proto_int",
         "//src:proto_message",
         "//src:proto_option",
         "//src:proto_string_literal",
