@@ -170,7 +170,7 @@ class IntTest(unittest.TestCase):
                         ],
                     ),
                     ProtoOneOf(
-                        ProtoIdentifier("one_of_field"),
+                        ProtoIdentifier("foo"),
                         [
                             ProtoMessageField(ProtoMessageFieldTypesEnum.STRING, ProtoIdentifier("name"), ProtoInt(4, ProtoIntSign.POSITIVE), False, None, []),
                             ProtoMessageField(ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE, ProtoIdentifier("sub_message"), ProtoInt(9, ProtoIntSign.POSITIVE), False, ProtoFullIdentifier("SubMessage"), []),
