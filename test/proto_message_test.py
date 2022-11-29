@@ -37,6 +37,7 @@ class MessageTest(unittest.TestCase):
                 reserved 1 to 3;
                 repeated string some_field = 4 [ (bar.baz).bat = "bat", baz.bat = -100 ];
                 bool some_bool_field = 5;
+                oneof my_oneof {}
             }
         """.strip()
             )
@@ -99,6 +100,7 @@ class MessageTest(unittest.TestCase):
                     False,
                     None,
                 ),
+                ProtoOneOf(ProtoIdentifier("my_oneof"), []),
             ],
         )
         self.assertEqual(
@@ -118,6 +120,8 @@ class MessageTest(unittest.TestCase):
             reserved 1 to 3;
             repeated string some_field = 4 [ (bar.baz).bat = "bat", baz.bat = -100 ];
             bool some_bool_field = 5;
+            oneof my_oneof {
+            }
             }
             """
             ).strip(),

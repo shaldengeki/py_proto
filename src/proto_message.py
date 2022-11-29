@@ -246,7 +246,8 @@ class ProtoOneOf(ProtoNode):
         return [node for node in self.nodes if isinstance(node, ProtoOption)]
 
     def serialize(self) -> str:
-        return ""
+        serialize_parts = [f"oneof {self.name.serialize()} {{"] + [n.serialize() for n in self.nodes] + ["}"]
+        return "\n".join(serialize_parts)
 
 
 class ProtoMessage(ProtoNode):
@@ -274,6 +275,7 @@ class ProtoMessage(ProtoNode):
             ProtoMessage,
             ProtoReserved,
             ProtoMessageField,
+            ProtoOneOf,
         ):
             try:
                 match_result = node_type.match(partial_message_content)
