@@ -131,7 +131,7 @@ class MessageTest(unittest.TestCase):
             bool some_bool_field = 5;
             oneof my_oneof {
             string name = 4;
-            SubMessage sub_message = 9;            
+            SubMessage sub_message = 9;
             }
             }
             """
