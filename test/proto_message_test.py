@@ -37,7 +37,10 @@ class MessageTest(unittest.TestCase):
                 reserved 1 to 3;
                 repeated string some_field = 4 [ (bar.baz).bat = "bat", baz.bat = -100 ];
                 bool some_bool_field = 5;
-                oneof my_oneof {}
+                oneof one_of_field {
+                    string name = 4;
+                    SubMessage sub_message = 9;
+                }
             }
         """.strip()
             )
@@ -100,7 +103,13 @@ class MessageTest(unittest.TestCase):
                     False,
                     None,
                 ),
-                ProtoOneOf(ProtoIdentifier("my_oneof"), []),
+                ProtoOneOf(
+                    ProtoIdentifier("one_of_field"),
+                    [
+                        ProtoMessageField(ProtoMessageFieldTypesEnum.STRING, ProtoIdentifier("name"), ProtoInt(4, ProtoIntSign.POSITIVE), False, None, []),
+                        ProtoMessageField(ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE, ProtoIdentifier("sub_message"), ProtoInt(9, ProtoIntSign.POSITIVE), False, ProtoFullIdentifier("SubMessage"), []),
+                    ],
+                ),
             ],
         )
         self.assertEqual(
@@ -121,6 +130,8 @@ class MessageTest(unittest.TestCase):
             repeated string some_field = 4 [ (bar.baz).bat = "bat", baz.bat = -100 ];
             bool some_bool_field = 5;
             oneof my_oneof {
+            string name = 4;
+            SubMessage sub_message = 9;            
             }
             }
             """
@@ -389,6 +400,24 @@ class MessageTest(unittest.TestCase):
             ProtoOneOf(
                 ProtoIdentifier("one_of_field"),
                 [],
+            ),
+        )
+
+    def test_oneof_basic_fields(self):
+        parsed_oneof_basic_fields = ProtoOneOf.match(
+            dedent("""oneof one_of_field {
+                string name = 4;
+                SubMessage sub_message = 9;
+            }""".strip())
+        )
+        self.assertEqual(
+            parsed_oneof_basic_fields.node,
+            ProtoOneOf(
+                ProtoIdentifier("one_of_field"),
+                [
+                    ProtoMessageField(ProtoMessageFieldTypesEnum.STRING, ProtoIdentifier("name"), ProtoInt(4, ProtoIntSign.POSITIVE), False, None, []),
+                    ProtoMessageField(ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE, ProtoIdentifier("sub_message"), ProtoInt(9, ProtoIntSign.POSITIVE), False, ProtoFullIdentifier("SubMessage"), []),
+                ],
             ),
         )
 

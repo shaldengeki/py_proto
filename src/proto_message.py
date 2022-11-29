@@ -52,10 +52,7 @@ class ProtoMessageField(ProtoNode):
             options = []
         self.options = options
 
-    def __eq__(self, other: "ProtoMessageField") -> bool:
-        if not isinstance(other, ProtoMessageField):
-            return False
-
+    def __eq__(self, other) -> bool:
         return (
             self.type == other.type
             and self.name == other.name
@@ -180,7 +177,7 @@ class ProtoOneOf(ProtoNode):
         self.name = name
         self.nodes = nodes
 
-    def __eq__(self, other: "ProtoMessage") -> bool:
+    def __eq__(self, other) -> bool:
         return self.name == other.name and self.nodes == other.nodes
 
     def __str__(self) -> str:
@@ -191,7 +188,7 @@ class ProtoOneOf(ProtoNode):
 
     @staticmethod
     def parse_partial_content(partial_oneof_content: str) -> ParsedProtoNode:
-        for node_type in []:
+        for node_type in (ProtoMessageField,):
             try:
                 match_result = node_type.match(partial_oneof_content)
             except (ValueError, IndexError, TypeError):
@@ -255,10 +252,7 @@ class ProtoMessage(ProtoNode):
         self.name = name
         self.nodes = nodes
 
-    def __eq__(self, other: "ProtoMessage") -> bool:
-        if not isinstance(other, ProtoMessage):
-            return False
-
+    def __eq__(self, other) -> bool:
         return self.name == other.name and self.nodes == other.nodes
 
     def __str__(self) -> str:
