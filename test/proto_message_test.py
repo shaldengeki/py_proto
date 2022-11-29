@@ -11,6 +11,7 @@ from src.proto_message import (
     ProtoMessageField,
     ProtoMessageFieldOption,
     ProtoMessageFieldTypesEnum,
+    ProtoOneOf,
 )
 from src.proto_option import ProtoOption
 from src.proto_reserved import ProtoReserved, ProtoReservedRange, ProtoReservedRangeEnum
@@ -357,6 +358,33 @@ class MessageTest(unittest.TestCase):
                         ProtoFullIdentifier("foo.SomeEnumOrMessage"),
                     )
                 ],
+            ),
+        )
+
+    def test_oneof_empty(self):
+        parsed_oneof_empty = ProtoOneOf.match(
+            dedent("oneof one_of_field {}".strip())
+        )
+        self.assertEqual(
+            parsed_oneof_empty.node,
+            ProtoOneOf(
+                ProtoIdentifier("one_of_field"),
+                [],
+            ),
+        )
+
+    def test_oneof_empty_statements(self):
+        parsed_oneof_empty = ProtoOneOf.match(
+            dedent("""oneof one_of_field {
+                ;
+                ;
+            }""".strip())
+        )
+        self.assertEqual(
+            parsed_oneof_empty.node,
+            ProtoOneOf(
+                ProtoIdentifier("one_of_field"),
+                [],
             ),
         )
 
