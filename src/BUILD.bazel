@@ -179,6 +179,7 @@ py_library(
         ":proto_node",
         ":proto_option",
         ":proto_package",
+        ":proto_service",
         ":proto_syntax",
     ],
 )
