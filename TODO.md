@@ -36,7 +36,7 @@
 - [ ] [Service support](https://developers.google.com/protocol-buffers/docs/reference/proto3-spec#service_definition)
   - [x] Empty service
   - [x] Empty statements
-  - [ ] Service options
+  - [x] Service options
   - [ ] rpcs
     - [ ] Basic RPC
     - [ ] stream request
