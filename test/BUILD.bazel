@@ -129,6 +129,15 @@ py_test(
 )
 
 py_test(
+    name = "proto_service_test",
+    srcs = ["proto_service_test.py"],
+    deps = [
+        "//src:proto_identifier",
+        "//src:proto_service",
+    ],
+)
+
+py_test(
     name = "parser_test",
     srcs = ["parser_test.py"],
     deps = [
