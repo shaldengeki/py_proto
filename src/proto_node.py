@@ -12,7 +12,7 @@ class ProtoNode(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def normalize(self) -> "ProtoNode":
+    def normalize(self) -> Optional["ProtoNode"]:
         raise NotImplementedError
 
 

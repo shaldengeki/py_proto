@@ -142,6 +142,14 @@ py_test(
 )
 
 py_test(
+    name = "proto_comment_test",
+    srcs = ["proto_comment_test.py"],
+    deps = [
+        "//src:proto_comment",
+    ],
+)
+
+py_test(
     name = "parser_test",
     srcs = ["parser_test.py"],
     deps = [
