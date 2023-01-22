@@ -48,7 +48,7 @@
   - [x] Multi-line /* */ comments
   - [ ] Same-line comment serialization support
 - [ ] Diffs
-  - [ ] Normalizing
+  - [x] Normalizing
   - [ ] Complete diffs
     - [ ] Proto file-level diffs
       - [ ] Syntax changes
