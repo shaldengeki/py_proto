@@ -44,8 +44,8 @@
     - [x] stream response
     - [x] RPC options & empty statements
 - [x] [Comment support](https://protobuf.dev/programming-guides/proto3/#adding-comments)
-  - [ ] Single-line // comments
-  - [ ] Multi-line /* */ comments
+  - [x] Single-line // comments
+  - [x] Multi-line /* */ comments
   - [ ] Same-line comment serialization support
 - [ ] Diffs
   - [ ] Normalizing
