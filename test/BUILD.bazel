@@ -135,6 +135,7 @@ py_test(
     srcs = ["proto_service_test.py"],
     deps = [
         "//src:proto_bool",
+        "//src:proto_comment",
         "//src:proto_constant",
         "//src:proto_identifier",
         "//src:proto_option",

@@ -2,6 +2,7 @@ import unittest
 from textwrap import dedent
 
 from src.proto_bool import ProtoBool
+from src.proto_comment import ProtoSingleLineComment, ProtoMultiLineComment
 from src.proto_constant import ProtoConstant
 from src.proto_identifier import (
     ProtoEnumOrMessageIdentifier,
@@ -23,8 +24,14 @@ class ServiceTest(unittest.TestCase):
                 """
             service FooService {
                 option (foo.bar).baz = "bat";
+                // single-line comment!
                 rpc OneRPC (OneRPCRequest) returns (OneRPCResponse);
                 rpc TwoRPC (TwoRPCRequest) returns (stream TwoRPCResponse);
+                /*
+                multiple
+                line
+                comment
+                */
                 rpc ThreeRPC (ThreeRPCRequest) returns (ThreeRPCResponse) { option java_package = "com.example.foo"; option (foo.bar).baz = false; }
             }
         """.strip()
@@ -39,6 +46,7 @@ class ServiceTest(unittest.TestCase):
                         ProtoIdentifier("(foo.bar).baz"),
                         ProtoConstant(ProtoStringLiteral("bat")),
                     ),
+                    ProtoSingleLineComment(" single-line comment!"),
                     ProtoServiceRPC(
                         ProtoIdentifier("OneRPC"),
                         ProtoEnumOrMessageIdentifier("OneRPCRequest"),
@@ -51,6 +59,7 @@ class ServiceTest(unittest.TestCase):
                         False,
                         True,
                     ),
+                    ProtoMultiLineComment("\n                multiple\n                line\n                comment\n                "),
                     ProtoServiceRPC(
                         ProtoIdentifier("ThreeRPC"),
                         ProtoEnumOrMessageIdentifier("ThreeRPCRequest"),
@@ -77,8 +86,14 @@ class ServiceTest(unittest.TestCase):
                 """
             service FooService {
             option (foo.bar).baz = "bat";
+            // single-line comment!
             rpc OneRPC (OneRPCRequest) returns (OneRPCResponse);
             rpc TwoRPC (TwoRPCRequest) returns (stream TwoRPCResponse);
+            /*
+                            multiple
+                            line
+                            comment
+                            */
             rpc ThreeRPC (ThreeRPCRequest) returns (ThreeRPCResponse) { option java_package = "com.example.foo"; option (foo.bar).baz = false; }
             }
             """
@@ -243,6 +258,86 @@ class ServiceTest(unittest.TestCase):
                 ),
             ],
         )
+
+    def test_service_parses_comments(self):
+        service_with_comments = ProtoService.match(
+            dedent(
+                """
+            service FooService {
+                rpc OneRPC (OneRPCRequest) returns (OneRPCResponse);
+                // single-line comment!
+                rpc TwoRPC (TwoRPCRequest) returns (TwoRPCResponse);
+                /*
+                multiple
+                line
+                comment
+                */
+                rpc ThreeRPC (ThreeRPCRequest) returns (ThreeRPCResponse);
+            }
+        """.strip()
+            )
+        )
+        self.assertEqual(
+            service_with_comments.node.nodes,
+            [
+                ProtoServiceRPC(
+                    ProtoIdentifier("OneRPC"),
+                    ProtoEnumOrMessageIdentifier("OneRPCRequest"),
+                    ProtoEnumOrMessageIdentifier("OneRPCResponse"),
+                ),
+                ProtoSingleLineComment(" single-line comment!"),
+                ProtoServiceRPC(
+                    ProtoIdentifier("TwoRPC"),
+                    ProtoEnumOrMessageIdentifier("TwoRPCRequest"),
+                    ProtoEnumOrMessageIdentifier("TwoRPCResponse"),
+                ),
+                ProtoMultiLineComment("\n                multiple\n                line\n                comment\n                "),
+                ProtoServiceRPC(
+                    ProtoIdentifier("ThreeRPC"),
+                    ProtoEnumOrMessageIdentifier("ThreeRPCRequest"),
+                    ProtoEnumOrMessageIdentifier("ThreeRPCResponse"),
+                ),
+            ],
+        )
+    def test_service_normalize_removes_comments(self):
+        normalized_service = ProtoService.match(
+            dedent(
+                """
+            service FooService {
+                rpc OneRPC (OneRPCRequest) returns (OneRPCResponse);
+                // single-line comment!
+                rpc TwoRPC (TwoRPCRequest) returns (TwoRPCResponse);
+                /*
+                multiple
+                line
+                comment
+                */
+                rpc ThreeRPC (ThreeRPCRequest) returns (ThreeRPCResponse);
+            }
+        """.strip()
+            )
+        ).node.normalize()
+        self.assertEqual(
+            normalized_service.nodes,
+            [
+                ProtoServiceRPC(
+                    ProtoIdentifier("OneRPC"),
+                    ProtoEnumOrMessageIdentifier("OneRPCRequest"),
+                    ProtoEnumOrMessageIdentifier("OneRPCResponse"),
+                ),
+                ProtoServiceRPC(
+                    ProtoIdentifier("ThreeRPC"),
+                    ProtoEnumOrMessageIdentifier("ThreeRPCRequest"),
+                    ProtoEnumOrMessageIdentifier("ThreeRPCResponse"),
+                ),
+                ProtoServiceRPC(
+                    ProtoIdentifier("TwoRPC"),
+                    ProtoEnumOrMessageIdentifier("TwoRPCRequest"),
+                    ProtoEnumOrMessageIdentifier("TwoRPCResponse"),
+                ),
+            ]
+        )
+
 
 
 if __name__ == "__main__":

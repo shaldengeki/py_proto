@@ -152,6 +152,7 @@ py_library(
     srcs = ["proto_service.py"],
     visibility = ["//visibility:public"],
     deps = [
+        ":proto_comment",
         ":proto_identifier",
         ":proto_option",
     ],
