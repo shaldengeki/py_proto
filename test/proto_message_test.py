@@ -43,6 +43,7 @@ class MessageTest(unittest.TestCase):
                 message NestedMessage {}
                 reserved "a";
                 reserved 1 to 3;
+                // single-line comment
                 repeated string some_field = 4 [ (bar.baz).bat = "bat", baz.bat = -100 ];
                 bool some_bool_field = 5;
                 oneof one_of_field {
@@ -90,6 +91,7 @@ class MessageTest(unittest.TestCase):
                         )
                     ]
                 ),
+                ProtoSingleLineComment(" single-line comment"),
                 ProtoMessageField(
                     ProtoMessageFieldTypesEnum.STRING,
                     ProtoIdentifier("some_field"),
@@ -188,6 +190,7 @@ class MessageTest(unittest.TestCase):
             }
             reserved "a";
             reserved 1 to 3;
+            // single-line comment
             repeated string some_field = 4 [ (bar.baz).bat = "bat", baz.bat = -100 ];
             bool some_bool_field = 5;
             oneof one_of_field {
