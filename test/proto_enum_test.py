@@ -2,6 +2,7 @@ import unittest
 from textwrap import dedent
 
 from src.proto_bool import ProtoBool
+from src.proto_comment import ProtoSingleLineComment, ProtoMultiLineComment
 from src.proto_constant import ProtoConstant
 from src.proto_enum import ProtoEnum, ProtoEnumValue, ProtoEnumValueOption
 from src.proto_identifier import ProtoIdentifier
@@ -207,6 +208,73 @@ class EnumTest(unittest.TestCase):
             ],
         )
 
+    def test_enum_comments(self):
+        parsed_enum_multiple_values = ProtoEnum.match(
+            dedent(
+                """
+            enum FooEnum {
+                FE_NEGATIVE = -1; // test single-line comment
+                FE_UNDEFINED = 0; /* test multiple
+                FE_UNUSED = 200;
+                line comment */
+                FE_VALONE = 1;
+                FE_VALTWO = 2;
+            }
+        """.strip()
+            )
+        )
+        self.assertEqual(
+            parsed_enum_multiple_values.node.nodes,
+            [
+                ProtoEnumValue(
+                    ProtoIdentifier("FE_NEGATIVE"), ProtoInt(1, ProtoIntSign.NEGATIVE)
+                ),
+                ProtoSingleLineComment(" test single-line comment"),
+                ProtoEnumValue(
+                    ProtoIdentifier("FE_UNDEFINED"), ProtoInt(0, ProtoIntSign.POSITIVE)
+                ),
+                ProtoMultiLineComment(" test multiple\n                FE_UNUSED = 200;\n                line comment "),
+                ProtoEnumValue(
+                    ProtoIdentifier("FE_VALONE"), ProtoInt(1, ProtoIntSign.POSITIVE)
+                ),
+                ProtoEnumValue(
+                    ProtoIdentifier("FE_VALTWO"), ProtoInt(2, ProtoIntSign.POSITIVE)
+                ),
+            ],
+        )
+    def test_enum_normalize_away_comments(self):
+        parsed_enum_multiple_values = ProtoEnum.match(
+            dedent(
+                """
+            enum FooEnum {
+                FE_NEGATIVE = -1; // test single-line comment
+                FE_UNDEFINED = 0; /* test multiple
+                FE_UNUSED = 200;
+                line comment */
+                FE_VALONE = 1;
+                FE_VALTWO = 2;
+            }
+        """.strip()
+            )
+        ).node.normalize()
+        self.assertEqual(
+            parsed_enum_multiple_values.nodes, 
+            [
+                ProtoEnumValue(
+                    ProtoIdentifier("FE_NEGATIVE"), ProtoInt(1, ProtoIntSign.NEGATIVE)
+                ),
+                ProtoEnumValue(
+                    ProtoIdentifier("FE_UNDEFINED"), ProtoInt(0, ProtoIntSign.POSITIVE)
+                ),
+                ProtoEnumValue(
+                    ProtoIdentifier("FE_VALONE"), ProtoInt(1, ProtoIntSign.POSITIVE)
+                ),
+                ProtoEnumValue(
+                    ProtoIdentifier("FE_VALTWO"), ProtoInt(2, ProtoIntSign.POSITIVE)
+                ),
+            ],
+
+        )
 
 if __name__ == "__main__":
     unittest.main()

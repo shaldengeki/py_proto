@@ -137,6 +137,7 @@ py_library(
     srcs = ["proto_enum.py"],
     visibility = ["//visibility:public"],
     deps = [
+        ":proto_comment",
         ":proto_identifier",
         ":proto_int",
         ":proto_node",
