@@ -287,7 +287,6 @@ class EnumTest(unittest.TestCase):
                     ProtoIdentifier("FE_VALTWO"), ProtoInt(2, ProtoIntSign.POSITIVE)
                 ),
             ],
-
         )
 
 if __name__ == "__main__":

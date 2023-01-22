@@ -103,6 +103,7 @@ py_test(
     srcs = ["proto_message_test.py"],
     deps = [
         "//src:proto_bool",
+        "//src:proto_comment",
         "//src:proto_constant",
         "//src:proto_enum",
         "//src:proto_identifier",

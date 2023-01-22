@@ -2,6 +2,7 @@ import unittest
 from textwrap import dedent
 
 from src.proto_bool import ProtoBool
+from src.proto_comment import ProtoSingleLineComment, ProtoMultiLineComment
 from src.proto_constant import ProtoConstant
 from src.proto_enum import ProtoEnum, ProtoEnumValue
 from src.proto_identifier import (
@@ -648,6 +649,86 @@ class MessageTest(unittest.TestCase):
                 True,
             )
 
+    def test_message_parses_comments(self):
+        parsed_comments = ProtoMessage.match(
+            dedent(
+                """
+                message MyMessage {
+                    string foo = 1;
+                    // single-line comment!
+                    bool bar = 2;
+                    /*
+                    multiple
+                    line
+                    comment!
+                    */
+                    string baz = 3;
+                }
+                """.strip()
+            )
+        )
+        self.assertEqual(
+            parsed_comments.node.nodes,
+            [
+                ProtoMessageField(
+                    ProtoMessageFieldTypesEnum.STRING,
+                    ProtoIdentifier("foo"),
+                    ProtoInt(1, ProtoIntSign.POSITIVE),
+                ),
+                ProtoSingleLineComment(" single-line comment!"),
+                ProtoMessageField(
+                    ProtoMessageFieldTypesEnum.BOOL,
+                    ProtoIdentifier("bar"),
+                    ProtoInt(2, ProtoIntSign.POSITIVE),
+                ),
+                ProtoMultiLineComment("\n                    multiple\n                    line\n                    comment!\n                    "),
+                ProtoMessageField(
+                    ProtoMessageFieldTypesEnum.STRING,
+                    ProtoIdentifier("baz"),
+                    ProtoInt(3, ProtoIntSign.POSITIVE),
+                ),
+            ]
+        )
+
+    def test_message_normalizes_away_comments(self):
+        parsed_comments = ProtoMessage.match(
+            dedent(
+                """
+                message MyMessage {
+                    string foo = 1;
+                    // single-line comment!
+                    bool bar = 2;
+                    /*
+                    multiple
+                    line
+                    comment!
+                    */
+                    string baz = 3;
+                }
+                """.strip()
+            )
+        ).node.normalize()
+        self.assertEqual(
+            parsed_comments.nodes, 
+            [
+                ProtoMessageField(
+                    ProtoMessageFieldTypesEnum.STRING,
+                    ProtoIdentifier("foo"),
+                    ProtoInt(1, ProtoIntSign.POSITIVE),
+                ),
+                ProtoMessageField(
+                    ProtoMessageFieldTypesEnum.BOOL,
+                    ProtoIdentifier("bar"),
+                    ProtoInt(2, ProtoIntSign.POSITIVE),
+                ),
+                ProtoMessageField(
+                    ProtoMessageFieldTypesEnum.STRING,
+                    ProtoIdentifier("baz"),
+                    ProtoInt(3, ProtoIntSign.POSITIVE),
+                ),
+            ]
+
+        )
 
 if __name__ == "__main__":
     unittest.main()
