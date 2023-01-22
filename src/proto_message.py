@@ -229,9 +229,24 @@ class ProtoOneOf(ProtoNode):
         return str(self)
 
     def normalize(self) -> "ProtoOneOf":
+        non_comment_nodes = filter(lambda n: not isinstance(n, ProtoComment), self.nodes)
+        options = []
+        fields = []
+        for node in non_comment_nodes:
+            if isinstance(node, ProtoOption):
+                options.append(node.normalize())
+            elif isinstance(node, ProtoMessageField) or isinstance(node, ProtoOneOf) or isinstance(node, ProtoMap):
+                fields.append(node.normalize())
+            else:
+                raise ValueError(f"Can't sort message {self} node for normalizing: {node}")
+
+        sorted_nodes_for_normalizing = \
+            sorted(options, key=lambda o: str(o.normalize())) + \
+                sorted(fields, key=lambda f: int(f.number))
+
         return ProtoOneOf(
             self.name,
-            nodes=sorted(self.nodes, key=lambda n: str(n.normalize())),
+            nodes=sorted_nodes_for_normalizing,
         )
 
     @staticmethod
@@ -239,6 +254,8 @@ class ProtoOneOf(ProtoNode):
         for node_type in (
             ProtoMessageField,
             ProtoOption,
+            ProtoSingleLineComment,
+            ProtoMultiLineComment
         ):
             try:
                 match_result = node_type.match(partial_oneof_content)

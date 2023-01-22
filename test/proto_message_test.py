@@ -556,6 +556,70 @@ class MessageTest(unittest.TestCase):
             ),
         )
 
+    def test_oneof_with_comment(self):
+        parsed_oneof_with_comment = ProtoOneOf.match(
+            dedent(
+                """oneof one_of_field {
+                string name = 4;
+                // single-line comment!
+                SubMessage sub_message = 9;
+            }""".strip()
+            )
+        )
+        self.assertEqual(
+            parsed_oneof_with_comment.node,
+            ProtoOneOf(
+                ProtoIdentifier("one_of_field"),
+                [
+                    ProtoMessageField(
+                        ProtoMessageFieldTypesEnum.STRING,
+                        ProtoIdentifier("name"),
+                        ProtoInt(4, ProtoIntSign.POSITIVE),
+                    ),
+                    ProtoSingleLineComment(" single-line comment!"),
+                    ProtoMessageField(
+                        ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE,
+                        ProtoIdentifier("sub_message"),
+                        ProtoInt(9, ProtoIntSign.POSITIVE),
+                        False,
+                        False,
+                        ProtoFullIdentifier("SubMessage"),
+                        [],
+                    ),
+                ],
+            ),
+        )
+
+    def test_oneof_normalize_removes_comment(self):
+        normalized_oneof = ProtoOneOf.match(
+            dedent(
+                """oneof one_of_field {
+                string name = 4;
+                // single-line comment!
+                SubMessage sub_message = 9;
+            }""".strip()
+            )
+        ).node.normalize()
+        self.assertEqual(
+            normalized_oneof.nodes,
+            [
+                ProtoMessageField(
+                    ProtoMessageFieldTypesEnum.STRING,
+                    ProtoIdentifier("name"),
+                    ProtoInt(4, ProtoIntSign.POSITIVE),
+                ),
+                ProtoMessageField(
+                    ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE,
+                    ProtoIdentifier("sub_message"),
+                    ProtoInt(9, ProtoIntSign.POSITIVE),
+                    False,
+                    False,
+                    ProtoFullIdentifier("SubMessage"),
+                    [],
+                ),
+            ],
+        )
+
     def test_simple_map(self):
         parsed_map_simple = ProtoMap.match("map <sfixed64, NestedMessage> my_map = 10;")
         self.assertEqual(
