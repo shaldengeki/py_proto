@@ -49,36 +49,23 @@ class ProtoSingleLineComment(ProtoComment):
     def serialize(self) -> str:
         return f"//{self.value}"
 
-# class ProtoMultiLineComment(ProtoNode):
-#     def __init__(self, value: bool):
-#         self.value = value
+class ProtoMultiLineComment(ProtoComment):
+    def __str__(self) -> str:
+        return f"<ProtoMultiLineComment value={self.value}>"
 
-#     def __bool__(self) -> bool:
-#         return self.value
+    @classmethod
+    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+        if not proto_source.startswith("/*"):
+            return None
 
-#     def __eq__(self, other) -> bool:
-#         return bool(self) == bool(other)
+        proto_source = proto_source[2:]
+        close_comment_pos = proto_source.find("*/")
+        if close_comment_pos == -1:
+            return None
+        return ParsedProtoNode(
+            ProtoMultiLineComment(proto_source[:close_comment_pos]),
+            proto_source[close_comment_pos+2:]
+        )
 
-#     def __str__(self) -> str:
-#         return f"<ProtoBool value={self.value}>"
-
-#     def __repr__(self) -> str:
-#         return str(self)
-
-#     def normalize(self) -> "ProtoBool":
-#         return self
-
-#     @classmethod
-#     def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
-#         if proto_source.startswith("true") and (
-#             len(proto_source) == 4 or proto_source[4] not in ProtoFullIdentifier.ALL
-#         ):
-#             return ParsedProtoNode(ProtoBool(True), proto_source[4:].strip())
-#         elif proto_source.startswith("false") and (
-#             len(proto_source) == 5 or proto_source[5] not in ProtoFullIdentifier.ALL
-#         ):
-#             return ParsedProtoNode(ProtoBool(False), proto_source[5:].strip())
-#         return None
-
-#     def serialize(self) -> str:
-#         return str(self.value).lower()
+    def serialize(self) -> str:
+        return f"/*{self.value}*/"
