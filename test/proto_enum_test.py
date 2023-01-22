@@ -2,7 +2,7 @@ import unittest
 from textwrap import dedent
 
 from src.proto_bool import ProtoBool
-from src.proto_comment import ProtoSingleLineComment, ProtoMultiLineComment
+from src.proto_comment import ProtoMultiLineComment, ProtoSingleLineComment
 from src.proto_constant import ProtoConstant
 from src.proto_enum import ProtoEnum, ProtoEnumValue, ProtoEnumValueOption
 from src.proto_identifier import ProtoIdentifier
@@ -66,7 +66,9 @@ class EnumTest(unittest.TestCase):
                     ProtoIdentifier("java_package"),
                     ProtoConstant(ProtoStringLiteral("foobar")),
                 ),
-                ProtoMultiLineComment("\n                multiple\n                line\n                comment\n                "),
+                ProtoMultiLineComment(
+                    "\n                multiple\n                line\n                comment\n                "
+                ),
                 ProtoEnumValue(
                     ProtoIdentifier("FE_VALONE"),
                     ProtoInt(1, ProtoIntSign.POSITIVE),
@@ -247,7 +249,9 @@ class EnumTest(unittest.TestCase):
                 ProtoEnumValue(
                     ProtoIdentifier("FE_UNDEFINED"), ProtoInt(0, ProtoIntSign.POSITIVE)
                 ),
-                ProtoMultiLineComment(" test multiple\n                FE_UNUSED = 200;\n                line comment "),
+                ProtoMultiLineComment(
+                    " test multiple\n                FE_UNUSED = 200;\n                line comment "
+                ),
                 ProtoEnumValue(
                     ProtoIdentifier("FE_VALONE"), ProtoInt(1, ProtoIntSign.POSITIVE)
                 ),
@@ -256,6 +260,7 @@ class EnumTest(unittest.TestCase):
                 ),
             ],
         )
+
     def test_enum_normalize_away_comments(self):
         parsed_enum_multiple_values = ProtoEnum.match(
             dedent(
@@ -272,7 +277,7 @@ class EnumTest(unittest.TestCase):
             )
         ).node.normalize()
         self.assertEqual(
-            parsed_enum_multiple_values.nodes, 
+            parsed_enum_multiple_values.nodes,
             [
                 ProtoEnumValue(
                     ProtoIdentifier("FE_NEGATIVE"), ProtoInt(1, ProtoIntSign.NEGATIVE)
@@ -288,6 +293,7 @@ class EnumTest(unittest.TestCase):
                 ),
             ],
         )
+
 
 if __name__ == "__main__":
     unittest.main()

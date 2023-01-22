@@ -1,6 +1,7 @@
 import abc
 from typing import NamedTuple, Optional
 
+
 class ProtoNode(abc.ABC):
     @classmethod
     @abc.abstractmethod

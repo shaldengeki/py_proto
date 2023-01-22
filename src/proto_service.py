@@ -1,6 +1,10 @@
 from typing import Optional
 
-from src.proto_comment import ProtoComment, ProtoSingleLineComment, ProtoMultiLineComment
+from src.proto_comment import (
+    ProtoComment,
+    ProtoMultiLineComment,
+    ProtoSingleLineComment,
+)
 from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
 from src.proto_node import ParsedProtoNode, ProtoNode
 from src.proto_option import ProtoOption
@@ -218,7 +222,9 @@ class ProtoService(ProtoNode):
         return str(self)
 
     def normalize(self) -> "ProtoService":
-        non_comment_nodes = filter(lambda n: not isinstance(n, ProtoComment), self.nodes)
+        non_comment_nodes = filter(
+            lambda n: not isinstance(n, ProtoComment), self.nodes
+        )
         return ProtoService(
             name=self.name,
             nodes=sorted(non_comment_nodes, key=lambda n: str(n.normalize())),
@@ -230,7 +236,7 @@ class ProtoService(ProtoNode):
             ProtoOption,
             ProtoServiceRPC,
             ProtoSingleLineComment,
-            ProtoMultiLineComment
+            ProtoMultiLineComment,
         ):
             try:
                 match_result = node_type.match(partial_service_content)

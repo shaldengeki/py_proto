@@ -28,6 +28,7 @@ class ProtoComment(ProtoNode):
     def serialize(self) -> str:
         return ""
 
+
 class ProtoSingleLineComment(ProtoComment):
     def __str__(self) -> str:
         return f"<ProtoSingleLineComment value={self.value}>"
@@ -43,11 +44,12 @@ class ProtoSingleLineComment(ProtoComment):
             newline_pos = len(proto_source)
         return ParsedProtoNode(
             ProtoSingleLineComment(proto_source[:newline_pos]),
-            proto_source[newline_pos+1:]
+            proto_source[newline_pos + 1 :],
         )
 
     def serialize(self) -> str:
         return f"//{self.value}"
+
 
 class ProtoMultiLineComment(ProtoComment):
     def __str__(self) -> str:
@@ -64,7 +66,7 @@ class ProtoMultiLineComment(ProtoComment):
             return None
         return ParsedProtoNode(
             ProtoMultiLineComment(proto_source[:close_comment_pos]),
-            proto_source[close_comment_pos+2:]
+            proto_source[close_comment_pos + 2 :],
         )
 
     def serialize(self) -> str:

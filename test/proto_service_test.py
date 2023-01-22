@@ -2,7 +2,7 @@ import unittest
 from textwrap import dedent
 
 from src.proto_bool import ProtoBool
-from src.proto_comment import ProtoSingleLineComment, ProtoMultiLineComment
+from src.proto_comment import ProtoMultiLineComment, ProtoSingleLineComment
 from src.proto_constant import ProtoConstant
 from src.proto_identifier import (
     ProtoEnumOrMessageIdentifier,
@@ -59,7 +59,9 @@ class ServiceTest(unittest.TestCase):
                         False,
                         True,
                     ),
-                    ProtoMultiLineComment("\n                multiple\n                line\n                comment\n                "),
+                    ProtoMultiLineComment(
+                        "\n                multiple\n                line\n                comment\n                "
+                    ),
                     ProtoServiceRPC(
                         ProtoIdentifier("ThreeRPC"),
                         ProtoEnumOrMessageIdentifier("ThreeRPCRequest"),
@@ -291,7 +293,9 @@ class ServiceTest(unittest.TestCase):
                     ProtoEnumOrMessageIdentifier("TwoRPCRequest"),
                     ProtoEnumOrMessageIdentifier("TwoRPCResponse"),
                 ),
-                ProtoMultiLineComment("\n                multiple\n                line\n                comment\n                "),
+                ProtoMultiLineComment(
+                    "\n                multiple\n                line\n                comment\n                "
+                ),
                 ProtoServiceRPC(
                     ProtoIdentifier("ThreeRPC"),
                     ProtoEnumOrMessageIdentifier("ThreeRPCRequest"),
@@ -299,6 +303,7 @@ class ServiceTest(unittest.TestCase):
                 ),
             ],
         )
+
     def test_service_normalize_removes_comments(self):
         normalized_service = ProtoService.match(
             dedent(
@@ -335,9 +340,8 @@ class ServiceTest(unittest.TestCase):
                     ProtoEnumOrMessageIdentifier("TwoRPCRequest"),
                     ProtoEnumOrMessageIdentifier("TwoRPCResponse"),
                 ),
-            ]
+            ],
         )
-
 
 
 if __name__ == "__main__":
