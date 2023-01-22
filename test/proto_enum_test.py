@@ -22,8 +22,13 @@ class EnumTest(unittest.TestCase):
             enum FooEnum {
                 reserved 1, 2, 5 to max;
                 FE_NEGATIVE = -1 [ foo = false ];
-                FE_UNDEFINED = 0;
+                FE_UNDEFINED = 0; // single-line comment
                 option java_package = "foobar";
+                /*
+                multiple
+                line
+                comment
+                */
                 FE_VALONE = 1 [ (bar.baz).bat = "bat", baz.bat = -100 ];
                 reserved "FE_RESERVED", "FE_OLD";
                 FE_VALTWO = 2;
@@ -56,10 +61,12 @@ class EnumTest(unittest.TestCase):
                 ProtoEnumValue(
                     ProtoIdentifier("FE_UNDEFINED"), ProtoInt(0, ProtoIntSign.POSITIVE)
                 ),
+                ProtoSingleLineComment(" single-line comment"),
                 ProtoOption(
                     ProtoIdentifier("java_package"),
                     ProtoConstant(ProtoStringLiteral("foobar")),
                 ),
+                ProtoMultiLineComment("\n                multiple\n                line\n                comment\n                "),
                 ProtoEnumValue(
                     ProtoIdentifier("FE_VALONE"),
                     ProtoInt(1, ProtoIntSign.POSITIVE),
@@ -82,6 +89,7 @@ class EnumTest(unittest.TestCase):
                 ),
             ],
         )
+        # TODO: The serialization of the multi-line comment here is obviously off.
         self.assertEqual(
             parsed_enum_multiple_values.node.serialize(),
             dedent(
@@ -90,7 +98,13 @@ class EnumTest(unittest.TestCase):
             reserved 1, 2, 5 to max;
             FE_NEGATIVE = -1 [ foo = false ];
             FE_UNDEFINED = 0;
+            // single-line comment
             option java_package = "foobar";
+            /*
+                            multiple
+                            line
+                            comment
+                            */
             FE_VALONE = 1 [ (bar.baz).bat = "bat", baz.bat = -100 ];
             reserved "FE_RESERVED", "FE_OLD";
             FE_VALTWO = 2;
