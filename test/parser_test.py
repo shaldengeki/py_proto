@@ -3,7 +3,7 @@ from textwrap import dedent
 
 from src.parser import ParseError, Parser
 from src.proto_bool import ProtoBool
-from src.proto_comment import ProtoSingleLineComment, ProtoMultiLineComment
+from src.proto_comment import ProtoSingleLineComment
 from src.proto_constant import ProtoConstant
 from src.proto_enum import ProtoEnum, ProtoEnumValue
 from src.proto_float import ProtoFloat, ProtoFloatSign
@@ -25,7 +25,8 @@ from src.proto_message import (
     ProtoOneOf,
 )
 from src.proto_option import ProtoOption
-from src.proto_reserved import ProtoReserved, ProtoReservedRange
+from src.proto_range import ProtoRange
+from src.proto_reserved import ProtoReserved
 from src.proto_service import ProtoService, ProtoServiceRPC
 from src.proto_string_literal import ProtoStringLiteral
 from src.proto_syntax import ProtoSyntaxType
@@ -166,7 +167,7 @@ class IntTest(unittest.TestCase):
                     ProtoMessage(ProtoIdentifier("MyNestedMessage"), []),
                     ProtoReserved(
                         ranges=[
-                            ProtoReservedRange(
+                            ProtoRange(
                                 ProtoInt(1, ProtoIntSign.POSITIVE),
                                 ProtoInt(3, ProtoIntSign.POSITIVE),
                             )

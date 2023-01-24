@@ -22,7 +22,8 @@ from src.proto_message import (
     ProtoOneOf,
 )
 from src.proto_option import ProtoOption
-from src.proto_reserved import ProtoReserved, ProtoReservedRange, ProtoReservedRangeEnum
+from src.proto_range import ProtoRange, ProtoRangeEnum
+from src.proto_reserved import ProtoReserved
 from src.proto_string_literal import ProtoStringLiteral
 
 
@@ -85,7 +86,7 @@ class MessageTest(unittest.TestCase):
                 ProtoReserved(fields=[ProtoIdentifier("a")]),
                 ProtoReserved(
                     ranges=[
-                        ProtoReservedRange(
+                        ProtoRange(
                             ProtoInt(1, ProtoIntSign.POSITIVE),
                             ProtoInt(3, ProtoIntSign.POSITIVE),
                         )
@@ -344,14 +345,14 @@ class MessageTest(unittest.TestCase):
                 [
                     ProtoReserved(
                         ranges=[
-                            ProtoReservedRange(ProtoInt(38, ProtoIntSign.POSITIVE)),
-                            ProtoReservedRange(
+                            ProtoRange(ProtoInt(38, ProtoIntSign.POSITIVE)),
+                            ProtoRange(
                                 ProtoInt(48, ProtoIntSign.POSITIVE),
                                 ProtoInt(100, ProtoIntSign.POSITIVE),
                             ),
-                            ProtoReservedRange(
+                            ProtoRange(
                                 ProtoInt(72, ProtoIntSign.POSITIVE),
-                                ProtoReservedRangeEnum.MAX,
+                                ProtoRangeEnum.MAX,
                             ),
                         ]
                     ),
