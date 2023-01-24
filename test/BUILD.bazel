@@ -122,6 +122,7 @@ py_test(
         "//src:proto_comment",
         "//src:proto_constant",
         "//src:proto_enum",
+        "//src:proto_extensions",
         "//src:proto_identifier",
         "//src:proto_int",
         "//src:proto_message",

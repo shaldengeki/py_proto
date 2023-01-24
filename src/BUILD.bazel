@@ -146,9 +146,11 @@ py_library(
     deps = [
         ":proto_comment",
         ":proto_enum",
+        ":proto_extensions",
         ":proto_identifier",
         ":proto_node",
         ":proto_option",
+        ":proto_reserved",
     ],
 )
 

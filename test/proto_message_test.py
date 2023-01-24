@@ -5,6 +5,7 @@ from src.proto_bool import ProtoBool
 from src.proto_comment import ProtoMultiLineComment, ProtoSingleLineComment
 from src.proto_constant import ProtoConstant
 from src.proto_enum import ProtoEnum, ProtoEnumValue
+from src.proto_extensions import ProtoExtensions
 from src.proto_identifier import (
     ProtoEnumOrMessageIdentifier,
     ProtoFullIdentifier,
@@ -54,6 +55,7 @@ class MessageTest(unittest.TestCase):
                 }
                 map <sfixed64, NestedMessage> my_map = 10;
                 map <string, string> string_map = 11 [ java_package = "com.example.foo", baz.bat = 48 ];
+                extensions 8 to max;
             }
         """.strip()
             )
@@ -174,6 +176,7 @@ class MessageTest(unittest.TestCase):
                         ),
                     ],
                 ),
+                ProtoExtensions([ProtoRange(8, ProtoRangeEnum.MAX)]),
             ],
         )
         self.assertEqual(
@@ -201,6 +204,7 @@ class MessageTest(unittest.TestCase):
             }
             map <sfixed64, NestedMessage> my_map = 10;
             map <string, string> string_map = 11 [ java_package = "com.example.foo", baz.bat = 48 ];
+            extensions 8 to max;
             }
             """
             ).strip(),
