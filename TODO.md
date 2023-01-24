@@ -31,7 +31,7 @@
       - [x] Basic maps
       - [x] Map options
     - [x] Reserveds
-    - [ ] Extensions
+    - [x] Extensions
     - [x] Optional
   - [x] Nested messages
   - [x] Nested enums
