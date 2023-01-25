@@ -5,13 +5,13 @@ from src.proto_comment import (
     ProtoMultiLineComment,
     ProtoSingleLineComment,
 )
-from src.proto_identifier import ProtoIdentifier
+from src.proto_identifier import ProtoEnumOrMessageIdentifier
 from src.proto_message_field import ProtoMessageField
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ProtoExtend(ProtoNode):
-    def __init__(self, name: ProtoIdentifier, nodes: list[ProtoNode]):
+    def __init__(self, name: ProtoEnumOrMessageIdentifier, nodes: list[ProtoNode]):
         self.name = name
         self.nodes = nodes
 
@@ -56,7 +56,7 @@ class ProtoExtend(ProtoNode):
             return None
 
         proto_source = proto_source[7:]
-        match = ProtoIdentifier.match(proto_source)
+        match = ProtoEnumOrMessageIdentifier.match(proto_source)
         if match is None:
             raise ValueError(f"Proto extend has invalid message name: {proto_source}")
 

@@ -2,7 +2,7 @@ import unittest
 from textwrap import dedent
 
 from src.proto_extend import ProtoExtend
-from src.proto_identifier import ProtoIdentifier
+from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
 from src.proto_int import ProtoInt, ProtoIntSign
 from src.proto_message import ProtoMessageField, ProtoMessageFieldTypesEnum
 
@@ -13,7 +13,9 @@ class ExtendTest(unittest.TestCase):
     def test_empty_extend(self):
         parsed_empty_extend = ProtoExtend.match("""extend FooMessage {}""")
         self.assertIsNotNone(parsed_empty_extend)
-        self.assertEqual(parsed_empty_extend.node.name, ProtoIdentifier("FooMessage"))
+        self.assertEqual(
+            parsed_empty_extend.node.name, ProtoEnumOrMessageIdentifier("FooMessage")
+        )
         self.assertEqual(parsed_empty_extend.node.serialize(), "extend FooMessage {\n}")
 
         parsed_spaced_extend = ProtoExtend.match(
@@ -26,9 +28,30 @@ class ExtendTest(unittest.TestCase):
             )
         )
         self.assertIsNotNone(parsed_spaced_extend)
-        self.assertEqual(parsed_spaced_extend.node.name, ProtoIdentifier("FooMessage"))
+        self.assertEqual(
+            parsed_spaced_extend.node.name, ProtoEnumOrMessageIdentifier("FooMessage")
+        )
         self.assertEqual(
             parsed_spaced_extend.node.serialize(), "extend FooMessage {\n}"
+        )
+
+        parsed_scoped_extend = ProtoExtend.match(
+            dedent(
+                """
+            extend google.protobuf.FooMessage {
+
+            }
+        """.strip()
+            )
+        )
+        self.assertIsNotNone(parsed_scoped_extend)
+        self.assertEqual(
+            parsed_scoped_extend.node.name,
+            ProtoEnumOrMessageIdentifier("google.protobuf.FooMessage"),
+        )
+        self.assertEqual(
+            parsed_scoped_extend.node.serialize(),
+            "extend google.protobuf.FooMessage {\n}",
         )
 
     def test_extend_empty_statements(self):
@@ -44,7 +67,8 @@ class ExtendTest(unittest.TestCase):
         )
         self.assertIsNotNone(empty_statement_message)
         self.assertEqual(
-            empty_statement_message.node.name, ProtoIdentifier("FooMessage")
+            empty_statement_message.node.name,
+            ProtoEnumOrMessageIdentifier("FooMessage"),
         )
         self.assertEqual(
             empty_statement_message.node.serialize(), "extend FooMessage {\n}"
@@ -63,7 +87,7 @@ class ExtendTest(unittest.TestCase):
         self.assertEqual(
             parsed_extend_with_single_field.node,
             ProtoExtend(
-                ProtoIdentifier("FooMessage"),
+                ProtoEnumOrMessageIdentifier("FooMessage"),
                 [
                     ProtoMessageField(
                         ProtoMessageFieldTypesEnum.STRING,
