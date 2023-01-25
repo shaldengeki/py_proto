@@ -146,7 +146,19 @@ py_library(
     deps = [
         ":proto_comment",
         ":proto_identifier",
-        ":proto_message",
+        ":proto_message_field",
+        ":proto_node",
+    ],
+)
+
+py_library(
+    name = "proto_message_field",
+    srcs = ["proto_message_field.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":proto_enum",
+        ":proto_identifier",
+        ":proto_int",
         ":proto_node",
     ],
 )
@@ -158,6 +170,7 @@ py_library(
     deps = [
         ":proto_comment",
         ":proto_enum",
+        ":proto_extend",
         ":proto_extensions",
         ":proto_identifier",
         ":proto_node",

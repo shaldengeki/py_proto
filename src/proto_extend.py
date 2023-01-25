@@ -6,7 +6,7 @@ from src.proto_comment import (
     ProtoSingleLineComment,
 )
 from src.proto_identifier import ProtoIdentifier
-from src.proto_message import ProtoMessageField
+from src.proto_message_field import ProtoMessageField
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 
