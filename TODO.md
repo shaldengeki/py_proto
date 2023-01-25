@@ -51,7 +51,7 @@
 - [ ] [Extending support](https://protobuf.dev/reference/protobuf/proto2-spec/#extend)
   - This is required by [a Google well-known proto file.](https://github.com/protocolbuffers/protobuf/blob/main/src/google/protobuf/unittest_proto3_optional.proto#L96)
   - [x] Top-level extends
-  - [ ] Message-scope extends
+  - [x] Message-scope extends
 - [ ] Google well-known protobuf support
   - [x] Mount in Google protobufs
   - [ ] Parseable
