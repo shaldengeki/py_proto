@@ -220,6 +220,7 @@ py_library(
     visibility = ["//visibility:public"],
     deps = [
         ":proto_enum",
+        ":proto_extend",
         ":proto_file",
         ":proto_import",
         ":proto_message",

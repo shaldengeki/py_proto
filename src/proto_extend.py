@@ -11,15 +11,15 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ProtoExtend(ProtoNode):
-    def __init__(self, message_type: ProtoIdentifier, nodes: list[ProtoNode]):
-        self.message_type = message_type
+    def __init__(self, name: ProtoIdentifier, nodes: list[ProtoNode]):
+        self.name = name
         self.nodes = nodes
 
     def __eq__(self, other) -> bool:
-        return self.message_type == other.message_type and self.nodes == other.nodes
+        return self.name == other.name and self.nodes == other.nodes
 
     def __str__(self) -> str:
-        return f"<ProtoExtend message_type={self.message_type}, nodes={self.nodes}>"
+        return f"<ProtoExtend name={self.name}, nodes={self.nodes}>"
 
     def __repr__(self) -> str:
         return str(self)
@@ -29,7 +29,7 @@ class ProtoExtend(ProtoNode):
             lambda n: not isinstance(n, ProtoComment), self.nodes
         )
         return ProtoExtend(
-            message_type=self.message_type,
+            name=self.name,
             nodes=sorted(non_comment_nodes, key=lambda f: int(f.number)),
         )
 
@@ -60,7 +60,7 @@ class ProtoExtend(ProtoNode):
         if match is None:
             raise ValueError(f"Proto extend has invalid message name: {proto_source}")
 
-        message_type = match.node
+        name = match.node
         proto_source = match.remaining_source.strip()
 
         if not proto_source.startswith("{"):
@@ -84,13 +84,11 @@ class ProtoExtend(ProtoNode):
             parsed_tree.append(match_result.node)
             proto_source = match_result.remaining_source.strip()
 
-        return ParsedProtoNode(
-            ProtoExtend(message_type, nodes=parsed_tree), proto_source
-        )
+        return ParsedProtoNode(ProtoExtend(name, nodes=parsed_tree), proto_source)
 
     def serialize(self) -> str:
         serialize_parts = (
-            [f"extend {self.message_type.serialize()} {{"]
+            [f"extend {self.name.serialize()} {{"]
             + [n.serialize() for n in self.nodes]
             + ["}"]
         )

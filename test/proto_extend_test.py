@@ -13,9 +13,7 @@ class ExtendTest(unittest.TestCase):
     def test_empty_extend(self):
         parsed_empty_extend = ProtoExtend.match("""extend FooMessage {}""")
         self.assertIsNotNone(parsed_empty_extend)
-        self.assertEqual(
-            parsed_empty_extend.node.message_type, ProtoIdentifier("FooMessage")
-        )
+        self.assertEqual(parsed_empty_extend.node.name, ProtoIdentifier("FooMessage"))
         self.assertEqual(parsed_empty_extend.node.serialize(), "extend FooMessage {\n}")
 
         parsed_spaced_extend = ProtoExtend.match(
@@ -28,9 +26,7 @@ class ExtendTest(unittest.TestCase):
             )
         )
         self.assertIsNotNone(parsed_spaced_extend)
-        self.assertEqual(
-            parsed_spaced_extend.node.message_type, ProtoIdentifier("FooMessage")
-        )
+        self.assertEqual(parsed_spaced_extend.node.name, ProtoIdentifier("FooMessage"))
         self.assertEqual(
             parsed_spaced_extend.node.serialize(), "extend FooMessage {\n}"
         )
@@ -48,7 +44,7 @@ class ExtendTest(unittest.TestCase):
         )
         self.assertIsNotNone(empty_statement_message)
         self.assertEqual(
-            empty_statement_message.node.message_type, ProtoIdentifier("FooMessage")
+            empty_statement_message.node.name, ProtoIdentifier("FooMessage")
         )
         self.assertEqual(
             empty_statement_message.node.serialize(), "extend FooMessage {\n}"
