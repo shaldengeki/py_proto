@@ -70,6 +70,7 @@ class Parser:
             raise ParseError(f"Proto doesn't have parseable syntax:\n{proto_content}")
         syntax = match_result.node
         proto_content = match_result.remaining_source.strip()
+        parsed_tree.append(syntax)
 
         return syntax, parsed_tree, proto_content
 

@@ -26,7 +26,7 @@ class ProtoFile:
         return [node for node in self.nodes if isinstance(node, ProtoOption)]
 
     def serialize(self) -> str:
-        serialized_parts = [self.syntax.serialize()]
+        serialized_parts = []
         previous_type = self.syntax.__class__
         for node in self.nodes:
             # Attempt to group up lines of the same type.

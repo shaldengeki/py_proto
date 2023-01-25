@@ -15,7 +15,7 @@ class ProtoSyntax(ProtoNode):
         self.syntax = syntax
 
     def __eq__(self, other) -> bool:
-        return self.syntax == other.syntax
+        return isinstance(other, ProtoSyntax) and self.syntax == other.syntax
 
     def __str__(self) -> str:
         return f"<ProtoSyntax syntax={self.syntax.serialize()}>"
