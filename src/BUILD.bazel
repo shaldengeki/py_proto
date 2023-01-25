@@ -140,6 +140,18 @@ py_library(
 )
 
 py_library(
+    name = "proto_extend",
+    srcs = ["proto_extend.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":proto_comment",
+        ":proto_identifier",
+        ":proto_message",
+        ":proto_node",
+    ],
+)
+
+py_library(
     name = "proto_message",
     srcs = ["proto_message.py"],
     visibility = ["//visibility:public"],

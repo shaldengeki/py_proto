@@ -133,6 +133,17 @@ py_test(
 )
 
 py_test(
+    name = "proto_extend_test",
+    srcs = ["proto_extend_test.py"],
+    deps = [
+        "//src:proto_extend",
+        "//src:proto_identifier",
+        "//src:proto_int",
+        "//src:proto_message",
+    ],
+)
+
+py_test(
     name = "proto_enum_test",
     srcs = ["proto_enum_test.py"],
     deps = [
