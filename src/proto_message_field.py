@@ -2,7 +2,11 @@ from enum import Enum
 from typing import Optional
 
 from src.proto_enum import ProtoEnumValueOption
-from src.proto_identifier import ProtoFullIdentifier, ProtoIdentifier
+from src.proto_identifier import (
+    ProtoEnumOrMessageIdentifier,
+    ProtoFullIdentifier,
+    ProtoIdentifier,
+)
 from src.proto_int import ProtoInt
 from src.proto_node import ParsedProtoNode, ProtoNode
 
@@ -109,7 +113,7 @@ class ProtoMessageField(ProtoNode):
         for field_type in ProtoMessageFieldTypesEnum:
             if field_type == ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE:
                 # This is special-cased below.
-                break
+                continue
             if proto_source.startswith(f"{field_type.value} "):
                 matched_type = field_type
                 proto_source = proto_source[len(field_type.value) + 1 :]
@@ -118,7 +122,7 @@ class ProtoMessageField(ProtoNode):
         enum_or_message_type_name = None
         if matched_type is None:
             # See if this is an enum or message type.
-            match = ProtoFullIdentifier.match(proto_source)
+            match = ProtoEnumOrMessageIdentifier.match(proto_source)
             if match is None:
                 return None
             matched_type = ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE
