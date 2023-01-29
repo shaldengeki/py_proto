@@ -213,6 +213,16 @@ py_test(
     ],
 )
 
+py_test(
+    name = "proto_file_test",
+    srcs = ["proto_file_test.py"],
+    deps = [
+        "//src:proto_file",
+        "//src:proto_string_literal",
+        "//src:proto_syntax",
+    ],
+)
+
 sh_test(
     name = "parser_binary_test",
     srcs = ["parser_binary_test.sh"],

@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from src.proto_node import ParsedProtoNode, ProtoNode
+from src.proto_node_diff import ProtoNodeDiff
 from src.proto_string_literal import ProtoStringLiteral
 
 
@@ -50,3 +51,17 @@ class ProtoSyntax(ProtoNode):
 
     def serialize(self) -> str:
         return f"syntax = {self.syntax.serialize()};"
+
+    def diff(self, other: "ProtoSyntax") -> Optional["ProtoSyntaxDiff"]:
+        if self == other:
+            return None
+        return ProtoSyntaxDiff(self, other)
+
+
+class ProtoSyntaxDiff(ProtoNodeDiff):
+    def __init__(self, left: ProtoStringLiteral, right: ProtoStringLiteral):
+        self.left = left
+        self.right = right
+
+    def __eq__(self, other: "ProtoSyntaxDiff") -> bool:
+        return self.left == other.left and self.right == other.right
