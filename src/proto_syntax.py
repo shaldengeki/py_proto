@@ -52,10 +52,11 @@ class ProtoSyntax(ProtoNode):
     def serialize(self) -> str:
         return f"syntax = {self.syntax.serialize()};"
 
-    def diff(self, other: "ProtoSyntax") -> Optional["ProtoSyntaxDiff"]:
-        if self == other:
-            return None
-        return ProtoSyntaxDiff(self, other)
+    @staticmethod
+    def diff(left: "ProtoSyntax", right: "ProtoSyntax") -> list["ProtoSyntaxDiff"]:
+        if left == right:
+            return []
+        return [ProtoSyntaxDiff(left, right)]
 
 
 class ProtoSyntaxDiff(ProtoNodeDiff):

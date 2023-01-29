@@ -42,5 +42,6 @@ class ProtoFile:
 
     def diff(self, other: "ProtoFile") -> list[ProtoNodeDiff]:
         diffs = []
-        diffs.append(self.syntax.diff(other.syntax))
+        diffs.extend(ProtoSyntax.diff(self.syntax, other.syntax))
+        diffs.extend(ProtoImport.diff(self.imports, other.imports))
         return [d for d in diffs if d is not None]

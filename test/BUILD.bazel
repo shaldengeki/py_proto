@@ -218,8 +218,6 @@ py_test(
     srcs = ["proto_file_test.py"],
     deps = [
         "//src:proto_file",
-        "//src:proto_string_literal",
-        "//src:proto_syntax",
     ],
 )
 
