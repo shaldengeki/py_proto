@@ -60,7 +60,7 @@
   - [x] Normalizing
   - [ ] Complete diffs
     - [ ] Proto file-level diffs
-      - [ ] Syntax changes
+      - [x] Syntax changes
       - [ ] Import changes
       - [ ] Package changes
       - [ ] Option changes
