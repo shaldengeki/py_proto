@@ -1,8 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from src.proto_node import ParsedProtoNode, ProtoNode
-from src.proto_node_diff import ProtoNodeDiff
+from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
 from src.proto_string_literal import ProtoStringLiteral
 
 
@@ -23,6 +22,9 @@ class ProtoSyntax(ProtoNode):
 
     def __repr__(self) -> str:
         return str(self)
+
+    def __dict__(self) -> dict:
+        return {"syntax": self.syntax.serialize()}
 
     def normalize(self) -> "ProtoSyntax":
         return self
@@ -53,16 +55,16 @@ class ProtoSyntax(ProtoNode):
         return f"syntax = {self.syntax.serialize()};"
 
     @staticmethod
-    def diff(left: "ProtoSyntax", right: "ProtoSyntax") -> list["ProtoSyntaxDiff"]:
+    def diff(left: "ProtoSyntax", right: "ProtoSyntax") -> list["ProtoNodeDiff"]:
         if left == right:
             return []
-        return [ProtoSyntaxDiff(left, right)]
+        return [ProtoSyntaxChanged(left, right)]
 
 
-class ProtoSyntaxDiff(ProtoNodeDiff):
+class ProtoSyntaxChanged(ProtoNodeDiff):
     def __init__(self, left: ProtoStringLiteral, right: ProtoStringLiteral):
         self.left = left
         self.right = right
 
-    def __eq__(self, other: "ProtoSyntaxDiff") -> bool:
+    def __eq__(self, other: "ProtoSyntaxChanged") -> bool:
         return self.left == other.left and self.right == other.right

@@ -75,7 +75,6 @@ py_library(
     visibility = ["//visibility:public"],
     deps = [
         ":proto_node",
-        ":proto_node_diff",
         ":proto_string_literal",
     ],
 )
@@ -222,18 +221,10 @@ py_library(
     deps = [
         ":proto_import",
         ":proto_node",
-        ":proto_node_diff",
         ":proto_option",
         ":proto_package",
         ":proto_syntax",
     ],
-)
-
-py_library(
-    name = "proto_node_diff",
-    srcs = ["proto_node_diff.py"],
-    visibility = ["//visibility:public"],
-    deps = [],
 )
 
 py_library(

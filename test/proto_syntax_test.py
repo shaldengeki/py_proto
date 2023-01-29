@@ -1,7 +1,7 @@
 import unittest
 
 from src.proto_string_literal import ProtoStringLiteral
-from src.proto_syntax import ProtoSyntax, ProtoSyntaxDiff
+from src.proto_syntax import ProtoSyntax, ProtoSyntaxChanged
 
 
 class SyntaxTest(unittest.TestCase):
@@ -86,7 +86,7 @@ class SyntaxTest(unittest.TestCase):
         self.assertEqual(
             ProtoSyntax.diff(pf1, pf2),
             [
-                ProtoSyntaxDiff(
+                ProtoSyntaxChanged(
                     ProtoSyntax(ProtoStringLiteral("proto3")),
                     ProtoSyntax(ProtoStringLiteral("proto2")),
                 )

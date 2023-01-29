@@ -103,6 +103,7 @@ py_test(
     srcs = ["proto_import_test.py"],
     deps = [
         "//src:proto_import",
+        "//src:proto_string_literal",
     ],
 )
 

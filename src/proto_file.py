@@ -1,8 +1,7 @@
 from typing import Optional
 
 from src.proto_import import ProtoImport
-from src.proto_node import ProtoNode
-from src.proto_node_diff import ProtoNodeDiff
+from src.proto_node import ProtoNode, ProtoNodeDiff
 from src.proto_option import ProtoOption
 from src.proto_package import ProtoPackage
 from src.proto_syntax import ProtoSyntax
