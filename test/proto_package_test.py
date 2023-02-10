@@ -1,7 +1,12 @@
 import unittest
 from textwrap import dedent
 
-from src.proto_package import ProtoPackage
+from src.proto_package import (
+    ProtoPackage,
+    ProtoPackageAdded,
+    ProtoPackageChanged,
+    ProtoPackageRemoved,
+)
 
 
 class PackageTest(unittest.TestCase):
@@ -70,6 +75,26 @@ class PackageTest(unittest.TestCase):
                     ProtoPackage("my.awesome.package"),
                     ProtoPackage("my.other.awesome.package"),
                 )
+            ],
+        )
+
+    def test_diff_package_added(self):
+        pp1 = None
+        pp2 = ProtoPackage("my.new.package")
+        self.assertEqual(
+            ProtoPackage.diff(pp1, pp2),
+            [
+                ProtoPackageAdded(ProtoPackage("my.new.package")),
+            ],
+        )
+
+    def test_diff_package_removed(self):
+        pp1 = ProtoPackage("my.old.package")
+        pp2 = None
+        self.assertEqual(
+            ProtoPackage.diff(pp1, pp2),
+            [
+                ProtoPackageRemoved(ProtoPackage("my.old.package")),
             ],
         )
 
