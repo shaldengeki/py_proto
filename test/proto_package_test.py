@@ -55,6 +55,24 @@ class PackageTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             ProtoPackage.match("packagefoo.bar;")
 
+    def test_diff_same_package_returns_empty(self):
+        pp1 = ProtoPackage("my.awesome.package")
+        pp2 = ProtoPackage("my.awesome.package")
+        self.assertEqual(ProtoPackage.diff(pp1, pp2), [])
+
+    def test_diff_different_package_returns_package_diff(self):
+        pp1 = ProtoPackage("my.awesome.package")
+        pp2 = ProtoPackage("my.other.awesome.package")
+        self.assertEqual(
+            ProtoPackage.diff(pp1, pp2),
+            [
+                ProtoPackageChanged(
+                    ProtoPackage("my.awesome.package"),
+                    ProtoPackage("my.other.awesome.package"),
+                )
+            ],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
