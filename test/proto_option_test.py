@@ -5,7 +5,12 @@ from src.proto_constant import ProtoConstant
 from src.proto_float import ProtoFloat, ProtoFloatSign
 from src.proto_identifier import ProtoFullIdentifier, ProtoIdentifier
 from src.proto_int import ProtoInt, ProtoIntSign
-from src.proto_option import ProtoOption
+from src.proto_option import (
+    ProtoOption,
+    ProtoOptionAdded,
+    ProtoOptionRemoved,
+    ProtoOptionValueChanged,
+)
 from src.proto_string_literal import ProtoStringLiteral
 
 
@@ -190,6 +195,83 @@ class OptionTest(unittest.TestCase):
         self.assertEqual(
             float_option.node.value,
             ProtoConstant(ProtoFloat(float(120), ProtoFloatSign.NEGATIVE)),
+        )
+
+    def test_diff_same_option_returns_empty(self):
+        pp1 = ProtoOption(
+            ProtoIdentifier("some.custom.option"),
+            ProtoConstant(ProtoStringLiteral("some value")),
+        )
+        pp2 = ProtoOption(
+            ProtoIdentifier("some.custom.option"),
+            ProtoConstant(ProtoStringLiteral("some value")),
+        )
+        self.assertEqual(ProtoOption.diff(pp1, pp2), [])
+
+    def test_diff_different_option_name_returns_empty(self):
+        pp1 = ProtoOption(
+            ProtoIdentifier("some.custom.option"),
+            ProtoConstant(ProtoStringLiteral("some value")),
+        )
+        pp2 = ProtoOption(
+            ProtoIdentifier("other.option"),
+            ProtoConstant(ProtoStringLiteral("some value")),
+        )
+        self.assertEqual(ProtoOption.diff(pp1, pp2), [])
+
+    def test_diff_different_option_value_returns_option_diff(self):
+        pp1 = ProtoOption(
+            ProtoIdentifier("some.custom.option"),
+            ProtoConstant(ProtoStringLiteral("some value")),
+        )
+        pp2 = ProtoOption(
+            ProtoIdentifier("some.custom.option"),
+            ProtoConstant(ProtoStringLiteral("other value")),
+        )
+        self.assertEqual(
+            ProtoOption.diff(pp1, pp2),
+            [
+                ProtoOptionValueChanged(
+                    ProtoConstant(ProtoStringLiteral("some value")),
+                    ProtoConstant(ProtoStringLiteral("other value")),
+                )
+            ],
+        )
+
+    def test_diff_option_added(self):
+        pp1 = None
+        pp2 = ProtoOption(
+            ProtoIdentifier("some.custom.option"),
+            ProtoConstant(ProtoStringLiteral("some value")),
+        )
+        self.assertEqual(
+            ProtoOption.diff(pp1, pp2),
+            [
+                ProtoOptionAdded(
+                    ProtoOption(
+                        ProtoIdentifier("some.custom.option"),
+                        ProtoConstant(ProtoStringLiteral("some value")),
+                    )
+                ),
+            ],
+        )
+
+    def test_diff_option_removed(self):
+        pp1 = ProtoOption(
+            ProtoIdentifier("some.custom.option"),
+            ProtoConstant(ProtoStringLiteral("some value")),
+        )
+        pp2 = None
+        self.assertEqual(
+            ProtoOption.diff(pp1, pp2),
+            [
+                ProtoOptionRemoved(
+                    ProtoOption(
+                        ProtoIdentifier("some.custom.option"),
+                        ProtoConstant(ProtoStringLiteral("some value")),
+                    )
+                ),
+            ],
         )
 
 

@@ -6,7 +6,7 @@ from src.proto_identifier import (
     ProtoFullIdentifier,
     ProtoIdentifier,
 )
-from src.proto_node import ParsedProtoNode, ProtoNode
+from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
 
 
 class ProtoOption(ProtoNode):
@@ -91,3 +91,42 @@ class ProtoOption(ProtoNode):
 
     def serialize(self) -> str:
         return f"option {self.name.serialize()} = {self.value.serialize()};"
+
+    @staticmethod
+    def diff(left: "ProtoOption", right: "ProtoOption") -> list["ProtoNodeDiff"]:
+        if left is None and right is not None:
+            return [ProtoOptionAdded(right)]
+        elif left is not None and right is None:
+            return [ProtoOptionRemoved(left)]
+        elif left is None and right is None:
+            return []
+        elif left.name != right.name:
+            return []
+        elif left == right:
+            return []
+        return [ProtoOptionValueChanged(left.value, right.value)]
+
+
+class ProtoOptionValueChanged(ProtoNodeDiff):
+    def __init__(self, left: str, right: str):
+        self.left = left
+        self.right = right
+
+    def __eq__(self, other: "ProtoOptionValueChanged") -> bool:
+        return self.left == other.left and self.right == other.right
+
+
+class ProtoOptionAdded(ProtoNodeDiff):
+    def __init__(self, left: str):
+        self.left = left
+
+    def __eq__(self, other: "ProtoOptionAdded") -> bool:
+        return self.left == other.left
+
+
+class ProtoOptionRemoved(ProtoNodeDiff):
+    def __init__(self, right: str):
+        self.right = right
+
+    def __eq__(self, other: "ProtoOptionRemoved") -> bool:
+        return self.right == other.right
