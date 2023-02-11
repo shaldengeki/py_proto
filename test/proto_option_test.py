@@ -15,6 +15,9 @@ from src.proto_string_literal import ProtoStringLiteral
 
 
 class OptionTest(unittest.TestCase):
+
+    maxDiff = None
+
     def test_string_option(self):
         string_option = ProtoOption.match("option foo = 'test value';")
         self.assertEqual(string_option.node.name, ProtoIdentifier("foo"))
@@ -298,7 +301,8 @@ class OptionTest(unittest.TestCase):
         self.assertEqual(ProtoOption.diff_sets(set1, set1), [])
 
     def test_diff_sets_all_removed(self):
-        set1 = [
+        set1 = []
+        set2 = [
             ProtoOption(
                 ProtoIdentifier("some.custom.option"),
                 ProtoConstant(ProtoStringLiteral("some value")),
@@ -312,7 +316,6 @@ class OptionTest(unittest.TestCase):
                 ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
             ),
         ]
-        set2 = []
         self.assertEqual(
             ProtoOption.diff_sets(set1, set2),
             [
@@ -338,8 +341,7 @@ class OptionTest(unittest.TestCase):
         )
 
     def test_diff_sets_all_added(self):
-        set1 = []
-        set2 = [
+        set1 = [
             ProtoOption(
                 ProtoIdentifier("some.custom.option"),
                 ProtoConstant(ProtoStringLiteral("some value")),
@@ -353,6 +355,7 @@ class OptionTest(unittest.TestCase):
                 ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
             ),
         ]
+        set2 = []
         self.assertEqual(
             ProtoOption.diff_sets(set1, set2),
             [
@@ -380,20 +383,6 @@ class OptionTest(unittest.TestCase):
     def test_diff_sets_mutually_exclusive(self):
         set1 = [
             ProtoOption(
-                ProtoIdentifier("some.custom.option"),
-                ProtoConstant(ProtoStringLiteral("some value")),
-            ),
-            ProtoOption(
-                ProtoIdentifier("java_package"),
-                ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
-            ),
-            ProtoOption(
-                ProtoIdentifier("other.option"),
-                ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
-            ),
-        ]
-        set2 = [
-            ProtoOption(
                 ProtoIdentifier("some.custom.option.but.not.prior"),
                 ProtoConstant(ProtoStringLiteral("some value")),
             ),
@@ -406,50 +395,7 @@ class OptionTest(unittest.TestCase):
                 ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
             ),
         ]
-        self.assertEqual(
-            ProtoOption.diff_sets(set1, set2),
-            [
-                ProtoOptionRemoved(
-                    ProtoOption(
-                        ProtoIdentifier("some.custom.option"),
-                        ProtoConstant(ProtoStringLiteral("some value")),
-                    )
-                ),
-                ProtoOptionRemoved(
-                    ProtoOption(
-                        ProtoIdentifier("java_package"),
-                        ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
-                    )
-                ),
-                ProtoOptionRemoved(
-                    ProtoOption(
-                        ProtoIdentifier("other.option"),
-                        ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
-                    )
-                ),
-                ProtoOptionAdded(
-                    ProtoOption(
-                        ProtoIdentifier("some.custom.option.but.not.prior"),
-                        ProtoConstant(ProtoStringLiteral("some value")),
-                    )
-                ),
-                ProtoOptionAdded(
-                    ProtoOption(
-                        ProtoIdentifier("ruby_package"),
-                        ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
-                    )
-                ),
-                ProtoOptionAdded(
-                    ProtoOption(
-                        ProtoIdentifier("other.option.but.stil.not.prior"),
-                        ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
-                    )
-                ),
-            ],
-        )
-
-    def test_diff_sets_overlap(self):
-        set1 = [
+        set2 = [
             ProtoOption(
                 ProtoIdentifier("some.custom.option"),
                 ProtoConstant(ProtoStringLiteral("some value")),
@@ -463,7 +409,72 @@ class OptionTest(unittest.TestCase):
                 ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
             ),
         ]
-        set2 = [
+
+        diff = ProtoOption.diff_sets(set1, set2)
+
+        self.assertIn(
+            ProtoOptionAdded(
+                ProtoOption(
+                    ProtoIdentifier("some.custom.option.but.not.prior"),
+                    ProtoConstant(ProtoStringLiteral("some value")),
+                )
+            ),
+            diff,
+        )
+        self.assertIn(
+            ProtoOptionAdded(
+                ProtoOption(
+                    ProtoIdentifier("other.option.but.stil.not.prior"),
+                    ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
+                )
+            ),
+            diff,
+        )
+
+        self.assertIn(
+            ProtoOptionAdded(
+                ProtoOption(
+                    ProtoIdentifier("ruby_package"),
+                    ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
+                )
+            ),
+            diff,
+        )
+
+        self.assertIn(
+            ProtoOptionRemoved(
+                ProtoOption(
+                    ProtoIdentifier("other.option"),
+                    ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
+                )
+            ),
+            diff,
+        )
+
+        self.assertIn(
+            ProtoOptionRemoved(
+                ProtoOption(
+                    ProtoIdentifier("some.custom.option"),
+                    ProtoConstant(ProtoStringLiteral("some value")),
+                )
+            ),
+            diff,
+        )
+
+        self.assertIn(
+            ProtoOptionRemoved(
+                ProtoOption(
+                    ProtoIdentifier("java_package"),
+                    ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
+                )
+            ),
+            diff,
+        )
+
+        self.assertEqual(6, len(diff))
+
+    def test_diff_sets_overlap(self):
+        set1 = [
             ProtoOption(
                 ProtoIdentifier("some.custom.option.but.not.prior"),
                 ProtoConstant(ProtoStringLiteral("some value")),
@@ -477,40 +488,69 @@ class OptionTest(unittest.TestCase):
                 ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
             ),
         ]
-        self.assertEqual(
-            ProtoOption.diff_sets(set1, set2),
-            [
-                ProtoOptionRemoved(
-                    ProtoOption(
-                        ProtoIdentifier("some.custom.option"),
-                        ProtoConstant(ProtoStringLiteral("some value")),
-                    )
-                ),
-                ProtoOptionRemoved(
-                    ProtoOption(
-                        ProtoIdentifier("other.option"),
-                        ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
-                    )
-                ),
-                ProtoOptionAdded(
-                    ProtoOption(
-                        ProtoIdentifier("some.custom.option.but.not.prior"),
-                        ProtoConstant(ProtoStringLiteral("some value")),
-                    )
-                ),
-                ProtoOptionAdded(
-                    ProtoOption(
-                        ProtoIdentifier("other.option.but.stil.not.prior"),
-                        ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
-                    )
-                ),
-                ProtoOptionValueChanged(
-                    ProtoIdentifier("java_package"),
-                    ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
-                    ProtoConstant(ProtoStringLiteral("foo.bar.bat")),
-                ),
-            ],
+        set2 = [
+            ProtoOption(
+                ProtoIdentifier("some.custom.option"),
+                ProtoConstant(ProtoStringLiteral("some value")),
+            ),
+            ProtoOption(
+                ProtoIdentifier("java_package"),
+                ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
+            ),
+            ProtoOption(
+                ProtoIdentifier("other.option"),
+                ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
+            ),
+        ]
+
+        diff = ProtoOption.diff_sets(set1, set2)
+
+        self.assertIn(
+            ProtoOptionRemoved(
+                ProtoOption(
+                    ProtoIdentifier("some.custom.option"),
+                    ProtoConstant(ProtoStringLiteral("some value")),
+                )
+            ),
+            diff,
         )
+
+        self.assertIn(
+            ProtoOptionRemoved(
+                ProtoOption(
+                    ProtoIdentifier("other.option"),
+                    ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
+                )
+            ),
+            diff,
+        )
+        self.assertIn(
+            ProtoOptionAdded(
+                ProtoOption(
+                    ProtoIdentifier("some.custom.option.but.not.prior"),
+                    ProtoConstant(ProtoStringLiteral("some value")),
+                )
+            ),
+            diff,
+        )
+        self.assertIn(
+            ProtoOptionAdded(
+                ProtoOption(
+                    ProtoIdentifier("other.option.but.stil.not.prior"),
+                    ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
+                )
+            ),
+            diff,
+        )
+        self.assertIn(
+            ProtoOptionValueChanged(
+                ProtoIdentifier("java_package"),
+                ProtoConstant(ProtoStringLiteral("foo.bar.bat")),
+                ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
+            ),
+            diff,
+        )
+        self.assertEqual(5, len(diff))
 
 
 if __name__ == "__main__":

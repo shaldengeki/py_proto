@@ -23,6 +23,9 @@ class ProtoOption(ProtoNode):
     def __repr__(self) -> str:
         return str(self)
 
+    def __hash__(self):
+        return hash(str(self))
+
     def normalize(self) -> "ProtoOption":
         return self
 
@@ -110,7 +113,23 @@ class ProtoOption(ProtoNode):
     def diff_sets(
         left: list["ProtoOption"], right: list["ProtoOption"]
     ) -> list["ProtoNodeDiff"]:
-        return []
+        diffs = []
+        left_names = set(o.name.identifier for o in left)
+        right_names = set(o.name.identifier for o in right)
+        for name in left_names - right_names:
+            diffs.append(
+                ProtoOptionAdded(next(i for i in left if i.name.identifier == name))
+            )
+        for name in right_names - left_names:
+            diffs.append(
+                ProtoOptionRemoved(next(i for i in right if i.name.identifier == name))
+            )
+        for name in left_names & right_names:
+            left_option = next(i for i in left if i.name.identifier == name)
+            right_option = next(i for i in right if i.name.identifier == name)
+            diffs.extend(ProtoOption.diff(left_option, right_option))
+
+        return diffs
 
 
 class ProtoOptionValueChanged(ProtoNodeDiff):
@@ -121,10 +140,17 @@ class ProtoOptionValueChanged(ProtoNodeDiff):
 
     def __eq__(self, other: "ProtoOptionValueChanged") -> bool:
         return (
-            self.name == other.name
+            isinstance(other, ProtoOptionValueChanged)
+            and self.name == other.name
             and self.left == other.left
             and self.right == other.right
         )
+
+    def __str__(self) -> str:
+        return f"<ProtoOptionValueChanged name={self.name} left={self.left} right={self.right}>"
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class ProtoOptionAdded(ProtoNodeDiff):
@@ -132,7 +158,13 @@ class ProtoOptionAdded(ProtoNodeDiff):
         self.left = left
 
     def __eq__(self, other: "ProtoOptionAdded") -> bool:
-        return self.left == other.left
+        return isinstance(other, ProtoOptionAdded) and self.left == other.left
+
+    def __str__(self) -> str:
+        return f"<ProtoOptionAdded left={self.left}>"
+
+    def __repr__(self) -> str:
+        return str(self)
 
 
 class ProtoOptionRemoved(ProtoNodeDiff):
@@ -140,4 +172,10 @@ class ProtoOptionRemoved(ProtoNodeDiff):
         self.right = right
 
     def __eq__(self, other: "ProtoOptionRemoved") -> bool:
-        return self.right == other.right
+        return isinstance(other, ProtoOptionRemoved) and self.right == other.right
+
+    def __str__(self) -> str:
+        return f"<ProtoOptionRemoved right={self.right}>"
+
+    def __repr__(self) -> str:
+        return str(self)
