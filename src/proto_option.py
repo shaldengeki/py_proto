@@ -104,16 +104,27 @@ class ProtoOption(ProtoNode):
             return []
         elif left == right:
             return []
-        return [ProtoOptionValueChanged(left.value, right.value)]
+        return [ProtoOptionValueChanged(left.name, left.value, right.value)]
+
+    @staticmethod
+    def diff_sets(
+        left: list["ProtoOption"], right: list["ProtoOption"]
+    ) -> list["ProtoNodeDiff"]:
+        return []
 
 
 class ProtoOptionValueChanged(ProtoNodeDiff):
-    def __init__(self, left: str, right: str):
+    def __init__(self, name: ProtoIdentifier, left: str, right: str):
+        self.name = name
         self.left = left
         self.right = right
 
     def __eq__(self, other: "ProtoOptionValueChanged") -> bool:
-        return self.left == other.left and self.right == other.right
+        return (
+            self.name == other.name
+            and self.left == other.left
+            and self.right == other.right
+        )
 
 
 class ProtoOptionAdded(ProtoNodeDiff):
