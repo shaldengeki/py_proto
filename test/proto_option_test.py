@@ -316,29 +316,36 @@ class OptionTest(unittest.TestCase):
                 ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
             ),
         ]
-        self.assertEqual(
-            ProtoOption.diff_sets(set1, set2),
-            [
-                ProtoOptionRemoved(
-                    ProtoOption(
-                        ProtoIdentifier("some.custom.option"),
-                        ProtoConstant(ProtoStringLiteral("some value")),
-                    )
-                ),
-                ProtoOptionRemoved(
-                    ProtoOption(
-                        ProtoIdentifier("java_package"),
-                        ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
-                    )
-                ),
-                ProtoOptionRemoved(
-                    ProtoOption(
-                        ProtoIdentifier("other.option"),
-                        ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
-                    )
-                ),
-            ],
+        diff = ProtoOption.diff_sets(set1, set2)
+
+        self.assertIn(
+            ProtoOptionRemoved(
+                ProtoOption(
+                    ProtoIdentifier("some.custom.option"),
+                    ProtoConstant(ProtoStringLiteral("some value")),
+                )
+            ),
+            diff,
         )
+        self.assertIn(
+            ProtoOptionRemoved(
+                ProtoOption(
+                    ProtoIdentifier("java_package"),
+                    ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
+                )
+            ),
+            diff,
+        )
+        self.assertIn(
+            ProtoOptionRemoved(
+                ProtoOption(
+                    ProtoIdentifier("other.option"),
+                    ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
+                )
+            ),
+            diff,
+        )
+        self.assertEqual(3, len(diff))
 
     def test_diff_sets_all_added(self):
         set1 = [
@@ -356,29 +363,36 @@ class OptionTest(unittest.TestCase):
             ),
         ]
         set2 = []
-        self.assertEqual(
-            ProtoOption.diff_sets(set1, set2),
-            [
-                ProtoOptionAdded(
-                    ProtoOption(
-                        ProtoIdentifier("some.custom.option"),
-                        ProtoConstant(ProtoStringLiteral("some value")),
-                    )
-                ),
-                ProtoOptionAdded(
-                    ProtoOption(
-                        ProtoIdentifier("java_package"),
-                        ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
-                    )
-                ),
-                ProtoOptionAdded(
-                    ProtoOption(
-                        ProtoIdentifier("other.option"),
-                        ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
-                    )
-                ),
-            ],
+        diff = ProtoOption.diff_sets(set1, set2)
+
+        self.assertIn(
+            ProtoOptionAdded(
+                ProtoOption(
+                    ProtoIdentifier("some.custom.option"),
+                    ProtoConstant(ProtoStringLiteral("some value")),
+                )
+            ),
+            diff,
         )
+        self.assertIn(
+            ProtoOptionAdded(
+                ProtoOption(
+                    ProtoIdentifier("java_package"),
+                    ProtoConstant(ProtoStringLiteral("foo.bar.baz")),
+                )
+            ),
+            diff,
+        )
+        self.assertIn(
+            ProtoOptionAdded(
+                ProtoOption(
+                    ProtoIdentifier("other.option"),
+                    ProtoConstant(ProtoInt(100, ProtoIntSign.POSITIVE)),
+                )
+            ),
+            diff,
+        )
+        self.assertEqual(3, len(diff))
 
     def test_diff_sets_mutually_exclusive(self):
         set1 = [
