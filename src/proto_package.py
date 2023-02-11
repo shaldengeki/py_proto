@@ -55,7 +55,7 @@ class ProtoPackage(ProtoNode):
             return []
         elif left is None and right is not None:
             return [ProtoPackageAdded(right)]
-        elif right is not None and right is None:
+        elif left is not None and right is None:
             return [ProtoPackageRemoved(left)]
         return [ProtoPackageChanged(left, right)]
 
