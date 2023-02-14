@@ -131,6 +131,53 @@ class ProtoEnumValue(ProtoNode):
             serialized_parts.append("]")
         return " ".join(serialized_parts) + ";"
 
+    @staticmethod
+    def diff(
+        enum: "ProtoEnum", left: "ProtoEnumValue", right: "ProtoEnumValue"
+    ) -> list["ProtoNodeDiff"]:
+        if left is None and right is not None:
+            return [ProtoEnumValueAdded(right)]
+        elif left is not None and right is None:
+            return [ProtoEnumValueRemoved(left)]
+        elif left is None and right is None:
+            return []
+        elif left.identifier != right.identifier:
+            return []
+        elif left == right:
+            return []
+        diffs = []
+        diffs.extend(ProtoOption.diff_sets(left.options, right.options))
+
+        # TODO: Diff the value / name.
+
+        return diffs
+
+    @staticmethod
+    def diff_sets(
+        enum: "ProtoEnum", left: list["ProtoEnumValue"], right: list["ProtoEnumValue"]
+    ) -> list["ProtoNodeDiff"]:
+        diffs = []
+        left_names = set(o.identifier.identifier for o in left)
+        right_names = set(o.identifier.identifier for o in right)
+        for name in left_names - right_names:
+            diffs.append(
+                ProtoEnumValueAdded(
+                    enum, next(i for i in left if i.identifier.identifier == name)
+                )
+            )
+        for name in right_names - left_names:
+            diffs.append(
+                ProtoEnumValueRemoved(
+                    enum, next(i for i in right if i.identifier.identifier == name)
+                )
+            )
+        for name in left_names & right_names:
+            left_enum_value = next(i for i in left if i.identifier.identifier == name)
+            right_enum_value = next(i for i in right if i.identifier.identifier == name)
+            diffs.extend(ProtoEnumValue.diff(enum, left_enum_value, right_enum_value))
+
+        return diffs
+
 
 class ProtoEnum(ProtoNode):
     def __init__(self, name: ProtoIdentifier, nodes: list[ProtoNode]):
@@ -216,6 +263,10 @@ class ProtoEnum(ProtoNode):
     def options(self) -> list[ProtoOption]:
         return [node for node in self.nodes if isinstance(node, ProtoOption)]
 
+    @property
+    def values(self) -> list[ProtoEnumValue]:
+        return [node for node in self.nodes if isinstance(node, ProtoEnumValue)]
+
     def serialize(self) -> str:
         serialize_parts = (
             [f"enum {self.name.serialize()} {{"]
@@ -238,8 +289,7 @@ class ProtoEnum(ProtoNode):
             return []
         diffs = []
         diffs.extend(ProtoOption.diff_sets(left.options, right.options))
-        # TODO: process the values.
-
+        diffs.extend(ProtoEnumValue.diff_sets(left, left.values, right.values))
         return diffs
 
     @staticmethod
@@ -258,9 +308,9 @@ class ProtoEnum(ProtoNode):
                 ProtoEnumRemoved(next(i for i in right if i.name.identifier == name))
             )
         for name in left_names & right_names:
-            left_option = next(i for i in left if i.name.identifier == name)
-            right_option = next(i for i in right if i.name.identifier == name)
-            diffs.extend(ProtoEnum.diff(left_option, right_option))
+            left_enum = next(i for i in left if i.name.identifier == name)
+            right_enum = next(i for i in right if i.name.identifier == name)
+            diffs.extend(ProtoEnum.diff(left_enum, right_enum))
 
         return diffs
 
