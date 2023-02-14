@@ -158,19 +158,32 @@ class ProtoEnumValue(ProtoNode):
     ) -> list["ProtoNodeDiff"]:
         diffs = []
         left_names = set(o.identifier.identifier for o in left)
+        left_values = set(int(o.value) for o in left)
         right_names = set(o.identifier.identifier for o in right)
+        right_values = set(int(o.value) for o in right)
+
         for name in left_names - right_names:
-            diffs.append(
-                ProtoEnumValueAdded(
-                    enum, next(i for i in left if i.identifier.identifier == name)
+            # Check to see if this is a renamed field number.
+            left_value = next(i for i in left if i.identifier.identifier == name)
+            if int(left_value.value) in right_values:
+                # This is a renamed field number.
+                right_value = next(
+                    i for i in right if int(i.value) == int(left_value.value)
                 )
-            )
+                diffs.append(
+                    ProtoEnumValueNameChanged(enum, right_value, left_value.identifier)
+                )
+            else:
+                diffs.append(ProtoEnumValueAdded(enum, left_value))
         for name in right_names - left_names:
-            diffs.append(
-                ProtoEnumValueRemoved(
-                    enum, next(i for i in right if i.identifier.identifier == name)
+            # Check to see if this is a renamed field number.
+            right_value = next(i for i in right if i.identifier.identifier == name)
+            if int(right_value.value) not in left_values:
+                diffs.append(
+                    ProtoEnumValueRemoved(
+                        enum, next(i for i in right if i.identifier.identifier == name)
+                    )
                 )
-            )
         for name in left_names & right_names:
             left_enum_value = next(i for i in left if i.identifier.identifier == name)
             right_enum_value = next(i for i in right if i.identifier.identifier == name)

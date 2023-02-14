@@ -349,8 +349,8 @@ class EnumTest(unittest.TestCase):
             [
                 ProtoEnumValueNameChanged(
                     pe1,
-                    pe1.nodes[0],
-                    ProtoIdentifier("ME_KNOWN"),
+                    pe2.nodes[0],
+                    ProtoIdentifier("ME_UNKNOWN"),
                 )
             ],
         )
