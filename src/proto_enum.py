@@ -7,7 +7,7 @@ from src.proto_comment import (
 )
 from src.proto_identifier import ProtoIdentifier
 from src.proto_int import ProtoInt, ProtoIntSign
-from src.proto_node import ParsedProtoNode, ProtoNode
+from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
 from src.proto_option import ProtoOption
 from src.proto_reserved import ProtoReserved
 
@@ -223,3 +223,13 @@ class ProtoEnum(ProtoNode):
             + ["}"]
         )
         return "\n".join(serialize_parts)
+
+    @staticmethod
+    def diff(left: "ProtoEnum", right: "ProtoEnum") -> list["ProtoNodeDiff"]:
+        return []
+
+    @staticmethod
+    def diff_sets(
+        left: list["ProtoEnum"], right: list["ProtoEnum"]
+    ) -> list["ProtoNodeDiff"]:
+        return []
