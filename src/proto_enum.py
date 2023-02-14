@@ -236,8 +236,11 @@ class ProtoEnum(ProtoNode):
             return []
         elif left == right:
             return []
-        # TODO: process the enum options and values.
-        return []
+        diffs = []
+        diffs.extend(ProtoOption.diff_sets(left.options, right.options))
+        # TODO: process the values.
+
+        return diffs
 
     @staticmethod
     def diff_sets(
