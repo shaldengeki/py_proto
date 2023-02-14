@@ -826,7 +826,7 @@ class EnumTest(unittest.TestCase):
                 [
                     ProtoEnumValue(
                         ProtoIdentifier("BE_UNKNOWN2"),
-                        ProtoInt(1, ProtoIntSign.POSITIVE),
+                        ProtoInt(0, ProtoIntSign.POSITIVE),
                     )
                 ],
             ),
@@ -846,35 +846,6 @@ class EnumTest(unittest.TestCase):
         self.assertIn(
             ProtoEnumRemoved(
                 ProtoEnum(
-                    ProtoIdentifier("FooEnum"),
-                    [
-                        ProtoEnumValue(
-                            ProtoIdentifier("FE_UNKNOWN"),
-                            ProtoInt(0, ProtoIntSign.POSITIVE),
-                        )
-                    ],
-                ),
-            ),
-            diff,
-        )
-
-        self.assertIn(
-            ProtoEnumRemoved(
-                ProtoEnum(
-                    ProtoIdentifier("TagEnum"),
-                    [
-                        ProtoEnumValue(
-                            ProtoIdentifier("TE_UNKNOWN"),
-                            ProtoInt(0, ProtoIntSign.POSITIVE),
-                        )
-                    ],
-                ),
-            ),
-            diff,
-        )
-        self.assertIn(
-            ProtoEnumAdded(
-                ProtoEnum(
                     ProtoIdentifier("FooEnum2"),
                     [
                         ProtoEnumValue(
@@ -886,8 +857,9 @@ class EnumTest(unittest.TestCase):
             ),
             diff,
         )
+
         self.assertIn(
-            ProtoEnumAdded(
+            ProtoEnumRemoved(
                 ProtoEnum(
                     ProtoIdentifier("TagEnum2"),
                     [
@@ -901,24 +873,52 @@ class EnumTest(unittest.TestCase):
             diff,
         )
         self.assertIn(
-            ProtoEnumValueRemoved(
-                ProtoIdentifier("BarEnum"),
-                ProtoEnumValue(
-                    ProtoIdentifier("BE_UNKNOWN"), ProtoInt(0, ProtoIntSign.POSITIVE)
+            ProtoEnumAdded(
+                ProtoEnum(
+                    ProtoIdentifier("FooEnum"),
+                    [
+                        ProtoEnumValue(
+                            ProtoIdentifier("FE_UNKNOWN"),
+                            ProtoInt(0, ProtoIntSign.POSITIVE),
+                        )
+                    ],
                 ),
             ),
             diff,
         )
         self.assertIn(
-            ProtoEnumValueAdded(
-                ProtoIdentifier("BarEnum"),
-                ProtoEnumValue(
-                    ProtoIdentifier("BE_UNKNOWN2"), ProtoInt(1, ProtoIntSign.POSITIVE)
+            ProtoEnumAdded(
+                ProtoEnum(
+                    ProtoIdentifier("TagEnum"),
+                    [
+                        ProtoEnumValue(
+                            ProtoIdentifier("TE_UNKNOWN"),
+                            ProtoInt(0, ProtoIntSign.POSITIVE),
+                        )
+                    ],
                 ),
             ),
             diff,
         )
-        self.assertEqual(6, len(diff))
+        self.assertIn(
+            ProtoEnumValueNameChanged(
+                ProtoEnum(
+                    ProtoIdentifier("BarEnum"),
+                    [
+                        ProtoEnumValue(
+                            ProtoIdentifier("BE_UNKNOWN"),
+                            ProtoInt(0, ProtoIntSign.POSITIVE),
+                        )
+                    ],
+                ),
+                ProtoEnumValue(
+                    ProtoIdentifier("BE_UNKNOWN2"), ProtoInt(0, ProtoIntSign.POSITIVE)
+                ),
+                ProtoIdentifier("BE_UNKNOWN"),
+            ),
+            diff,
+        )
+        self.assertEqual(5, len(diff))
 
 
 if __name__ == "__main__":
