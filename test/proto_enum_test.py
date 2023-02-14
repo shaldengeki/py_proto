@@ -372,16 +372,18 @@ class EnumTest(unittest.TestCase):
                 )
             ],
         )
-        self.assertEqual(
-            ProtoEnum.diff(pe1, pe2),
-            [
-                ProtoEnumValueValueChanged(
-                    pe1,
-                    pe1.nodes[0],
-                    ProtoInt(1, ProtoIntSign.POSITIVE),
-                )
-            ],
+
+        diff = ProtoEnum.diff(pe1, pe2)
+
+        self.assertIn(
+            ProtoEnumValueValueChanged(
+                pe1,
+                pe2.values[0],
+                ProtoInt(0, ProtoIntSign.POSITIVE),
+            ),
+            diff,
         )
+        self.assertEqual(1, len(diff))
 
     def test_diff_enum_added(self):
         pe1 = None

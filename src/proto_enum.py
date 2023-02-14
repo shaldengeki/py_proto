@@ -62,6 +62,9 @@ class ProtoEnumValue(ProtoNode):
     def __repr__(self) -> str:
         return str(self)
 
+    def __hash__(self) -> str:
+        return hash(str(self))
+
     def normalize(self) -> "ProtoEnumValue":
         return ProtoEnumValue(
             self.identifier,
@@ -147,8 +150,7 @@ class ProtoEnumValue(ProtoNode):
             return []
         diffs = []
         diffs.extend(ProtoOption.diff_sets(left.options, right.options))
-
-        # TODO: Diff the value / name.
+        diffs.append(ProtoEnumValueValueChanged(enum, right, left.value))
 
         return diffs
 
@@ -338,9 +340,6 @@ class ProtoEnumAdded(ProtoNodeDiff):
     def __str__(self) -> str:
         return f"<ProtoEnumAdded enum={self.enum}>"
 
-    def __repr__(self) -> str:
-        return str(self)
-
 
 class ProtoEnumRemoved(ProtoNodeDiff):
     def __init__(self, enum: ProtoEnum):
@@ -351,9 +350,6 @@ class ProtoEnumRemoved(ProtoNodeDiff):
 
     def __str__(self) -> str:
         return f"<ProtoEnumRemoved enum={self.enum}>"
-
-    def __repr__(self) -> str:
-        return str(self)
 
 
 class ProtoEnumValueAdded(ProtoNodeDiff):
@@ -371,9 +367,6 @@ class ProtoEnumValueAdded(ProtoNodeDiff):
     def __str__(self) -> str:
         return f"<ProtoEnumValueAdded enum={self.enum} enum_value={self.enum_value}>"
 
-    def __repr__(self) -> str:
-        return str(self)
-
 
 class ProtoEnumValueRemoved(ProtoNodeDiff):
     def __init__(self, enum: "ProtoEnum", enum_value: "ProtoEnumValue"):
@@ -389,9 +382,6 @@ class ProtoEnumValueRemoved(ProtoNodeDiff):
 
     def __str__(self) -> str:
         return f"<ProtoEnumValueRemoved enum={self.enum} enum_value={self.enum_value}>"
-
-    def __repr__(self) -> str:
-        return str(self)
 
 
 class ProtoEnumValueNameChanged(ProtoNodeDiff):
@@ -413,9 +403,6 @@ class ProtoEnumValueNameChanged(ProtoNodeDiff):
     def __str__(self) -> str:
         return f"<ProtoEnumValueNameChanged enum={self.enum} enum_value={self.enum_value} new_name={self.new_name}>"
 
-    def __repr__(self) -> str:
-        return str(self)
-
 
 class ProtoEnumValueValueChanged(ProtoNodeDiff):
     def __init__(
@@ -425,16 +412,13 @@ class ProtoEnumValueValueChanged(ProtoNodeDiff):
         self.enum_value = enum_value
         self.new_value = new_value
 
-    def __eq__(self, other: "ProtoEnumValueNameChanged") -> bool:
+    def __eq__(self, other: "ProtoEnumValueValueChanged") -> bool:
         return (
-            isinstance(other, ProtoEnumValueNameChanged)
+            isinstance(other, ProtoEnumValueValueChanged)
             and self.enum == other.enum
             and self.enum_value == other.enum_value
             and self.new_value == other.new_value
         )
 
     def __str__(self) -> str:
-        return f"<ProtoEnumValueNameChanged enum={self.enum} enum_value={self.enum_value} new_value={self.new_value}>"
-
-    def __repr__(self) -> str:
-        return str(self)
+        return f"<ProtoEnumValueValueChanged enum={self.enum} enum_value={self.enum_value} new_value={self.new_value}>"
