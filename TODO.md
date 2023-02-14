@@ -67,9 +67,9 @@
     - [ ] Enum-level diffs
       - [x] Additions/removals
       - [x] Option changes
-      - [ ] Field changes
-        - [ ] Value changes
-        - [ ] Option changes
+      - [x] Field changes
+        - [x] Value changes
+        - [x] Option changes
       - [ ] Reserveds changes
     - [ ] Message-level diffs
       - [ ] Additions/removals
