@@ -226,13 +226,40 @@ class ProtoEnum(ProtoNode):
 
     @staticmethod
     def diff(left: "ProtoEnum", right: "ProtoEnum") -> list["ProtoNodeDiff"]:
+        if left is None and right is not None:
+            return [ProtoEnumAdded(right)]
+        elif left is not None and right is None:
+            return [ProtoEnumRemoved(left)]
+        elif left is None and right is None:
+            return []
+        elif left.name != right.name:
+            return []
+        elif left == right:
+            return []
+        # TODO: process the enum options and values.
         return []
 
     @staticmethod
     def diff_sets(
         left: list["ProtoEnum"], right: list["ProtoEnum"]
     ) -> list["ProtoNodeDiff"]:
-        return []
+        diffs = []
+        left_names = set(o.name.identifier for o in left)
+        right_names = set(o.name.identifier for o in right)
+        for name in left_names - right_names:
+            diffs.append(
+                ProtoEnumAdded(next(i for i in left if i.name.identifier == name))
+            )
+        for name in right_names - left_names:
+            diffs.append(
+                ProtoEnumRemoved(next(i for i in right if i.name.identifier == name))
+            )
+        for name in left_names & right_names:
+            left_option = next(i for i in left if i.name.identifier == name)
+            right_option = next(i for i in right if i.name.identifier == name)
+            diffs.extend(ProtoEnum.diff(left_option, right_option))
+
+        return diffs
 
 
 class ProtoEnumAdded(ProtoNodeDiff):
