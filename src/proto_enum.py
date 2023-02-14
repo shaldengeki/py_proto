@@ -236,28 +236,28 @@ class ProtoEnum(ProtoNode):
 
 
 class ProtoEnumAdded(ProtoNodeDiff):
-    def __init__(self, left: str):
-        self.left = left
+    def __init__(self, enum: ProtoEnum):
+        self.enum = enum
 
     def __eq__(self, other: "ProtoEnumAdded") -> bool:
-        return isinstance(other, ProtoEnumAdded) and self.left == other.left
+        return isinstance(other, ProtoEnumAdded) and self.enum == other.enum
 
     def __str__(self) -> str:
-        return f"<ProtoEnumAdded left={self.left}>"
+        return f"<ProtoEnumAdded enum={self.enum}>"
 
     def __repr__(self) -> str:
         return str(self)
 
 
 class ProtoEnumRemoved(ProtoNodeDiff):
-    def __init__(self, right: str):
-        self.right = right
+    def __init__(self, enum: ProtoEnum):
+        self.enum = enum
 
     def __eq__(self, other: "ProtoEnumRemoved") -> bool:
-        return isinstance(other, ProtoEnumRemoved) and self.right == other.right
+        return isinstance(other, ProtoEnumRemoved) and self.enum == other.enum
 
     def __str__(self) -> str:
-        return f"<ProtoEnumRemoved right={self.right}>"
+        return f"<ProtoEnumRemoved enum={self.enum}>"
 
     def __repr__(self) -> str:
         return str(self)
