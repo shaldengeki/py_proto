@@ -18,6 +18,8 @@ from src.proto_message import (
     ProtoMapKeyTypesEnum,
     ProtoMapValueTypesEnum,
     ProtoMessage,
+    ProtoMessageAdded,
+    ProtoMessageRemoved,
     ProtoOneOf,
 )
 from src.proto_message_field import (
@@ -761,6 +763,117 @@ class MessageTest(unittest.TestCase):
                 ),
             ],
         )
+
+    def test_diff_sets_empty_returns_empty(self):
+        set1 = []
+        set2 = []
+        self.assertEqual(ProtoMessage.diff_sets(set1, set2), [])
+
+    def test_diff_sets_no_change_returns_empty(self):
+        set1 = [
+            ProtoMessage(ProtoIdentifier("FooMessage"), []),
+            ProtoMessage(ProtoIdentifier("BarMessage"), []),
+            ProtoMessage(ProtoIdentifier("BazMessage"), []),
+        ]
+        self.assertEqual(ProtoMessage.diff_sets(set1, set1), [])
+
+    def test_diff_sets_all_removed(self):
+        set1 = []
+        set2 = [
+            ProtoMessage(ProtoIdentifier("FooMessage"), []),
+            ProtoMessage(ProtoIdentifier("BarMessage"), []),
+            ProtoMessage(ProtoIdentifier("BazMessage"), []),
+        ]
+        diff = ProtoMessage.diff_sets(set1, set2)
+        self.assertIn(
+            ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("FooMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("BarMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("BazMessage"), [])), diff
+        )
+        self.assertEqual(3, len(diff))
+
+    def test_diff_sets_all_added(self):
+        set1 = [
+            ProtoMessage(ProtoIdentifier("FooMessage"), []),
+            ProtoMessage(ProtoIdentifier("BarMessage"), []),
+            ProtoMessage(ProtoIdentifier("BazMessage"), []),
+        ]
+        set2 = []
+
+        diff = ProtoMessage.diff_sets(set1, set2)
+        self.assertIn(
+            ProtoMessageAdded(ProtoMessage(ProtoIdentifier("FooMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageAdded(ProtoMessage(ProtoIdentifier("BarMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageAdded(ProtoMessage(ProtoIdentifier("BazMessage"), [])), diff
+        )
+        self.assertEqual(3, len(diff))
+
+    def test_diff_sets_mutually_exclusive(self):
+        set1 = [
+            ProtoMessage(ProtoIdentifier("FooMessage"), []),
+            ProtoMessage(ProtoIdentifier("BarMessage"), []),
+            ProtoMessage(ProtoIdentifier("BazMessage"), []),
+        ]
+        set2 = [
+            ProtoMessage(ProtoIdentifier("FooMessage2"), []),
+            ProtoMessage(ProtoIdentifier("BarMessage2"), []),
+            ProtoMessage(ProtoIdentifier("BazMessage2"), []),
+        ]
+        diff = ProtoMessage.diff_sets(set1, set2)
+        self.assertIn(
+            ProtoMessageAdded(ProtoMessage(ProtoIdentifier("FooMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageAdded(ProtoMessage(ProtoIdentifier("BarMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageAdded(ProtoMessage(ProtoIdentifier("BazMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("FooMessage2"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("BarMessage2"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("BazMessage2"), [])), diff
+        )
+        self.assertEqual(6, len(diff))
+
+    def test_diff_sets_overlap(self):
+
+        set1 = [
+            ProtoMessage(ProtoIdentifier("FooMessage"), []),
+            ProtoMessage(ProtoIdentifier("BarMessage"), []),
+            ProtoMessage(ProtoIdentifier("BazMessage"), []),
+        ]
+        set2 = [
+            ProtoMessage(ProtoIdentifier("FooMessage2"), []),
+            ProtoMessage(ProtoIdentifier("BarMessage"), []),
+            ProtoMessage(ProtoIdentifier("BazMessage2"), []),
+        ]
+        diff = ProtoMessage.diff_sets(set1, set2)
+        self.assertIn(
+            ProtoMessageAdded(ProtoMessage(ProtoIdentifier("FooMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageAdded(ProtoMessage(ProtoIdentifier("BazMessage"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("FooMessage2"), [])), diff
+        )
+        self.assertIn(
+            ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("BazMessage2"), [])), diff
+        )
+        self.assertEqual(4, len(diff))
 
 
 if __name__ == "__main__":

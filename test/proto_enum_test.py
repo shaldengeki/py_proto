@@ -9,10 +9,8 @@ from src.proto_enum import (
     ProtoEnumAdded,
     ProtoEnumRemoved,
     ProtoEnumValue,
-    ProtoEnumValueAdded,
     ProtoEnumValueNameChanged,
     ProtoEnumValueOption,
-    ProtoEnumValueRemoved,
     ProtoEnumValueValueChanged,
 )
 from src.proto_identifier import ProtoIdentifier
