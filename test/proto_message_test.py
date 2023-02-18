@@ -796,6 +796,16 @@ class MessageTest(unittest.TestCase):
             ],
         )
 
+    def test_diff_message_removed(self):
+        pm1 = ProtoMessage(ProtoIdentifier("MyMessage"), [])
+        pm2 = None
+        self.assertEqual(
+            ProtoMessage.diff(pm1, pm2),
+            [
+                ProtoMessageRemoved(ProtoMessage(ProtoIdentifier("MyMessage"), [])),
+            ],
+        )
+
     def test_diff_sets_empty_returns_empty(self):
         set1 = []
         set2 = []

@@ -410,7 +410,7 @@ class EnumTest(unittest.TestCase):
             ],
         )
 
-    def test_diff_option_removed(self):
+    def test_diff_enum_removed(self):
         pe1 = ProtoEnum(
             ProtoIdentifier("MyEnum"),
             [
