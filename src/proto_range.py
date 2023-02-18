@@ -6,7 +6,7 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ParsedProtoRangeNode(ParsedProtoNode):
-    node: ProtoRange
+    node: "ProtoRange"
     remaining_source: str
 
 

@@ -5,7 +5,7 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ParsedProtoBoolNode(ParsedProtoNode):
-    node: ProtoBool
+    node: "ProtoBool"
     remaining_source: str
 
 

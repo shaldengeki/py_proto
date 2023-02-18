@@ -11,7 +11,7 @@ class ProtoIntSign(Enum):
 
 
 class ParsedProtoIntNode(ParsedProtoNode):
-    node: ProtoInt
+    node: "ProtoInt"
     remaining_source: str
 
 

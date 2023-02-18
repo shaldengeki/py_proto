@@ -4,7 +4,7 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ParsedProtoStringLiteralNode(ParsedProtoNode):
-    node: ProtoStringLiteral
+    node: "ProtoStringLiteral"
     remaining_source: str
 
 

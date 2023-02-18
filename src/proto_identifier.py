@@ -4,12 +4,12 @@ from src.proto_node import ParsedProtoNode, ProtoNode
 
 
 class ParsedProtoIdentifierNode(ParsedProtoNode):
-    node: ProtoIdentifier
+    node: "ProtoIdentifier"
     remaining_source: str
 
 
 class ParsedProtoFullIdentifierNode(ParsedProtoIdentifierNode):
-    node: ProtoFullIdentifier
+    node: "ProtoFullIdentifier"
     remaining_source: str
 
 

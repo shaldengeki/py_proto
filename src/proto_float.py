@@ -12,7 +12,7 @@ class ProtoFloatSign(Enum):
 
 
 class ParsedProtoFloatNode(ParsedProtoNode):
-    node: ProtoFloat
+    node: "ProtoFloat"
     remaining_source: str
 
 

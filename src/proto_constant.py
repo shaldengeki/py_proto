@@ -13,7 +13,7 @@ ProtoConstantTypes = (
 
 
 class ParsedProtoConstantNode(ParsedProtoNode):
-    node: ProtoConstant
+    node: "ProtoConstant"
     remaining_source: str
 
 
