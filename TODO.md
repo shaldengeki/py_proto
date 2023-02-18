@@ -95,3 +95,6 @@
     - [ ] Message reserved changes under messages
     - [ ] Message nested enum changes under messages
     - [ ] Message nested message changes under messages
+- [ ] (Perf) use iterators
+  - [ ] In parsing
+  - [ ] In properties
