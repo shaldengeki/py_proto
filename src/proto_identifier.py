@@ -8,6 +8,11 @@ class ParsedProtoIdentifierNode(ParsedProtoNode):
     remaining_source: str
 
 
+class ParsedProtoFullIdentifierNode(ParsedProtoIdentifierNode):
+    node: ProtoFullIdentifier
+    remaining_source: str
+
+
 class ProtoIdentifier(ProtoNode):
     ALPHABETICAL = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
     STARTING = ALPHABETICAL | set("_")
@@ -52,7 +57,7 @@ class ProtoFullIdentifier(ProtoIdentifier):
     ALL = ProtoIdentifier.ALL | set(".")
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoIdentifierNode"]:
+    def match(cls, proto_source: str) -> Optional["ParsedProtoFullIdentifierNode"]:
         if proto_source[0] not in ProtoFullIdentifier.STARTING:
             return None
 
@@ -66,7 +71,7 @@ class ProtoFullIdentifier(ProtoIdentifier):
                         f"Proto source has invalid identifier, expecting alphanumeric after .: {proto_source}"
                     )
                 identifier_parts.append(proto_source[last_part_start:i])
-                return ParsedProtoIdentifierNode(
+                return ParsedProtoFullIdentifierNode(
                     ProtoFullIdentifier(".".join(identifier_parts)), proto_source[i:]
                 )
             elif c == ".":
@@ -79,7 +84,7 @@ class ProtoFullIdentifier(ProtoIdentifier):
                 f"Proto source has invalid identifier, expecting alphanumeric after .: {proto_source}"
             )
         identifier_parts.append(proto_source[last_part_start:])
-        return ParsedProtoIdentifierNode(
+        return ParsedProtoFullIdentifierNode(
             ProtoFullIdentifier(".".join(identifier_parts)), ""
         )
 
@@ -97,7 +102,7 @@ class ProtoEnumOrMessageIdentifier(ProtoIdentifier):
 
         match = ProtoFullIdentifier.match(matched_source)
         if match is not None:
-            match = ParsedProtoIdentifierNode(
+            match = ParsedProtoFullIdentifierNode(
                 ProtoEnumOrMessageIdentifier(match.node.identifier),
                 match.remaining_source,
             )
