@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 
 from src.proto_constant import ProtoConstant
 from src.proto_identifier import (
@@ -107,7 +107,7 @@ class ProtoOption(ProtoNode):
         return f"option {self.name.serialize()} = {self.value.serialize()};"
 
     @staticmethod
-    def diff(left: "ProtoOption", right: "ProtoOption") -> list["ProtoOptionDiff"]:
+    def diff(left: "ProtoOption", right: "ProtoOption") -> Sequence["ProtoOptionDiff"]:
         if left is None and right is not None:
             return [ProtoOptionAdded(right)]
         elif left is not None and right is None:
@@ -122,7 +122,7 @@ class ProtoOption(ProtoNode):
 
     @staticmethod
     def diff_sets(
-        left: list["ProtoOption"], right: list["ProtoOption"]
+        left: Sequence["ProtoOption"], right: Sequence["ProtoOption"]
     ) -> list["ProtoOptionDiff"]:
         diffs: list[ProtoOptionDiff] = []
         left_names = set(o.name.identifier for o in left)
