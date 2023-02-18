@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from src.proto_enum import ProtoEnumValueOption
+from src.proto_enum import ParsedProtoEnumValueOptionNode, ProtoEnumValueOption
 from src.proto_identifier import (
     ProtoEnumOrMessageIdentifier,
     ProtoFullIdentifier,
@@ -11,8 +11,21 @@ from src.proto_int import ProtoInt
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 
+class ParsedProtoMessageFieldOptionNode(ParsedProtoEnumValueOptionNode):
+    node: "ProtoMessageFieldOption"
+    remaining_source: str
+
+
 class ProtoMessageFieldOption(ProtoEnumValueOption):
-    pass
+    @classmethod
+    def match(cls, proto_source: str) -> Optional["ParsedProtoMessageFieldOptionNode"]:
+        match = super().match(proto_source)
+        if match is None:
+            return None
+        return ParsedProtoMessageFieldOptionNode(
+            match.node,
+            match.remaining_source.strip(),
+        )
 
 
 class ProtoMessageFieldTypesEnum(Enum):
@@ -42,7 +55,7 @@ class ProtoMessageField(ProtoNode):
         number: ProtoInt,
         repeated: bool = False,
         optional: bool = False,
-        enum_or_message_type_name: Optional[ProtoFullIdentifier] = None,
+        enum_or_message_type_name: Optional[ProtoEnumOrMessageIdentifier] = None,
         options: Optional[list[ProtoMessageFieldOption]] = None,
     ):
         self.type = type
@@ -88,7 +101,7 @@ class ProtoMessageField(ProtoNode):
             repeated=self.repeated,
             optional=self.optional,
             enum_or_message_type_name=self.enum_or_message_type_name,
-            options=sorted(self.options, key=lambda o: o.name),
+            options=sorted(self.options, key=lambda o: str(o.name)),
         )
 
     @classmethod
@@ -130,22 +143,22 @@ class ProtoMessageField(ProtoNode):
             proto_source = match.remaining_source.strip()
 
         # Match the field name.
-        match = ProtoIdentifier.match(proto_source)
-        if match is None:
+        identifier_match = ProtoIdentifier.match(proto_source)
+        if identifier_match is None:
             return None
-        name = match.node
-        proto_source = match.remaining_source.strip()
+        name = identifier_match.node
+        proto_source = identifier_match.remaining_source.strip()
 
         if not proto_source.startswith("= "):
             return None
         proto_source = proto_source[2:].strip()
 
         # Match the field number.
-        match = ProtoInt.match(proto_source)
-        if match is None:
+        int_match = ProtoInt.match(proto_source)
+        if int_match is None:
             return None
-        number = match.node
-        proto_source = match.remaining_source.strip()
+        number = int_match.node
+        proto_source = int_match.remaining_source.strip()
 
         options = []
         if proto_source.startswith("["):
@@ -156,12 +169,14 @@ class ProtoMessageField(ProtoNode):
                     f"Proto has invalid message field option syntax, cannot find ]: {proto_source}"
                 )
             for option_part in proto_source[:end_bracket].strip().split(","):
-                match = ProtoMessageFieldOption.match(option_part.strip())
-                if match is None:
+                message_field_option_match = ProtoMessageFieldOption.match(
+                    option_part.strip()
+                )
+                if message_field_option_match is None:
                     raise ValueError(
                         f"Proto has invalid message field option syntax: {proto_source}"
                     )
-                options.append(match.node)
+                options.append(message_field_option_match.node)
             proto_source = proto_source[end_bracket + 1 :].strip()
 
         if not proto_source.startswith(";"):
@@ -188,6 +203,10 @@ class ProtoMessageField(ProtoNode):
             serialized_parts.append("repeated")
 
         if self.type == ProtoMessageFieldTypesEnum.ENUM_OR_MESSAGE:
+            if self.enum_or_message_type_name is None:
+                raise ValueError(
+                    f"Enum or message type name was not set for: {str(self)}"
+                )
             serialized_parts.append(self.enum_or_message_type_name.serialize())
         else:
             serialized_parts.append(self.type.value)
