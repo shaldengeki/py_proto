@@ -49,8 +49,8 @@ class ProtoReserved(ProtoNode):
     def normalize(self) -> "ProtoReserved":
         # sort the ranges.
         return ProtoReserved(
-            sorted(self.ranges, key=lambda r: r.min),
-            sorted(self.fields),
+            sorted(self.ranges, key=lambda r: int(r.min)),
+            sorted(self.fields, key=lambda f: str(f)),
             self.quote_type,
         )
 
@@ -74,10 +74,10 @@ class ProtoReserved(ProtoNode):
                 )
             if proto_source[0] == ",":
                 proto_source = proto_source[1:].strip()
-            match = ProtoRange.match(proto_source)
-            if match is not None:
-                ranges.append(match.node)
-                proto_source = match.remaining_source
+            range_match = ProtoRange.match(proto_source)
+            if range_match is not None:
+                ranges.append(range_match.node)
+                proto_source = range_match.remaining_source
             else:
                 # Maybe this is a field identifier.
                 quote_types = [
@@ -116,6 +116,7 @@ class ProtoReserved(ProtoNode):
             + ", ".join(
                 f"{self.quote_type.value}{f.serialize()}{self.quote_type.value}"
                 for f in self.fields
+                if self.quote_type is not None
             ),
         ]
         return " ".join(serialize_parts) + ";"
