@@ -50,13 +50,17 @@ class ProtoPackage(ProtoNode):
         return f"package {self.package};"
 
     @staticmethod
-    def diff(left: "ProtoPackage", right: "ProtoPackage") -> list["ProtoNodeDiff"]:
+    def diff(
+        left: Optional["ProtoPackage"], right: Optional["ProtoPackage"]
+    ) -> list["ProtoNodeDiff"]:
         if left == right:
             return []
         elif left is not None and right is None:
             return [ProtoPackageAdded(left)]
         elif left is None and right is not None:
             return [ProtoPackageRemoved(right)]
+
+        assert left is not None and right is not None
         return [ProtoPackageChanged(left, right)]
 
 
