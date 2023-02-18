@@ -72,7 +72,7 @@
         - [x] Option changes
       - [ ] Reserveds changes
     - [ ] Message-level diffs
-      - [ ] Additions/removals
+      - [x] Additions/removals
       - [ ] Option changes
       - [ ] Field changes
       - [ ] Reserved changes
