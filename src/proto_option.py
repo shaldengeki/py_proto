@@ -9,6 +9,11 @@ from src.proto_identifier import (
 from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
 
 
+class ParsedProtoOptionNode(ParsedProtoNode):
+    node: "ProtoOption"
+    remaining_source: str
+
+
 class ProtoOption(ProtoNode):
     def __init__(self, name: ProtoIdentifier, value: ProtoConstant):
         self.name = name
@@ -30,7 +35,7 @@ class ProtoOption(ProtoNode):
         return self
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(cls, proto_source: str) -> Optional["ParsedProtoOptionNode"]:
         if not proto_source.startswith("option "):
             return None
         proto_source = proto_source[7:]
@@ -90,7 +95,7 @@ class ProtoOption(ProtoNode):
         else:
             identifier = ProtoIdentifier(name_parts[0].identifier)
 
-        return ParsedProtoNode(
+        return ParsedProtoOptionNode(
             ProtoOption(
                 name=identifier,
                 value=constant_match.node,

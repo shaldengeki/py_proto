@@ -13,6 +13,11 @@ class ParsedProtoFullIdentifierNode(ParsedProtoIdentifierNode):
     remaining_source: str
 
 
+class ParsedProtoEnumOrMessageIdentifierNode(ParsedProtoIdentifierNode):
+    node: "ProtoEnumOrMessageIdentifier"
+    remaining_source: str
+
+
 class ProtoIdentifier(ProtoNode):
     ALPHABETICAL = set("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
     STARTING = ALPHABETICAL | set("_")
@@ -94,19 +99,22 @@ class ProtoEnumOrMessageIdentifier(ProtoIdentifier):
     ALL = ProtoIdentifier.ALL | set(".")
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoIdentifierNode"]:
+    def match(
+        cls, proto_source: str
+    ) -> Optional["ParsedProtoEnumOrMessageIdentifierNode"]:
         if proto_source[0] == ".":
             matched_source = proto_source[1:]
         else:
             matched_source = proto_source
 
-        match = ProtoFullIdentifier.match(matched_source)
-        if match is not None:
-            match = ParsedProtoFullIdentifierNode(
-                ProtoEnumOrMessageIdentifier(match.node.identifier),
-                match.remaining_source,
+        identifier_match = ProtoFullIdentifier.match(matched_source)
+        if identifier_match is not None:
+            match = ParsedProtoEnumOrMessageIdentifierNode(
+                ProtoEnumOrMessageIdentifier(identifier_match.node.identifier),
+                identifier_match.remaining_source,
             )
 
             if proto_source[0] == ".":
                 match.node.identifier = "." + match.node.identifier
-        return match
+            return match
+        return identifier_match
