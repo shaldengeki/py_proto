@@ -54,6 +54,13 @@ class ProtoReserved(ProtoNode):
             self.quote_type,
         )
 
+    @property
+    def min(self) -> str | int:
+        if self.ranges:
+            return int(min(self.ranges, key=lambda r: int(r.min)).min)
+        else:
+            return str(min(self.fields, key=lambda f: str(f)))
+
     @classmethod
     def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
         if not proto_source.startswith("reserved "):

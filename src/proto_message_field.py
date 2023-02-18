@@ -2,11 +2,7 @@ from enum import Enum
 from typing import Optional
 
 from src.proto_enum import ParsedProtoEnumValueOptionNode, ProtoEnumValueOption
-from src.proto_identifier import (
-    ProtoEnumOrMessageIdentifier,
-    ProtoFullIdentifier,
-    ProtoIdentifier,
-)
+from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
 from src.proto_int import ProtoInt
 from src.proto_node import ParsedProtoNode, ProtoNode
 
@@ -45,6 +41,11 @@ class ProtoMessageFieldTypesEnum(Enum):
     STRING = "string"
     BYTES = "bytes"
     ENUM_OR_MESSAGE = "enum_or_message"
+
+
+class ParsedProtoMessageFieldNode(ParsedProtoNode):
+    node: "ProtoMessageField"
+    remaining_source: str
 
 
 class ProtoMessageField(ProtoNode):
@@ -105,7 +106,7 @@ class ProtoMessageField(ProtoNode):
         )
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(cls, proto_source: str) -> Optional["ParsedProtoMessageFieldNode"]:
         # First, try to match the optional repeated.
         repeated = False
         if proto_source.startswith("repeated "):
@@ -184,7 +185,7 @@ class ProtoMessageField(ProtoNode):
                 f"Proto has invalid message field syntax, missing ending ;:{proto_source}"
             )
 
-        return ParsedProtoNode(
+        return ParsedProtoMessageFieldNode(
             ProtoMessageField(
                 matched_type,
                 name,
