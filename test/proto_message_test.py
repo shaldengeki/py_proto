@@ -72,7 +72,7 @@ class MessageTest(unittest.TestCase):
                     ProtoIdentifier("(foo.bar).baz"),
                     ProtoConstant(ProtoStringLiteral("bat")),
                 ),
-                ProtoEnum(
+                ProtoMessage(
                     ProtoIdentifier("MyEnum"),
                     [
                         ProtoEnumValue(
@@ -295,7 +295,7 @@ class MessageTest(unittest.TestCase):
             ProtoMessage(
                 ProtoIdentifier("FooMessage"),
                 [
-                    ProtoEnum(
+                    ProtoMessage(
                         ProtoIdentifier("MyEnum"),
                         [
                             ProtoEnumValue(
@@ -761,6 +761,38 @@ class MessageTest(unittest.TestCase):
                     ProtoIdentifier("baz"),
                     ProtoInt(3, ProtoIntSign.POSITIVE),
                 ),
+            ],
+        )
+
+    def test_diff_same_message_returns_empty(self):
+        pm1 = ProtoMessage(
+            ProtoIdentifier("MyMessage"),
+            [],
+        )
+        pm2 = ProtoMessage(
+            ProtoIdentifier("MyMessage"),
+            [],
+        )
+        self.assertEqual(ProtoMessage.diff(pm1, pm2), [])
+
+    def test_diff_different_message_name_returns_empty(self):
+        pm1 = ProtoMessage(
+            ProtoIdentifier("MyMessage"),
+            [],
+        )
+        pm2 = ProtoMessage(
+            ProtoIdentifier("OtherMessage"),
+            [],
+        )
+        self.assertEqual(ProtoMessage.diff(pm1, pm2), [])
+
+    def test_diff_enum_added(self):
+        pm1 = None
+        pm2 = ProtoMessage(ProtoIdentifier("MyMessage"), [])
+        self.assertEqual(
+            ProtoMessage.diff(pm1, pm2),
+            [
+                ProtoMessageAdded(ProtoMessage(ProtoIdentifier("MyMessage"), [])),
             ],
         )
 
