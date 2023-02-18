@@ -39,27 +39,32 @@ class ProtoOption(ProtoNode):
         if proto_source.startswith("("):
             proto_source = proto_source[1:]
             match = ProtoFullIdentifier.match(proto_source)
-            if not match or not match.remaining_source.startswith(")"):
+            if match is None or not match.remaining_source.startswith(")"):
                 # This might be a regular identifier.
-                match = ProtoIdentifier.match(proto_source)
-                if not match or not match.remaining_source.startswith(")"):
+                identifier_match = ProtoIdentifier.match(proto_source)
+                if (
+                    not identifier_match
+                    or not identifier_match.remaining_source.startswith(")")
+                ):
                     raise ValueError(
                         f"Proto has invalid option when expecting ): {proto_source}"
                     )
-                name_parts.append(ProtoIdentifier(f"({match.node.identifier})"))
+                name_parts.append(
+                    ProtoIdentifier(f"({identifier_match.node.identifier})")
+                )
+                proto_source = identifier_match.remaining_source[1:]
             else:
                 name_parts.append(ProtoFullIdentifier(f"({match.node.identifier})"))
-
-            proto_source = match.remaining_source[1:]
+                proto_source = match.remaining_source[1:]
 
         while True:
-            match = ProtoEnumOrMessageIdentifier.match(proto_source)
-            if match is None:
-                match = ProtoIdentifier.match(proto_source)
-                if match is None:
+            identifier_match = ProtoEnumOrMessageIdentifier.match(proto_source)
+            if identifier_match is None:
+                identifier_match = ProtoIdentifier.match(proto_source)
+                if identifier_match is None:
                     break
-            name_parts.append(match.node)
-            proto_source = match.remaining_source
+            name_parts.append(identifier_match.node)
+            proto_source = identifier_match.remaining_source
 
         proto_source = proto_source.strip()
         if not proto_source.startswith("="):
@@ -67,18 +72,19 @@ class ProtoOption(ProtoNode):
                 f"Proto has invalid option when expecting =: {proto_source}"
             )
         proto_source = proto_source[1:].strip()
-        match = ProtoConstant.match(proto_source)
-        if not match:
+        constant_match = ProtoConstant.match(proto_source)
+        if constant_match is None:
             raise ValueError(
                 f"Proto has invalid option when expecting constant: {proto_source}"
             )
 
-        proto_source = match.remaining_source
-        if not match.remaining_source.startswith(";"):
+        proto_source = constant_match.remaining_source
+        if not constant_match.remaining_source.startswith(";"):
             raise ValueError(
                 f"Proto has invalid option when expecting ;: {proto_source}"
             )
 
+        identifier: ProtoFullIdentifier | ProtoIdentifier
         if len(name_parts) > 1:
             identifier = ProtoFullIdentifier("".join(x.identifier for x in name_parts))
         else:
@@ -87,7 +93,7 @@ class ProtoOption(ProtoNode):
         return ParsedProtoNode(
             ProtoOption(
                 name=identifier,
-                value=match.node,
+                value=constant_match.node,
             ),
             proto_source[1:],
         )
@@ -96,7 +102,7 @@ class ProtoOption(ProtoNode):
         return f"option {self.name.serialize()} = {self.value.serialize()};"
 
     @staticmethod
-    def diff(left: "ProtoOption", right: "ProtoOption") -> list["ProtoNodeDiff"]:
+    def diff(left: "ProtoOption", right: "ProtoOption") -> list["ProtoOptionDiff"]:
         if left is None and right is not None:
             return [ProtoOptionAdded(right)]
         elif left is not None and right is None:
@@ -112,8 +118,8 @@ class ProtoOption(ProtoNode):
     @staticmethod
     def diff_sets(
         left: list["ProtoOption"], right: list["ProtoOption"]
-    ) -> list["ProtoNodeDiff"]:
-        diffs = []
+    ) -> list["ProtoOptionDiff"]:
+        diffs: list[ProtoOptionDiff] = []
         left_names = set(o.name.identifier for o in left)
         right_names = set(o.name.identifier for o in right)
         for name in left_names - right_names:
@@ -132,13 +138,19 @@ class ProtoOption(ProtoNode):
         return diffs
 
 
-class ProtoOptionValueChanged(ProtoNodeDiff):
-    def __init__(self, name: ProtoIdentifier, left: str, right: str):
+class ProtoOptionDiff(ProtoNodeDiff):
+    pass
+
+
+class ProtoOptionValueChanged(ProtoOptionDiff):
+    def __init__(
+        self, name: ProtoIdentifier, left: ProtoConstant, right: ProtoConstant
+    ):
         self.name = name
         self.left = left
         self.right = right
 
-    def __eq__(self, other: "ProtoOptionValueChanged") -> bool:
+    def __eq__(self, other: object) -> bool:
         return (
             isinstance(other, ProtoOptionValueChanged)
             and self.name == other.name
@@ -150,22 +162,22 @@ class ProtoOptionValueChanged(ProtoNodeDiff):
         return f"<ProtoOptionValueChanged name={self.name} left={self.left} right={self.right}>"
 
 
-class ProtoOptionAdded(ProtoNodeDiff):
-    def __init__(self, left: str):
+class ProtoOptionAdded(ProtoOptionDiff):
+    def __init__(self, left: ProtoOption):
         self.left = left
 
-    def __eq__(self, other: "ProtoOptionAdded") -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, ProtoOptionAdded) and self.left == other.left
 
     def __str__(self) -> str:
         return f"<ProtoOptionAdded left={self.left}>"
 
 
-class ProtoOptionRemoved(ProtoNodeDiff):
-    def __init__(self, right: str):
+class ProtoOptionRemoved(ProtoOptionDiff):
+    def __init__(self, right: ProtoOption):
         self.right = right
 
-    def __eq__(self, other: "ProtoOptionRemoved") -> bool:
+    def __eq__(self, other: object) -> bool:
         return isinstance(other, ProtoOptionRemoved) and self.right == other.right
 
     def __str__(self) -> str:
