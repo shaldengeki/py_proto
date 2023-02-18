@@ -98,3 +98,4 @@
 - [ ] (Perf) use iterators
   - [ ] In parsing
   - [ ] In properties
+- [ ] Remove Proto* and proto_ from everything
