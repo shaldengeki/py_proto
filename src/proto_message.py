@@ -329,6 +329,43 @@ class ProtoMap(ProtoNode):
 
         return " ".join(serialized_parts) + ";"
 
+    @staticmethod
+    def diff(left: "ProtoMap", right: "ProtoMap") -> list["ProtoNodeDiff"]:
+        if left is None and right is not None:
+            return [ProtoMapAdded(right)]
+        elif left is not None and right is None:
+            return [ProtoMapRemoved(left)]
+        elif left is None and right is None:
+            return []
+        elif left.name != right.name:
+            return []
+        elif left == right:
+            return []
+        diffs = []
+        return diffs
+
+    @staticmethod
+    def diff_sets(
+        left: list["ProtoMap"], right: list["ProtoMap"]
+    ) -> list["ProtoNodeDiff"]:
+        diffs = []
+        left_names = set(o.name.identifier for o in left)
+        right_names = set(o.name.identifier for o in right)
+        for name in left_names - right_names:
+            diffs.append(
+                ProtoMapAdded(next(i for i in left if i.name.identifier == name))
+            )
+        for name in right_names - left_names:
+            diffs.append(
+                ProtoMapRemoved(next(i for i in right if i.name.identifier == name))
+            )
+        for name in left_names & right_names:
+            left_enum = next(i for i in left if i.name.identifier == name)
+            right_enum = next(i for i in right if i.name.identifier == name)
+            diffs.extend(ProtoMap.diff(left_enum, right_enum))
+
+        return diffs
+
 
 class ProtoMessage(ProtoNode):
     def __init__(self, name: ProtoIdentifier, nodes: list[ProtoNode]):
@@ -454,6 +491,10 @@ class ProtoMessage(ProtoNode):
     def options(self) -> list[ProtoOption]:
         return [node for node in self.nodes if isinstance(node, ProtoOption)]
 
+    @property
+    def maps(self) -> list[ProtoMap]:
+        return [node for node in self.nodes if isinstance(node, ProtoMap)]
+
     def serialize(self) -> str:
         serialize_parts = (
             [f"message {self.name.serialize()} {{"]
@@ -476,7 +517,9 @@ class ProtoMessage(ProtoNode):
             return []
         diffs = []
         diffs.extend(ProtoOption.diff_sets(left.options, right.options))
-        # diffs.extend(ProtoMessageValue.diff_sets(left, left.values, right.values))
+        # diffs.extend(ProtoOneOf.diff_sets(left, left.oneofs, right.oneofs))
+        diffs.extend(ProtoMap.diff_sets(left, left.maps, right.maps))
+        # diffs.extend(ProtoMessageField.diff_sets(left, left.message_fields, right.message_fields))
         return diffs
 
     @staticmethod
