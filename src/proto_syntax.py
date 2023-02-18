@@ -23,7 +23,7 @@ class ProtoSyntax(ProtoNode):
     def __repr__(self) -> str:
         return str(self)
 
-    def __dict__(self) -> dict:
+    def __dict__(self):
         return {"syntax": self.syntax.serialize()}
 
     def normalize(self) -> "ProtoSyntax":
@@ -62,9 +62,13 @@ class ProtoSyntax(ProtoNode):
 
 
 class ProtoSyntaxChanged(ProtoNodeDiff):
-    def __init__(self, left: ProtoStringLiteral, right: ProtoStringLiteral):
+    def __init__(self, left: ProtoSyntax, right: ProtoSyntax):
         self.left = left
         self.right = right
 
-    def __eq__(self, other: "ProtoSyntaxChanged") -> bool:
-        return self.left == other.left and self.right == other.right
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, ProtoSyntaxChanged)
+            and self.left == other.left
+            and self.right == other.right
+        )
