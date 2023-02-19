@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Sequence
 
 from src.proto_enum import ProtoEnum
 from src.proto_import import ProtoImport
@@ -23,7 +23,10 @@ class ProtoFile:
 
     @property
     def package(self) -> Optional[ProtoPackage]:
-        return next(node for node in self.nodes if isinstance(node, ProtoPackage))
+        try:
+            return next(node for node in self.nodes if isinstance(node, ProtoPackage))
+        except StopIteration:
+            return None
 
     @property
     def options(self) -> list[ProtoOption]:
@@ -39,7 +42,7 @@ class ProtoFile:
 
     def serialize(self) -> str:
         serialized_parts = [self.syntax.serialize()]
-        previous_type = self.syntax.__class__
+        previous_type: type[ProtoNode] = self.syntax.__class__
         for node in self.nodes:
             # Attempt to group up lines of the same type.
             if node.__class__ != previous_type:
@@ -49,12 +52,12 @@ class ProtoFile:
 
         return "\n".join(serialized_parts)
 
-    def diff(self, other: "ProtoFile") -> list[ProtoNodeDiff]:
-        diffs = []
+    def diff(self, other: "ProtoFile") -> Sequence[ProtoNodeDiff]:
+        diffs: list[ProtoNodeDiff] = []
         diffs.extend(ProtoSyntax.diff(self.syntax, other.syntax))
         diffs.extend(ProtoImport.diff_sets(self.imports, other.imports))
         diffs.extend(ProtoPackage.diff(self.package, other.package))
         diffs.extend(ProtoEnum.diff_sets(self.enums, other.enums))
-        diffs.extend(ProtoMessage.diff_sets(self.message, other.messages))
+        diffs.extend(ProtoMessage.diff_sets(self.messages, other.messages))
 
         return [d for d in diffs if d is not None]
