@@ -208,7 +208,6 @@ class ProtoMap(ProtoNode):
         self.enum_or_message_type_name = enum_or_message_type_name
         if self.enum_or_message_type_name is not None:
             self.enum_or_message_type_name.parent = self
-        self.parent = parent
 
         if options is None:
             options = []
@@ -224,11 +223,10 @@ class ProtoMap(ProtoNode):
             and self.number == other.number
             and self.enum_or_message_type_name == other.enum_or_message_type_name
             and self.options == other.options
-            and self.parent == other.parent
         )
 
     def __str__(self) -> str:
-        return f"<{self.__class__.__name__} key_type={self.key_type} value_type={self.value_type} name={self.name} number={self.number} enum_or_message_type_name={self.enum_or_message_type_name} options={self.options} parent={self.parent}>"
+        return f"<{self.__class__.__name__} key_type={self.key_type} value_type={self.value_type} name={self.name} number={self.number} enum_or_message_type_name={self.enum_or_message_type_name} options={self.options}>"
 
     def __repr__(self) -> str:
         return str(self)
@@ -431,11 +429,7 @@ class ProtoMapDiff(ProtoNodeDiff):
         self.map = map
 
     def __eq__(self, other: object) -> bool:
-        return (
-            isinstance(other, ProtoMapDiff)
-            and self.parent == other.parent
-            and self.map == other.map
-        )
+        return isinstance(other, ProtoMapDiff) and self.map == other.map
 
     def __str__(self) -> str:
         return f"<{self.__class__.__name__} parent={self.parent} map={self.map}>"
