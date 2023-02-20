@@ -1,0 +1,64 @@
+load("@rules_python//python:defs.bzl", "py_library")
+
+py_library(
+    name = "proto_bool",
+    srcs = ["proto_bool.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src:proto_node",
+        "//src/constants:proto_identifier",
+    ],
+)
+
+py_library(
+    name = "proto_identifier",
+    srcs = ["proto_identifier.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src:proto_node",
+    ],
+)
+
+py_library(
+    name = "proto_int",
+    srcs = ["proto_int.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src:proto_node",
+        "//src/constants:proto_identifier",
+    ],
+)
+
+py_library(
+    name = "proto_constant",
+    srcs = ["proto_constant.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src:proto_node",
+        "//src/constants:proto_bool",
+        "//src/constants:proto_float",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
+        "//src/constants:proto_string_literal",
+    ],
+)
+
+py_library(
+    name = "proto_float",
+    srcs = ["proto_float.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src:proto_node",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
+    ],
+)
+
+py_library(
+    name = "proto_string_literal",
+    srcs = ["proto_string_literal.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src:proto_node",
+    ],
+)

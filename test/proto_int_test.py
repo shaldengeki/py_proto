@@ -1,6 +1,6 @@
 import unittest
 
-from src.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_int import ProtoInt, ProtoIntSign
 
 
 class IntTest(unittest.TestCase):

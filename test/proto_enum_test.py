@@ -1,9 +1,12 @@
 import unittest
 from textwrap import dedent
 
-from src.proto_bool import ProtoBool
+from src.constants.proto_bool import ProtoBool
+from src.constants.proto_constant import ProtoConstant
+from src.constants.proto_identifier import ProtoIdentifier
+from src.constants.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_string_literal import ProtoStringLiteral
 from src.proto_comment import ProtoMultiLineComment, ProtoSingleLineComment
-from src.proto_constant import ProtoConstant
 from src.proto_enum import (
     ProtoEnum,
     ProtoEnumAdded,
@@ -13,12 +16,9 @@ from src.proto_enum import (
     ProtoEnumValueOption,
     ProtoEnumValueValueChanged,
 )
-from src.proto_identifier import ProtoIdentifier
-from src.proto_int import ProtoInt, ProtoIntSign
 from src.proto_option import ProtoOption
 from src.proto_range import ProtoRange, ProtoRangeEnum
 from src.proto_reserved import ProtoReserved
-from src.proto_string_literal import ProtoStringLiteral
 
 
 class EnumTest(unittest.TestCase):

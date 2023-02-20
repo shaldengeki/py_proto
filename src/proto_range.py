@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from src.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_int import ProtoInt, ProtoIntSign
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 

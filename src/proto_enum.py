@@ -1,14 +1,14 @@
 from typing import Optional, Sequence
 
+from src.constants.proto_identifier import ProtoIdentifier
+from src.constants.proto_int import ProtoInt, ProtoIntSign
 from src.proto_comment import (
     ProtoComment,
     ProtoMultiLineComment,
     ProtoSingleLineComment,
 )
-from src.proto_identifier import ProtoIdentifier
-from src.proto_int import ProtoInt, ProtoIntSign
 from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
-from src.proto_option import ParsedProtoOptionNode, ProtoOption, ProtoOptionDiff
+from src.proto_option import ParsedProtoOptionNode, ProtoOption
 from src.proto_reserved import ProtoReserved
 
 

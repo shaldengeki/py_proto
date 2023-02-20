@@ -1,5 +1,6 @@
 from typing import Optional, Sequence
 
+from src.constants.proto_identifier import ProtoIdentifier
 from src.proto_comment import (
     ParsedProtoMultiLineCommentNode,
     ParsedProtoSingleLineCommentNode,
@@ -7,7 +8,6 @@ from src.proto_comment import (
     ProtoMultiLineComment,
     ProtoSingleLineComment,
 )
-from src.proto_identifier import ProtoIdentifier
 from src.proto_map import ProtoMap
 from src.proto_message_field import ParsedProtoMessageFieldNode, ProtoMessageField
 from src.proto_node import ParsedProtoNode, ProtoNode

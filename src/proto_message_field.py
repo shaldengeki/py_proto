@@ -1,9 +1,9 @@
 from enum import Enum
 from typing import Optional
 
+from src.constants.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
+from src.constants.proto_int import ProtoInt
 from src.proto_enum import ParsedProtoEnumValueOptionNode, ProtoEnumValueOption
-from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
-from src.proto_int import ProtoInt
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 

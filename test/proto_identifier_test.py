@@ -1,7 +1,7 @@
 import unittest
 from textwrap import dedent
 
-from src.proto_identifier import (
+from src.constants.proto_identifier import (
     ProtoEnumOrMessageIdentifier,
     ProtoFullIdentifier,
     ProtoIdentifier,

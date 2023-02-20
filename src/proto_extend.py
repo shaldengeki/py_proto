@@ -1,11 +1,11 @@
 from typing import Optional
 
+from src.constants.proto_identifier import ProtoEnumOrMessageIdentifier
 from src.proto_comment import (
     ProtoComment,
     ProtoMultiLineComment,
     ProtoSingleLineComment,
 )
-from src.proto_identifier import ProtoEnumOrMessageIdentifier
 from src.proto_message_field import ProtoMessageField
 from src.proto_node import ParsedProtoNode, ProtoNode
 

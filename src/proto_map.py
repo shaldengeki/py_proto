@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Optional, Sequence
 
-from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
-from src.proto_int import ProtoInt
+from src.constants.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
+from src.constants.proto_int import ProtoInt
 from src.proto_message_field import ProtoMessageFieldOption, ProtoMessageFieldTypesEnum
 from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
 

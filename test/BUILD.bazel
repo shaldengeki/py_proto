@@ -4,7 +4,7 @@ py_test(
     name = "proto_string_literal_test",
     srcs = ["proto_string_literal_test.py"],
     deps = [
-        "//src:proto_string_literal",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -12,7 +12,7 @@ py_test(
     name = "proto_identifier_test",
     srcs = ["proto_identifier_test.py"],
     deps = [
-        "//src:proto_identifier",
+        "//src/constants:proto_identifier",
     ],
 )
 
@@ -20,7 +20,7 @@ py_test(
     name = "proto_bool_test",
     srcs = ["proto_bool_test.py"],
     deps = [
-        "//src:proto_bool",
+        "//src/constants:proto_bool",
     ],
 )
 
@@ -28,7 +28,7 @@ py_test(
     name = "proto_int_test",
     srcs = ["proto_int_test.py"],
     deps = [
-        "//src:proto_int",
+        "//src/constants:proto_int",
     ],
 )
 
@@ -36,7 +36,7 @@ py_test(
     name = "proto_float_test",
     srcs = ["proto_float_test.py"],
     deps = [
-        "//src:proto_float",
+        "//src/constants:proto_float",
     ],
 )
 
@@ -44,11 +44,11 @@ py_test(
     name = "proto_constant_test",
     srcs = ["proto_constant_test.py"],
     deps = [
-        "//src:proto_bool",
-        "//src:proto_constant",
-        "//src:proto_identifier",
-        "//src:proto_int",
-        "//src:proto_string_literal",
+        "//src/constants:proto_bool",
+        "//src/constants:proto_constant",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -64,12 +64,12 @@ py_test(
     name = "proto_option_test",
     srcs = ["proto_option_test.py"],
     deps = [
-        "//src:proto_bool",
-        "//src:proto_constant",
-        "//src:proto_identifier",
-        "//src:proto_int",
         "//src:proto_option",
-        "//src:proto_string_literal",
+        "//src/constants:proto_bool",
+        "//src/constants:proto_constant",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -93,8 +93,8 @@ py_test(
     name = "proto_syntax_test",
     srcs = ["proto_syntax_test.py"],
     deps = [
-        "//src:proto_string_literal",
         "//src:proto_syntax",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -103,7 +103,7 @@ py_test(
     srcs = ["proto_import_test.py"],
     deps = [
         "//src:proto_import",
-        "//src:proto_string_literal",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -119,9 +119,9 @@ py_test(
     name = "proto_message_field_test",
     srcs = ["proto_message_field_test.py"],
     deps = [
-        "//src:proto_identifier",
-        "//src:proto_int",
         "//src:proto_message_field",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
     ],
 )
 
@@ -129,19 +129,19 @@ py_test(
     name = "proto_map_test",
     srcs = ["proto_map_test.py"],
     deps = [
-        "//src:proto_bool",
         "//src:proto_comment",
-        "//src:proto_constant",
         "//src:proto_enum",
         "//src:proto_extend",
         "//src:proto_extensions",
-        "//src:proto_identifier",
-        "//src:proto_int",
         "//src:proto_map",
         "//src:proto_message_field",
         "//src:proto_option",
         "//src:proto_reserved",
-        "//src:proto_string_literal",
+        "//src/constants:proto_bool",
+        "//src/constants:proto_constant",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -149,19 +149,19 @@ py_test(
     name = "proto_message_test",
     srcs = ["proto_message_test.py"],
     deps = [
-        "//src:proto_bool",
         "//src:proto_comment",
-        "//src:proto_constant",
         "//src:proto_enum",
         "//src:proto_extend",
         "//src:proto_extensions",
-        "//src:proto_identifier",
-        "//src:proto_int",
         "//src:proto_map",
         "//src:proto_message",
         "//src:proto_option",
         "//src:proto_reserved",
-        "//src:proto_string_literal",
+        "//src/constants:proto_bool",
+        "//src/constants:proto_constant",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -170,9 +170,9 @@ py_test(
     srcs = ["proto_extend_test.py"],
     deps = [
         "//src:proto_extend",
-        "//src:proto_identifier",
-        "//src:proto_int",
         "//src:proto_message_field",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
     ],
 )
 
@@ -180,14 +180,14 @@ py_test(
     name = "proto_enum_test",
     srcs = ["proto_enum_test.py"],
     deps = [
-        "//src:proto_bool",
         "//src:proto_comment",
-        "//src:proto_constant",
         "//src:proto_enum",
-        "//src:proto_identifier",
         "//src:proto_option",
         "//src:proto_reserved",
-        "//src:proto_string_literal",
+        "//src/constants:proto_bool",
+        "//src/constants:proto_constant",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -195,13 +195,13 @@ py_test(
     name = "proto_service_test",
     srcs = ["proto_service_test.py"],
     deps = [
-        "//src:proto_bool",
         "//src:proto_comment",
-        "//src:proto_constant",
-        "//src:proto_identifier",
         "//src:proto_option",
         "//src:proto_service",
-        "//src:proto_string_literal",
+        "//src/constants:proto_bool",
+        "//src/constants:proto_constant",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_string_literal",
     ],
 )
 
@@ -219,21 +219,21 @@ py_test(
     deps = [
         "//src:parser",
         "//src:proto_comment",
-        "//src:proto_constant",
         "//src:proto_enum",
         "//src:proto_extend",
         "//src:proto_extensions",
-        "//src:proto_float",
-        "//src:proto_identifier",
         "//src:proto_import",
-        "//src:proto_int",
         "//src:proto_map",
         "//src:proto_message",
         "//src:proto_message_field",
         "//src:proto_option",
         "//src:proto_service",
-        "//src:proto_string_literal",
         "//src:proto_syntax",
+        "//src/constants:proto_constant",
+        "//src/constants:proto_float",
+        "//src/constants:proto_identifier",
+        "//src/constants:proto_int",
+        "//src/constants:proto_string_literal",
     ],
 )
 

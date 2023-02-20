@@ -1,11 +1,11 @@
 from typing import Optional
 
-from src.proto_bool import ProtoBool
-from src.proto_float import ProtoFloat, ProtoFloatSign
-from src.proto_identifier import ProtoFullIdentifier
-from src.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_bool import ProtoBool
+from src.constants.proto_float import ProtoFloat, ProtoFloatSign
+from src.constants.proto_identifier import ProtoFullIdentifier
+from src.constants.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_string_literal import ProtoStringLiteral
 from src.proto_node import ParsedProtoNode, ProtoNode
-from src.proto_string_literal import ProtoStringLiteral
 
 ProtoConstantTypes = (
     ProtoFullIdentifier | ProtoStringLiteral | ProtoInt | ProtoFloat | ProtoBool

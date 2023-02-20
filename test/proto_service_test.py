@@ -1,17 +1,17 @@
 import unittest
 from textwrap import dedent
 
-from src.proto_bool import ProtoBool
-from src.proto_comment import ProtoMultiLineComment, ProtoSingleLineComment
-from src.proto_constant import ProtoConstant
-from src.proto_identifier import (
+from src.constants.proto_bool import ProtoBool
+from src.constants.proto_constant import ProtoConstant
+from src.constants.proto_identifier import (
     ProtoEnumOrMessageIdentifier,
     ProtoFullIdentifier,
     ProtoIdentifier,
 )
+from src.constants.proto_string_literal import ProtoStringLiteral
+from src.proto_comment import ProtoMultiLineComment, ProtoSingleLineComment
 from src.proto_option import ProtoOption
 from src.proto_service import ProtoService, ProtoServiceRPC
-from src.proto_string_literal import ProtoStringLiteral
 
 
 class ServiceTest(unittest.TestCase):

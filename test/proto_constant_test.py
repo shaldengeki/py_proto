@@ -1,12 +1,12 @@
 import unittest
 from textwrap import dedent
 
-from src.proto_bool import ProtoBool
-from src.proto_constant import ProtoConstant
-from src.proto_float import ProtoFloat, ProtoFloatSign
-from src.proto_identifier import ProtoIdentifier
-from src.proto_int import ProtoInt, ProtoIntSign
-from src.proto_string_literal import ProtoStringLiteral
+from src.constants.proto_bool import ProtoBool
+from src.constants.proto_constant import ProtoConstant
+from src.constants.proto_float import ProtoFloat, ProtoFloatSign
+from src.constants.proto_identifier import ProtoIdentifier
+from src.constants.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_string_literal import ProtoStringLiteral
 
 
 class ConstantTest(unittest.TestCase):

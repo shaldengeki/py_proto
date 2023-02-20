@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Optional
 
-from src.proto_identifier import ProtoIdentifier
-from src.proto_int import ProtoInt
+from src.constants.proto_identifier import ProtoIdentifier
+from src.constants.proto_int import ProtoInt
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 

@@ -1,7 +1,7 @@
 from typing import Optional, Sequence
 
-from src.proto_constant import ProtoConstant
-from src.proto_identifier import (
+from src.constants.proto_constant import ProtoConstant
+from src.constants.proto_identifier import (
     ProtoEnumOrMessageIdentifier,
     ProtoFullIdentifier,
     ProtoIdentifier,

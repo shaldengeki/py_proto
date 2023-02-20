@@ -1,6 +1,6 @@
 import unittest
 
-from src.proto_string_literal import ProtoStringLiteral
+from src.constants.proto_string_literal import ProtoStringLiteral
 from src.proto_syntax import ProtoSyntax, ProtoSyntaxChanged
 
 

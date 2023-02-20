@@ -1,6 +1,6 @@
 import unittest
 
-from src.proto_float import ProtoFloat, ProtoFloatSign
+from src.constants.proto_float import ProtoFloat, ProtoFloatSign
 
 
 class FloatTest(unittest.TestCase):

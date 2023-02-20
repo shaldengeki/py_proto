@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.proto_identifier import ProtoFullIdentifier
+from src.constants.proto_identifier import ProtoFullIdentifier
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 

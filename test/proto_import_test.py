@@ -1,6 +1,7 @@
 import unittest
 from textwrap import dedent
 
+from src.constants.proto_string_literal import ProtoStringLiteral
 from src.proto_import import (
     ProtoImport,
     ProtoImportAdded,
@@ -8,7 +9,6 @@ from src.proto_import import (
     ProtoImportMadePublic,
     ProtoImportRemoved,
 )
-from src.proto_string_literal import ProtoStringLiteral
 
 
 class ImportTest(unittest.TestCase):

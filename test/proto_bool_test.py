@@ -1,6 +1,6 @@
 import unittest
 
-from src.proto_bool import ProtoBool
+from src.constants.proto_bool import ProtoBool
 
 
 class BoolTest(unittest.TestCase):

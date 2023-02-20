@@ -1,17 +1,17 @@
 import unittest
 from textwrap import dedent
 
-from src.proto_constant import ProtoConstant
-from src.proto_float import ProtoFloat, ProtoFloatSign
-from src.proto_identifier import ProtoFullIdentifier, ProtoIdentifier
-from src.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_constant import ProtoConstant
+from src.constants.proto_float import ProtoFloat, ProtoFloatSign
+from src.constants.proto_identifier import ProtoFullIdentifier, ProtoIdentifier
+from src.constants.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_string_literal import ProtoStringLiteral
 from src.proto_option import (
     ProtoOption,
     ProtoOptionAdded,
     ProtoOptionRemoved,
     ProtoOptionValueChanged,
 )
-from src.proto_string_literal import ProtoStringLiteral
 
 
 class OptionTest(unittest.TestCase):

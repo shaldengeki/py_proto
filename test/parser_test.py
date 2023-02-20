@@ -1,21 +1,22 @@
 import unittest
 from textwrap import dedent
 
-from src.parser import ParseError, Parser
-from src.proto_bool import ProtoBool
-from src.proto_comment import ProtoSingleLineComment
-from src.proto_constant import ProtoConstant
-from src.proto_enum import ProtoEnum, ProtoEnumValue
-from src.proto_extend import ProtoExtend
-from src.proto_extensions import ProtoExtensions
-from src.proto_float import ProtoFloat, ProtoFloatSign
-from src.proto_identifier import (
+from src.constants.proto_bool import ProtoBool
+from src.constants.proto_constant import ProtoConstant
+from src.constants.proto_float import ProtoFloat, ProtoFloatSign
+from src.constants.proto_identifier import (
     ProtoEnumOrMessageIdentifier,
     ProtoFullIdentifier,
     ProtoIdentifier,
 )
+from src.constants.proto_int import ProtoInt, ProtoIntSign
+from src.constants.proto_string_literal import ProtoStringLiteral
+from src.parser import ParseError, Parser
+from src.proto_comment import ProtoSingleLineComment
+from src.proto_enum import ProtoEnum, ProtoEnumValue
+from src.proto_extend import ProtoExtend
+from src.proto_extensions import ProtoExtensions
 from src.proto_import import ProtoImport
-from src.proto_int import ProtoInt, ProtoIntSign
 from src.proto_map import ProtoMap, ProtoMapKeyTypesEnum, ProtoMapValueTypesEnum
 from src.proto_message import ProtoMessage, ProtoOneOf
 from src.proto_message_field import (
@@ -27,7 +28,6 @@ from src.proto_option import ProtoOption
 from src.proto_range import ProtoRange, ProtoRangeEnum
 from src.proto_reserved import ProtoReserved
 from src.proto_service import ProtoService, ProtoServiceRPC
-from src.proto_string_literal import ProtoStringLiteral
 from src.proto_syntax import ProtoSyntaxType
 
 
