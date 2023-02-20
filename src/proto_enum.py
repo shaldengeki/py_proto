@@ -157,23 +157,26 @@ class ProtoEnumValue(ProtoNode):
 
     @staticmethod
     def diff(
-        enum: "ProtoEnum", left: "ProtoEnumValue", right: "ProtoEnumValue"
+        enum: "ProtoEnum",
+        left: Optional["ProtoEnumValue"],
+        right: Optional["ProtoEnumValue"],
     ) -> Sequence["ProtoNodeDiff"]:
-        if left is None and right is not None:
-            return [ProtoEnumValueAdded(right)]
-        elif left is not None and right is None:
-            return [ProtoEnumValueRemoved(left)]
-        elif left is None and right is None:
-            return []
-        elif left.identifier != right.identifier:
-            return []
-        elif left == right:
-            return []
         diffs: list["ProtoNodeDiff"] = []
         # TODO: scope these diffs under ProtoEnumValue
-        diffs.extend(ProtoEnumValueOption.diff_sets(left.options, right.options))
-        diffs.append(ProtoEnumValueValueChanged(enum, right, left.value))
+        if left is None or right is None:
+            if right is not None:
+                diffs.append(ProtoEnumValueAdded(enum, right))
+            elif left is not None:
+                diffs.append(ProtoEnumValueRemoved(enum, left))
+        else:
+            if left.identifier != right.identifier:
+                diffs.append(ProtoEnumValueNameChanged(enum, right, left.identifier))
+            else:
+                raise ValueError(
+                    f"Don't know how to handle diff between enums whose names aren't identical: {left}, {right}"
+                )
 
+            diffs.extend(ProtoEnumValueOption.diff_sets(left.options, right.options))
         return diffs
 
     @staticmethod
@@ -181,37 +184,22 @@ class ProtoEnumValue(ProtoNode):
         enum: "ProtoEnum", left: list["ProtoEnumValue"], right: list["ProtoEnumValue"]
     ) -> list["ProtoNodeDiff"]:
         diffs: list[ProtoNodeDiff] = []
-        left_names = set(o.identifier.identifier for o in left)
-        left_values = set(int(o.value) for o in left)
-        right_names = set(o.identifier.identifier for o in right)
-        right_values = set(int(o.value) for o in right)
 
-        for name in left_names - right_names:
-            # Check to see if this is a renamed field number.
-            left_value = next(i for i in left if i.identifier.identifier == name)
-            if int(left_value.value) in right_values:
-                # This is a renamed field number.
-                right_value = next(
-                    i for i in right if int(i.value) == int(left_value.value)
+        left_number_to_enum_values = {int(mf.value): mf for mf in left}
+        right_number_to_enum_values = {int(mf.value): mf for mf in right}
+        all_numbers = sorted(
+            set(left_number_to_enum_values.keys()).union(
+                set(right_number_to_enum_values.keys())
+            )
+        )
+        for number in all_numbers:
+            diffs.extend(
+                ProtoEnumValue.diff(
+                    enum,
+                    left_number_to_enum_values.get(number, None),
+                    right_number_to_enum_values.get(number, None),
                 )
-                diffs.append(
-                    ProtoEnumValueNameChanged(enum, right_value, left_value.identifier)
-                )
-            else:
-                diffs.append(ProtoEnumValueAdded(enum, left_value))
-        for name in right_names - left_names:
-            # Check to see if this is a renamed field number.
-            right_value = next(i for i in right if i.identifier.identifier == name)
-            if int(right_value.value) not in left_values:
-                diffs.append(
-                    ProtoEnumValueRemoved(
-                        enum, next(i for i in right if i.identifier.identifier == name)
-                    )
-                )
-        for name in left_names & right_names:
-            left_enum_value = next(i for i in left if i.identifier.identifier == name)
-            right_enum_value = next(i for i in right if i.identifier.identifier == name)
-            diffs.extend(ProtoEnumValue.diff(enum, left_enum_value, right_enum_value))
+            )
 
         return diffs
 

@@ -9,9 +9,10 @@ from src.proto_enum import (
     ProtoEnumAdded,
     ProtoEnumRemoved,
     ProtoEnumValue,
+    ProtoEnumValueAdded,
     ProtoEnumValueNameChanged,
     ProtoEnumValueOption,
-    ProtoEnumValueValueChanged,
+    ProtoEnumValueRemoved,
 )
 from src.proto_identifier import ProtoIdentifier
 from src.proto_int import ProtoInt, ProtoIntSign
@@ -413,7 +414,6 @@ class EnumTest(unittest.TestCase):
             ],
         )
         self.assertEqual(
-            ProtoEnum.diff(pe1, pe2),
             [
                 ProtoEnumValueNameChanged(
                     pe1,
@@ -421,6 +421,7 @@ class EnumTest(unittest.TestCase):
                     ProtoIdentifier(None, "ME_UNKNOWN"),
                 )
             ],
+            ProtoEnum.diff(pe1, pe2),
         )
 
     def test_diff_different_enum_value_value_returns_enum_diff(self):
@@ -450,14 +451,20 @@ class EnumTest(unittest.TestCase):
         diff = ProtoEnum.diff(pe1, pe2)
 
         self.assertIn(
-            ProtoEnumValueValueChanged(
+            ProtoEnumValueRemoved(
                 pe1,
-                pe2.values[0],
-                ProtoInt(None, 0, ProtoIntSign.POSITIVE),
+                pe1.values[0],
             ),
             diff,
         )
-        self.assertEqual(1, len(diff))
+        self.assertIn(
+            ProtoEnumValueAdded(
+                pe1,
+                pe2.values[0],
+            ),
+            diff,
+        )
+        self.assertEqual(2, len(diff))
 
     def test_diff_enum_added(self):
         pe1 = None
