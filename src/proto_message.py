@@ -160,6 +160,10 @@ class ProtoMessage(ProtoNode):
     def maps(self) -> list[ProtoMap]:
         return [node for node in self.nodes if isinstance(node, ProtoMap)]
 
+    @property
+    def message_fields(self) -> list[ProtoMessageField]:
+        return [node for node in self.nodes if isinstance(node, ProtoMessageField)]
+
     def serialize(self) -> str:
         serialize_parts = (
             [f"message {self.name.serialize()} {{"]
@@ -186,7 +190,11 @@ class ProtoMessage(ProtoNode):
         diffs.extend(ProtoOption.diff_sets(before.options, after.options))
         # diffs.extend(ProtoOneOf.diff_sets(before, before.oneofs, after.oneofs))
         diffs.extend(ProtoMap.diff_sets(before, before.maps, after.maps))
-        # diffs.extend(ProtoMessageField.diff_sets(before, before.message_fields, after.message_fields))
+        diffs.extend(
+            ProtoMessageField.diff_sets(
+                before, before.message_fields, after.message_fields
+            )
+        )
         return diffs
 
     @staticmethod
