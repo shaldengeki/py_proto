@@ -166,8 +166,8 @@ class MessageFieldTest(unittest.TestCase):
             [
                 ProtoMessageFieldNameChanged(
                     None,
-                    pmf2,
-                    pmf1.name,
+                    pmf1,
+                    pmf2.name,
                 )
             ],
             ProtoMessageField.diff(None, pmf1, pmf2),
