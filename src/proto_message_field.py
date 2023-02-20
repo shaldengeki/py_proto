@@ -339,21 +339,3 @@ class ProtoMessageFieldNameChanged(ProtoMessageFieldDiff):
 
     def __str__(self) -> str:
         return f"<ProtoMessageFieldNameChanged message={self.message} message_field={self.message_field} new_name={self.new_name}>"
-
-
-class ProtoMessageFieldValueChanged(ProtoMessageFieldDiff):
-    def __init__(
-        self, message: ProtoNode, message_field: ProtoMessageField, new_value: ProtoInt
-    ):
-        super().__init__(message, message_field)
-        self.new_value = new_value
-
-    def __eq__(self, other: object) -> bool:
-        return (
-            super().__eq__(other)
-            and isinstance(other, ProtoMessageFieldValueChanged)
-            and self.new_value == other.new_value
-        )
-
-    def __str__(self) -> str:
-        return f"<ProtoMessageFieldValueChanged message={self.message} message_field={self.message_field} new_value={self.new_value}>"
