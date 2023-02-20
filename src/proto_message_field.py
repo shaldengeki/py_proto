@@ -248,23 +248,22 @@ class ProtoMessageField(ProtoNode):
         left: Optional["ProtoMessageField"],
         right: Optional["ProtoMessageField"],
     ) -> Sequence["ProtoNodeDiff"]:
+        # TODO: scope these diffs under ProtoMessageField
+        diffs: list["ProtoNodeDiff"] = []
         if left is None or right is None:
             if right is not None:
-                return [ProtoMessageFieldAdded(parent, right)]
+                diffs.append(ProtoMessageFieldAdded(parent, right))
             elif left is not None:
-                return [ProtoMessageFieldRemoved(parent, left)]
-            else:
-                return []
+                diffs.append(ProtoMessageFieldRemoved(parent, left))
         else:
+            if left.name != right.name:
+                diffs.append(ProtoMessageFieldNameChanged(parent, right, left.name))
             if left.number != right.number:
-                return []
-            elif left == right:
-                return []
-            diffs: list["ProtoNodeDiff"] = []
-            # TODO: scope these diffs under ProtoMessageField
+                raise ValueError(
+                    f"Don't know how to handle diff between message fields whose names are identical: {left}, {right}"
+                )
             diffs.extend(ProtoMessageFieldOption.diff_sets(left.options, right.options))
-            diffs.append(ProtoMessageFieldValueChanged(parent, right, left.number))
-            return diffs
+        return diffs
 
     @staticmethod
     def diff_sets(
