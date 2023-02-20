@@ -417,8 +417,8 @@ class EnumTest(unittest.TestCase):
             [
                 ProtoEnumValueNameChanged(
                     pe1,
-                    pe2.nodes[0],
-                    ProtoIdentifier(None, "ME_UNKNOWN"),
+                    pe1.nodes[0],
+                    ProtoIdentifier(None, "ME_KNOWN"),
                 )
             ],
             ProtoEnum.diff(pe1, pe2),
@@ -1006,39 +1006,6 @@ class EnumTest(unittest.TestCase):
             ProtoEnumRemoved(
                 ProtoEnum(
                     None,
-                    ProtoIdentifier(None, "FooEnum2"),
-                    [
-                        ProtoEnumValue(
-                            None,
-                            ProtoIdentifier(None, "FE_UNKNOWN2"),
-                            ProtoInt(None, 0, ProtoIntSign.POSITIVE),
-                        )
-                    ],
-                ),
-            ),
-            diff,
-        )
-
-        self.assertIn(
-            ProtoEnumRemoved(
-                ProtoEnum(
-                    None,
-                    ProtoIdentifier(None, "TagEnum2"),
-                    [
-                        ProtoEnumValue(
-                            None,
-                            ProtoIdentifier(None, "TE_UNKNOWN2"),
-                            ProtoInt(None, 0, ProtoIntSign.POSITIVE),
-                        )
-                    ],
-                ),
-            ),
-            diff,
-        )
-        self.assertIn(
-            ProtoEnumAdded(
-                ProtoEnum(
-                    None,
                     ProtoIdentifier(None, "FooEnum"),
                     [
                         ProtoEnumValue(
@@ -1051,8 +1018,9 @@ class EnumTest(unittest.TestCase):
             ),
             diff,
         )
+
         self.assertIn(
-            ProtoEnumAdded(
+            ProtoEnumRemoved(
                 ProtoEnum(
                     None,
                     ProtoIdentifier(None, "TagEnum"),
@@ -1060,6 +1028,38 @@ class EnumTest(unittest.TestCase):
                         ProtoEnumValue(
                             None,
                             ProtoIdentifier(None, "TE_UNKNOWN"),
+                            ProtoInt(None, 0, ProtoIntSign.POSITIVE),
+                        )
+                    ],
+                ),
+            ),
+            diff,
+        )
+        self.assertIn(
+            ProtoEnumAdded(
+                ProtoEnum(
+                    None,
+                    ProtoIdentifier(None, "FooEnum2"),
+                    [
+                        ProtoEnumValue(
+                            None,
+                            ProtoIdentifier(None, "FE_UNKNOWN2"),
+                            ProtoInt(None, 0, ProtoIntSign.POSITIVE),
+                        )
+                    ],
+                ),
+            ),
+            diff,
+        )
+        self.assertIn(
+            ProtoEnumAdded(
+                ProtoEnum(
+                    None,
+                    ProtoIdentifier(None, "TagEnum2"),
+                    [
+                        ProtoEnumValue(
+                            None,
+                            ProtoIdentifier(None, "TE_UNKNOWN2"),
                             ProtoInt(None, 0, ProtoIntSign.POSITIVE),
                         )
                     ],
@@ -1082,10 +1082,10 @@ class EnumTest(unittest.TestCase):
                 ),
                 ProtoEnumValue(
                     None,
-                    ProtoIdentifier(None, "BE_UNKNOWN2"),
+                    ProtoIdentifier(None, "BE_UNKNOWN"),
                     ProtoInt(None, 0, ProtoIntSign.POSITIVE),
                 ),
-                ProtoIdentifier(None, "BE_UNKNOWN"),
+                ProtoIdentifier(None, "BE_UNKNOWN2"),
             ),
             diff,
         )

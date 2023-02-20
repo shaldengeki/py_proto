@@ -245,45 +245,49 @@ class ProtoMessageField(ProtoNode):
     @staticmethod
     def diff(
         parent: "ProtoNode",
-        left: Optional["ProtoMessageField"],
-        right: Optional["ProtoMessageField"],
+        before: Optional["ProtoMessageField"],
+        after: Optional["ProtoMessageField"],
     ) -> Sequence["ProtoNodeDiff"]:
         # TODO: scope these diffs under ProtoMessageField
         diffs: list["ProtoNodeDiff"] = []
-        if left is None or right is None:
-            if right is not None:
-                diffs.append(ProtoMessageFieldAdded(parent, right))
-            elif left is not None:
-                diffs.append(ProtoMessageFieldRemoved(parent, left))
+        if before is None or after is None:
+            if after is not None:
+                diffs.append(ProtoMessageFieldAdded(parent, after))
+            elif before is not None:
+                diffs.append(ProtoMessageFieldRemoved(parent, before))
         else:
-            if left.name != right.name:
-                diffs.append(ProtoMessageFieldNameChanged(parent, right, left.name))
-            if left.number != right.number:
+            if before.name != after.name:
+                diffs.append(ProtoMessageFieldNameChanged(parent, before, after.name))
+            if before.number != after.number:
                 raise ValueError(
-                    f"Don't know how to handle diff between message fields whose names are identical: {left}, {right}"
+                    f"Don't know how to handle diff between message fields whose names are identical: {before}, {after}"
                 )
-            diffs.extend(ProtoMessageFieldOption.diff_sets(left.options, right.options))
+            diffs.extend(
+                ProtoMessageFieldOption.diff_sets(before.options, after.options)
+            )
         return diffs
 
     @staticmethod
     def diff_sets(
         parent: "ProtoNode",
-        left: list["ProtoMessageField"],
-        right: list["ProtoMessageField"],
+        before: list["ProtoMessageField"],
+        after: list["ProtoMessageField"],
     ) -> list["ProtoNodeDiff"]:
         diffs: list[ProtoNodeDiff] = []
 
-        left_number_to_fields = {int(mf.number): mf for mf in left}
-        right_number_to_fields = {int(mf.number): mf for mf in right}
+        before_number_to_fields = {int(mf.number): mf for mf in before}
+        after_number_to_fields = {int(mf.number): mf for mf in after}
         all_numbers = sorted(
-            set(left_number_to_fields.keys()).union(set(right_number_to_fields.keys()))
+            set(before_number_to_fields.keys()).union(
+                set(after_number_to_fields.keys())
+            )
         )
         for number in all_numbers:
             diffs.extend(
                 ProtoMessageField.diff(
                     parent,
-                    left_number_to_fields.get(number, None),
-                    right_number_to_fields.get(number, None),
+                    before_number_to_fields.get(number, None),
+                    after_number_to_fields.get(number, None),
                 )
             )
 
