@@ -244,24 +244,27 @@ class ProtoMessageField(ProtoNode):
 
     @staticmethod
     def diff(
-        parent: "ProtoNode", left: "ProtoMessageField", right: "ProtoMessageField"
+        parent: "ProtoNode",
+        left: Optional["ProtoMessageField"],
+        right: Optional["ProtoMessageField"],
     ) -> Sequence["ProtoNodeDiff"]:
-        if left is None and right is not None:
-            return [ProtoMessageFieldAdded(right)]
-        elif left is not None and right is None:
-            return [ProtoMessageFieldRemoved(left)]
-        elif left is None and right is None:
-            return []
-        elif left.number != right.number:
-            return []
-        elif left == right:
-            return []
-        diffs: list["ProtoNodeDiff"] = []
-        # TODO: scope these diffs under ProtoMessageField
-        diffs.extend(ProtoMessageFieldOption.diff_sets(left.options, right.options))
-        diffs.append(ProtoMessageFieldValueChanged(parent, right, left.number))
-
-        return diffs
+        if left is None or right is None:
+            if right is not None:
+                return [ProtoMessageFieldAdded(parent, right)]
+            elif left is not None:
+                return [ProtoMessageFieldRemoved(parent, left)]
+            else:
+                return []
+        else:
+            if left.number != right.number:
+                return []
+            elif left == right:
+                return []
+            diffs: list["ProtoNodeDiff"] = []
+            # TODO: scope these diffs under ProtoMessageField
+            diffs.extend(ProtoMessageFieldOption.diff_sets(left.options, right.options))
+            diffs.append(ProtoMessageFieldValueChanged(parent, right, left.number))
+            return diffs
 
     @staticmethod
     def diff_sets(
@@ -270,39 +273,19 @@ class ProtoMessageField(ProtoNode):
         right: list["ProtoMessageField"],
     ) -> list["ProtoNodeDiff"]:
         diffs: list[ProtoNodeDiff] = []
-        left_names = set(o.name.identifier for o in left)
-        left_numbers = set(int(o.number) for o in left)
-        right_names = set(o.name.identifier for o in right)
-        right_numbers = set(int(o.number) for o in right)
 
-        for name in left_names - right_names:
-            # Check to see if this is a renamed field number.
-            left_value = next(i for i in left if i.name.identifier == name)
-            if int(left_value.number) in right_numbers:
-                # This is a renamed field number.
-                right_value = next(
-                    i for i in right if int(i.number) == int(left_value.number)
-                )
-                diffs.append(
-                    ProtoMessageFieldNameChanged(parent, right_value, left_value.name)
-                )
-            else:
-                diffs.append(ProtoMessageFieldAdded(parent, left_value))
-        for name in right_names - left_names:
-            # Check to see if this is a renamed field number.
-            right_value = next(i for i in right if i.name.identifier == name)
-            if int(right_value.number) not in left_numbers:
-                diffs.append(
-                    ProtoMessageFieldRemoved(
-                        parent,
-                        next(i for i in right if i.name.identifier == name),
-                    )
-                )
-        for name in left_names & right_names:
-            left_enum_value = next(i for i in left if i.name.identifier == name)
-            right_enum_value = next(i for i in right if i.name.identifier == name)
+        left_number_to_fields = {int(mf.number): mf for mf in left}
+        right_number_to_fields = {int(mf.number): mf for mf in right}
+        all_numbers = sorted(
+            set(left_number_to_fields.keys()).union(set(right_number_to_fields.keys()))
+        )
+        for number in all_numbers:
             diffs.extend(
-                ProtoMessageField.diff(parent, left_enum_value, right_enum_value)
+                ProtoMessageField.diff(
+                    parent,
+                    left_number_to_fields.get(number, None),
+                    right_number_to_fields.get(number, None),
+                )
             )
 
         return diffs
