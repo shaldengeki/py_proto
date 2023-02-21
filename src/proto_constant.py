@@ -39,7 +39,7 @@ class ProtoConstant(ProtoNode):
     def match(
         cls, proto_source: str, parent: Optional[ProtoNode] = None
     ) -> Optional["ParsedProtoConstantNode"]:
-        match = ProtoBool.match(proto_source=proto_source, parent=None)
+        match = ProtoBool.match(proto_source=proto_source)
         if match is not None:
             proto_constant = ProtoConstant(value=match.node, parent=parent)
             return ParsedProtoConstantNode(
@@ -50,9 +50,9 @@ class ProtoConstant(ProtoNode):
         sign = ProtoIntSign.POSITIVE
         if proto_source.startswith("+") or proto_source.startswith("-"):
             sign = next(x for x in ProtoIntSign if x.value == proto_source[0])
-            proto_int_match = ProtoInt.match(proto_source=proto_source[1:], parent=None)
+            proto_int_match = ProtoInt.match(proto_source=proto_source[1:])
         else:
-            proto_int_match = ProtoInt.match(proto_source=proto_source, parent=None)
+            proto_int_match = ProtoInt.match(proto_source=proto_source)
         if proto_int_match is not None:
             proto_constant = ProtoConstant(value=proto_int_match.node, parent=parent)
             proto_int_match.node.sign = sign
@@ -64,9 +64,9 @@ class ProtoConstant(ProtoNode):
         float_sign = ProtoFloatSign.POSITIVE
         if proto_source.startswith("+") or proto_source.startswith("-"):
             float_sign = next(x for x in ProtoFloatSign if x.value == proto_source[0])
-            float_match = ProtoFloat.match(proto_source=proto_source[1:], parent=None)
+            float_match = ProtoFloat.match(proto_source=proto_source[1:])
         else:
-            float_match = ProtoFloat.match(proto_source=proto_source, parent=None)
+            float_match = ProtoFloat.match(proto_source=proto_source)
         if float_match is not None:
             proto_constant = ProtoConstant(value=float_match.node, parent=parent)
             float_match.node.sign = float_sign
