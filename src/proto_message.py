@@ -165,6 +165,10 @@ class ProtoMessage(ProtoNode):
     def message_fields(self) -> list[ProtoMessageField]:
         return [node for node in self.nodes if isinstance(node, ProtoMessageField)]
 
+    @property
+    def oneofs(self) -> list[ProtoOneOf]:
+        return [node for node in self.nodes if isinstance(node, ProtoOneOf)]
+
     def serialize(self) -> str:
         serialize_parts = (
             [f"message {self.name.serialize()} {{"]
@@ -188,8 +192,15 @@ class ProtoMessage(ProtoNode):
         elif before == after:
             return []
         diffs: list[ProtoNodeDiff] = []
+
+        # TODO:
+        # ProtoEnum,
+        # ProtoExtend,
+        # ProtoExtensions,
+        # ProtoMessage,
+        # ProtoReserved,
         diffs.extend(ProtoOption.diff_sets(before.options, after.options))
-        # diffs.extend(ProtoOneOf.diff_sets(before, before.oneofs, after.oneofs))
+        diffs.extend(ProtoOneOf.diff_sets(before.oneofs, after.oneofs, parent=before))
         diffs.extend(ProtoMap.diff_sets(before, before.maps, after.maps))
         diffs.extend(
             ProtoMessageField.diff_sets(
