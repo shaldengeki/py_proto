@@ -124,31 +124,27 @@ class ProtoOption(ProtoNode):
 
     @staticmethod
     def diff(
+        parent: ProtoNode,
         before: "ProtoOption",
         after: "ProtoOption",
-        parent: Optional[ProtoNode] = None,
     ) -> Sequence["ProtoOptionDiff"]:
         if before is None and after is not None:
-            return [ProtoOptionAdded(after, parent=parent)]
+            return [ProtoOptionAdded(parent, after)]
         elif before is not None and after is None:
-            return [ProtoOptionRemoved(before, parent=parent)]
+            return [ProtoOptionRemoved(parent, before)]
         elif before is None and after is None:
             return []
         elif before.name != after.name:
             return []
         elif before == after:
             return []
-        return [
-            ProtoOptionValueChanged(
-                before.name, before.value, after.value, parent=parent
-            )
-        ]
+        return [ProtoOptionValueChanged(parent, before.name, before.value, after.value)]
 
     @staticmethod
     def diff_sets(
+        parent: ProtoNode,
         before: Sequence["ProtoOption"],
         after: Sequence["ProtoOption"],
-        parent: Optional[ProtoNode] = None,
     ) -> list["ProtoOptionDiff"]:
         diffs: list[ProtoOptionDiff] = []
         before_names = set(o.name.identifier for o in before)
@@ -156,19 +152,19 @@ class ProtoOption(ProtoNode):
         for name in before_names - after_names:
             diffs.append(
                 ProtoOptionRemoved(
-                    next(i for i in before if i.name.identifier == name), parent=parent
+                    parent, next(i for i in before if i.name.identifier == name)
                 )
             )
         for name in after_names - before_names:
             diffs.append(
                 ProtoOptionAdded(
-                    next(i for i in after if i.name.identifier == name), parent=parent
+                    parent, next(i for i in after if i.name.identifier == name)
                 )
             )
         for name in before_names & after_names:
             before_option = next(i for i in before if i.name.identifier == name)
             after_option = next(i for i in after if i.name.identifier == name)
-            diffs.extend(ProtoOption.diff(before_option, after_option, parent=parent))
+            diffs.extend(ProtoOption.diff(parent, before_option, after_option))
 
         return diffs
 
@@ -180,10 +176,10 @@ class ProtoOptionDiff(ProtoNodeDiff):
 class ProtoOptionValueChanged(ProtoOptionDiff):
     def __init__(
         self,
+        parent: ProtoNode,
         name: ProtoIdentifier,
         before: ProtoConstant,
         after: ProtoConstant,
-        parent: Optional[ProtoNode] = None,
     ):
         self.name = name
         self.before = before
@@ -204,9 +200,9 @@ class ProtoOptionValueChanged(ProtoOptionDiff):
 
 
 class ProtoOptionAdded(ProtoOptionDiff):
-    def __init__(self, before: ProtoOption, parent: Optional[ProtoNode] = None):
-        self.before = before
+    def __init__(self, parent: ProtoNode, before: ProtoOption):
         self.parent = parent
+        self.before = before
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -220,9 +216,9 @@ class ProtoOptionAdded(ProtoOptionDiff):
 
 
 class ProtoOptionRemoved(ProtoOptionDiff):
-    def __init__(self, after: ProtoOption, parent: Optional[ProtoNode] = None):
-        self.after = after
+    def __init__(self, parent: ProtoNode, after: ProtoOption):
         self.parent = parent
+        self.after = after
 
     def __eq__(self, other: object) -> bool:
         return (

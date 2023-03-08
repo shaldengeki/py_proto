@@ -165,7 +165,7 @@ class ProtoOneOf(ProtoNode):
 
     @staticmethod
     def diff(
-        before: "ProtoOneOf", after: "ProtoOneOf", parent: Optional[ProtoNode] = None
+        parent: ProtoNode, before: "ProtoOneOf", after: "ProtoOneOf"
     ) -> Sequence["ProtoNodeDiff"]:
         if before is None and after is not None:
             return [ProtoOneOfAdded(parent, after)]
@@ -178,9 +178,7 @@ class ProtoOneOf(ProtoNode):
         elif before == after:
             return []
         diffs: list[ProtoNodeDiff] = []
-        diffs.extend(
-            ProtoOption.diff_sets(before.options, after.options, parent=parent)
-        )
+        diffs.extend(ProtoOption.diff_sets(before, before.options, after.options))
         diffs.extend(
             ProtoMessageField.diff_sets(
                 before, before.message_fields, after.message_fields
@@ -190,9 +188,9 @@ class ProtoOneOf(ProtoNode):
 
     @staticmethod
     def diff_sets(
+        parent: ProtoNode,
         before: list["ProtoOneOf"],
         after: list["ProtoOneOf"],
-        parent: Optional[ProtoNode] = None,
     ) -> Sequence["ProtoNodeDiff"]:
         diffs: list[ProtoNodeDiff] = []
         before_names = set(o.name.identifier for o in before)
@@ -200,27 +198,27 @@ class ProtoOneOf(ProtoNode):
         for name in before_names - after_names:
             diffs.append(
                 ProtoOneOfRemoved(
-                    next(i for i in before if i.name.identifier == name), parent=parent
+                    parent, next(i for i in before if i.name.identifier == name)
                 )
             )
         for name in after_names - before_names:
             diffs.append(
                 ProtoOneOfAdded(
-                    next(i for i in after if i.name.identifier == name), parent=parent
+                    parent, next(i for i in after if i.name.identifier == name)
                 )
             )
         for name in before_names & after_names:
-            before_enum = next(i for i in before if i.name.identifier == name)
-            after_enum = next(i for i in after if i.name.identifier == name)
-            diffs.extend(ProtoOneOf.diff(before_enum, after_enum, parent=parent))
+            before_oneof = next(i for i in before if i.name.identifier == name)
+            after_oneof = next(i for i in after if i.name.identifier == name)
+            diffs.extend(ProtoOneOf.diff(parent, before_oneof, after_oneof))
 
         return diffs
 
 
 class ProtoOneOfDiff(ProtoNodeDiff):
-    def __init__(self, oneof: ProtoOneOf, parent: Optional[ProtoNode] = None):
-        self.oneof = oneof
+    def __init__(self, parent: ProtoNode, oneof: ProtoOneOf):
         self.parent = parent
+        self.oneof = oneof
 
     def __eq__(self, other: object) -> bool:
         return (
@@ -230,7 +228,7 @@ class ProtoOneOfDiff(ProtoNodeDiff):
         )
 
     def __str__(self) -> str:
-        return f"<{self.__class__.__name__} oneof={self.oneof}>"
+        return f"<{self.__class__.__name__} oneof={self.oneof} parent={self.parent}>"
 
 
 class ProtoOneOfAdded(ProtoOneOfDiff):
