@@ -76,17 +76,6 @@ class ProtoExtend(ProtoContainerNode):
         return ParsedProtoEnumOrMessageIdentifierNode(name, proto_source[1:].strip())
 
     @classmethod
-    def match_footer(
-        cls,
-        proto_source: str,
-        parent: Optional[ProtoNode] = None,
-    ) -> Optional[str]:
-        if proto_source.startswith("}"):
-            return proto_source[1:].strip()
-
-        return None
-
-    @classmethod
     def construct(
         cls,
         header_match: ParsedProtoNode,

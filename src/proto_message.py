@@ -106,17 +106,6 @@ class ProtoMessage(ProtoContainerNode):
         return ParsedProtoIdentifierNode(enum_name, proto_source[1:].strip())
 
     @classmethod
-    def match_footer(
-        cls,
-        proto_source: str,
-        parent: Optional[ProtoNode] = None,
-    ) -> Optional[str]:
-        if proto_source.startswith("}"):
-            return proto_source[1:].strip()
-
-        return None
-
-    @classmethod
     def container_types(cls) -> list[type[ProtoNode]]:
         return [
             ProtoSingleLineComment,

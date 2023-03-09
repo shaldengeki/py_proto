@@ -49,13 +49,15 @@ class ProtoContainerNode(ProtoNode):
         raise NotImplementedError
 
     @classmethod
-    @abc.abstractmethod
     def match_footer(
         cls,
         proto_source: str,
-        parent: Optional["ProtoNode"] = None,
+        parent: Optional[ProtoNode] = None,
     ) -> Optional[str]:
-        raise NotImplementedError
+        if proto_source.startswith("}"):
+            return proto_source[1:].strip()
+
+        return None
 
     @classmethod
     @abc.abstractmethod
