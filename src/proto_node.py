@@ -36,6 +36,9 @@ class ProtoContainerNode(ProtoNode):
         for node in self.nodes:
             node.parent = self
 
+    def __eq__(self, other) -> bool:
+        return self.nodes == other.nodes
+
     @classmethod
     @abc.abstractmethod
     def match_header(
@@ -51,7 +54,7 @@ class ProtoContainerNode(ProtoNode):
         cls,
         proto_source: str,
         parent: Optional["ProtoNode"] = None,
-    ) -> Optional["ParsedProtoNode"]:
+    ) -> Optional[str]:
         raise NotImplementedError
 
     @classmethod
@@ -65,8 +68,8 @@ class ProtoContainerNode(ProtoNode):
         cls,
         header_match: "ParsedProtoNode",
         contained_nodes: list[ProtoNode],
-        footer_match: "ParsedProtoNode",
-    ):
+        footer_match: str,
+    ) -> ProtoNode:
         raise NotImplementedError
 
     @classmethod
@@ -100,7 +103,7 @@ class ProtoContainerNode(ProtoNode):
 
             footer_match = cls.match_footer(proto_source, parent)
             if footer_match is not None:
-                proto_source = footer_match.remaining_source.strip()
+                proto_source = footer_match.strip()
                 break
 
             match_result = cls.parse_partial_content(proto_source)
@@ -112,7 +115,9 @@ class ProtoContainerNode(ProtoNode):
                 f"Footer was not found when matching container node {cls} for remaining proto source {proto_source}"
             )
 
-        return cls.construct(header_match, nodes, footer_match)
+        return ParsedProtoNode(
+            cls.construct(header_match, nodes, footer_match), proto_source.strip()
+        )
 
 
 class ParsedProtoNode(NamedTuple):
