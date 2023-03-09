@@ -1,5 +1,5 @@
 import abc
-from typing import NamedTuple, Optional, Type
+from typing import NamedTuple, Optional, Sequence
 
 
 class ProtoNode(abc.ABC):
@@ -25,6 +25,17 @@ class ProtoNode(abc.ABC):
 
 
 class ProtoContainerNode(ProtoNode):
+    def __init__(
+        self,
+        nodes: Sequence[ProtoNode],
+        *args,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        self.nodes = nodes
+        for node in self.nodes:
+            node.parent = self
+
     @classmethod
     @abc.abstractmethod
     def match_header(
