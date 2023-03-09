@@ -533,7 +533,7 @@ class MessageTest(unittest.TestCase):
         )
         self.assertEqual(ProtoMessage.diff(self.DEFAULT_PARENT, pm1, pm2), [])
 
-    def test_diff_enum_added(self):
+    def test_diff_message_added(self):
         pm1 = None
         pm2 = ProtoMessage(ProtoIdentifier("MyMessage"), [])
         self.assertEqual(
