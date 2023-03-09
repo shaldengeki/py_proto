@@ -69,6 +69,7 @@ class ProtoContainerNode(ProtoNode):
         header_match: "ParsedProtoNode",
         contained_nodes: list[ProtoNode],
         footer_match: str,
+        parent: Optional[ProtoNode] = None,
     ) -> ProtoNode:
         raise NotImplementedError
 
@@ -116,7 +117,8 @@ class ProtoContainerNode(ProtoNode):
             )
 
         return ParsedProtoNode(
-            cls.construct(header_match, nodes, footer_match), proto_source.strip()
+            cls.construct(header_match, nodes, footer_match, parent=parent),
+            proto_source.strip(),
         )
 
 
