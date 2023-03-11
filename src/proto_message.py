@@ -150,6 +150,10 @@ class ProtoMessage(ProtoContainerNode):
     def oneofs(self) -> list[ProtoOneOf]:
         return [node for node in self.nodes if isinstance(node, ProtoOneOf)]
 
+    @property
+    def enums(self) -> list[ProtoEnum]:
+        return [node for node in self.nodes if isinstance(node, ProtoEnum)]
+
     def serialize(self) -> str:
         serialize_parts = (
             [f"message {self.name.serialize()} {{"]
@@ -177,7 +181,6 @@ class ProtoMessage(ProtoContainerNode):
         diffs: list[ProtoNodeDiff] = []
 
         # TODO:
-        # ProtoEnum,
         # ProtoExtend,
         # ProtoExtensions,
         # ProtoMessage,
@@ -190,6 +193,7 @@ class ProtoMessage(ProtoContainerNode):
                 before, before.message_fields, after.message_fields
             )
         )
+        diffs.extend(ProtoEnum.diff_sets(before, before.enums, after.enums))
         return diffs
 
     @staticmethod

@@ -4,7 +4,7 @@ from textwrap import dedent
 from src.proto_bool import ProtoBool
 from src.proto_comment import ProtoMultiLineComment, ProtoSingleLineComment
 from src.proto_constant import ProtoConstant
-from src.proto_enum import ProtoEnum, ProtoEnumValue
+from src.proto_enum import ProtoEnum, ProtoEnumValue, ProtoEnumValueNameChanged
 from src.proto_extend import ProtoExtend
 from src.proto_extensions import ProtoExtensions
 from src.proto_identifier import (
@@ -549,12 +549,36 @@ class MessageTest(unittest.TestCase):
         pm1 = ProtoMessage(ProtoIdentifier("MyMessage"), [])
         pm2 = None
         self.assertEqual(
-            ProtoMessage.diff(self.DEFAULT_PARENT, pm1, pm2),
             [
                 ProtoMessageRemoved(
                     self.DEFAULT_PARENT, ProtoMessage(ProtoIdentifier("MyMessage"), [])
                 ),
             ],
+            ProtoMessage.diff(self.DEFAULT_PARENT, pm1, pm2),
+        )
+
+    def test_diff_nested_enum(self):
+        old_enum_value = ProtoEnumValue(
+            ProtoIdentifier("MNE_DEFAULT"), ProtoInt(1, ProtoIntSign.POSITIVE)
+        )
+        pm1 = ProtoMessage(
+            ProtoIdentifier("MyMessage"),
+            [ProtoEnum(ProtoIdentifier("MyNestedEnum"), nodes=[old_enum_value])],
+        )
+        new_enum_value = ProtoEnumValue(
+            ProtoIdentifier("MNE_DEFAULT_NEW"), ProtoInt(1, ProtoIntSign.POSITIVE)
+        )
+        pm2 = ProtoMessage(
+            ProtoIdentifier("MyMessage"),
+            [ProtoEnum(ProtoIdentifier("MyNestedEnum"), nodes=[new_enum_value])],
+        )
+        self.assertEqual(
+            [
+                ProtoEnumValueNameChanged(
+                    self.DEFAULT_PARENT, old_enum_value, new_enum_value.identifier
+                ),
+            ],
+            ProtoMessage.diff(self.DEFAULT_PARENT, pm1, pm2),
         )
 
     def test_diff_sets_empty_returns_empty(self):
