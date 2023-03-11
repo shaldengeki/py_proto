@@ -151,6 +151,10 @@ class ProtoMessage(ProtoContainerNode):
         return [node for node in self.nodes if isinstance(node, ProtoOneOf)]
 
     @property
+    def messages(self) -> list["ProtoMessage"]:
+        return [node for node in self.nodes if isinstance(node, ProtoMessage)]
+
+    @property
     def enums(self) -> list[ProtoEnum]:
         return [node for node in self.nodes if isinstance(node, ProtoEnum)]
 
@@ -183,7 +187,6 @@ class ProtoMessage(ProtoContainerNode):
         # TODO:
         # ProtoExtend,
         # ProtoExtensions,
-        # ProtoMessage,
         # ProtoReserved,
         diffs.extend(ProtoOption.diff_sets(before, before.options, after.options))
         diffs.extend(ProtoOneOf.diff_sets(before, before.oneofs, after.oneofs))
@@ -194,6 +197,7 @@ class ProtoMessage(ProtoContainerNode):
             )
         )
         diffs.extend(ProtoEnum.diff_sets(before, before.enums, after.enums))
+        diffs.extend(ProtoMessage.diff_sets(before, before.messages, after.messages))
         return diffs
 
     @staticmethod

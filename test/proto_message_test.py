@@ -581,6 +581,23 @@ class MessageTest(unittest.TestCase):
             ProtoMessage.diff(self.DEFAULT_PARENT, pm1, pm2),
         )
 
+    def test_diff_nested_message(self):
+        nested_message = ProtoMessage(ProtoIdentifier("MyNestedMessage"), nodes=[])
+        pm1 = ProtoMessage(
+            ProtoIdentifier("MyMessage"),
+            [nested_message],
+        )
+        pm2 = ProtoMessage(
+            ProtoIdentifier("MyMessage"),
+            [],
+        )
+        self.assertEqual(
+            [
+                ProtoMessageRemoved(pm1, nested_message),
+            ],
+            ProtoMessage.diff(self.DEFAULT_PARENT, pm1, pm2),
+        )
+
     def test_diff_sets_empty_returns_empty(self):
         set1 = []
         set2 = []
