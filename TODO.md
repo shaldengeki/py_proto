@@ -76,7 +76,7 @@
       - [x] Option changes
       - [x] Field changes
       - [ ] Reserved changes
-      - [ ] Nested enum changes
+      - [x] Nested enum changes
       - [ ] Nested message changes
     - [ ] Service-level diffs
       - [ ] Additions/removals
