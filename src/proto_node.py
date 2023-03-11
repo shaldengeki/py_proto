@@ -114,12 +114,12 @@ class ProtoContainerNode(ProtoNode):
             nodes.append(match_result.node)
             proto_source = match_result.remaining_source.strip()
 
-        if footer_match is None and cls.match_footer(proto_source, parent) is None:
-            raise ValueError(
-                f"Footer was not found when matching container node {cls} for remaining proto source {proto_source}"
-            )
-
-        assert footer_match is not None
+        if footer_match is None:
+            footer_match = cls.match_footer(proto_source, parent)
+            if footer_match is None:
+                raise ValueError(
+                    f"Footer was not found when matching container node {cls} for remaining proto source {proto_source}"
+                )
 
         return ParsedProtoNode(
             cls.construct(header_match, nodes, footer_match, parent=parent),
