@@ -27,10 +27,12 @@ class ReservedTest(unittest.TestCase):
 
     def test_reserved_single_string_field(self):
         self.assertEqual(
-            ProtoReserved.match("reserved 'foo';").node.serialize(), "reserved 'foo';"
+            ProtoReserved.match("reserved 'foo';").node.serialize(),
+            "reserved 'foo';",
         )
         self.assertEqual(
-            ProtoReserved.match('reserved "foo";').node.serialize(), 'reserved "foo";'
+            ProtoReserved.match('reserved "foo";').node.serialize(),
+            'reserved "foo";',
         )
 
     def test_reserved_multiple_string_fields(self):

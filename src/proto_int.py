@@ -10,12 +10,18 @@ class ProtoIntSign(Enum):
     NEGATIVE = "-"
 
 
+class ParsedProtoIntNode(ParsedProtoNode):
+    node: "ProtoInt"
+    remaining_source: str
+
+
 class ProtoInt(ProtoNode):
     OCTAL = set("01234567")
     DECIMAL = OCTAL | set("89")
     HEX = DECIMAL | set("ABCDEFabcdef")
 
-    def __init__(self, value: int, sign: ProtoIntSign):
+    def __init__(self, value: int, sign: ProtoIntSign, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.value = value
         self.sign = sign
 
@@ -38,7 +44,9 @@ class ProtoInt(ProtoNode):
         return self
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(
+        cls, proto_source: str, parent: Optional[ProtoNode] = None
+    ) -> Optional["ParsedProtoIntNode"]:
         if proto_source[0] not in ProtoInt.DECIMAL:
             return None
 
@@ -58,8 +66,8 @@ class ProtoInt(ProtoNode):
                     value = int(f"0x{proto_source[:i + 1]}", 16)
                 except ValueError:
                     raise ValueError(f"Proto has invalid hex: {proto_source}")
-                return ParsedProtoNode(
-                    ProtoInt(value, ProtoIntSign.POSITIVE),
+                return ParsedProtoIntNode(
+                    ProtoInt(value=value, sign=ProtoIntSign.POSITIVE, parent=parent),
                     proto_source[i + 1 :].strip(),
                 )
             else:
@@ -74,8 +82,8 @@ class ProtoInt(ProtoNode):
                     value = int(f"0{proto_source[:i + 1]}", 8)
                 except ValueError:
                     raise ValueError(f"Proto has invalid octal: {proto_source}")
-                return ParsedProtoNode(
-                    ProtoInt(value, ProtoIntSign.POSITIVE),
+                return ParsedProtoIntNode(
+                    ProtoInt(value=value, sign=ProtoIntSign.POSITIVE, parent=parent),
                     proto_source[i + 1 :].strip(),
                 )
         else:
@@ -91,8 +99,8 @@ class ProtoInt(ProtoNode):
             except ValueError:
                 return None
 
-            return ParsedProtoNode(
-                ProtoInt(value, ProtoIntSign.POSITIVE),
+            return ParsedProtoIntNode(
+                ProtoInt(value=value, sign=ProtoIntSign.POSITIVE, parent=parent),
                 proto_source[i + 1 :].strip(),
             )
 

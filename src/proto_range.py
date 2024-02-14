@@ -5,12 +5,24 @@ from src.proto_int import ProtoInt, ProtoIntSign
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 
+class ParsedProtoRangeNode(ParsedProtoNode):
+    node: "ProtoRange"
+    remaining_source: str
+
+
 class ProtoRangeEnum(Enum):
     MAX = "max"
 
 
 class ProtoRange(ProtoNode):
-    def __init__(self, min: ProtoInt, max: Optional[ProtoInt | ProtoRangeEnum] = None):
+    def __init__(
+        self,
+        min: ProtoInt,
+        max: Optional[ProtoInt | ProtoRangeEnum] = None,
+        *args,
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
         self.min = min
 
         if (
@@ -35,7 +47,9 @@ class ProtoRange(ProtoNode):
         return self
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(
+        cls, proto_source: str, parent: Optional[ProtoNode] = None
+    ) -> Optional["ParsedProtoRangeNode"]:
         sign = ProtoIntSign.POSITIVE
         if proto_source.startswith("-") and proto_source != "-":
             sign = next(x for x in ProtoIntSign if x.value == proto_source[0])
@@ -53,8 +67,10 @@ class ProtoRange(ProtoNode):
         if proto_source.startswith("to "):
             proto_source = proto_source[3:]
             if proto_source.startswith("max"):
-                return ParsedProtoNode(
-                    ProtoRange(min, ProtoRangeEnum.MAX),
+                proto_range = ProtoRange(min=min, max=ProtoRangeEnum.MAX, parent=parent)
+                min.parent = proto_range
+                return ParsedProtoRangeNode(
+                    proto_range,
                     proto_source[3:].strip(),
                 )
             else:
@@ -72,7 +88,11 @@ class ProtoRange(ProtoNode):
                 max = match.node
                 proto_source = match.remaining_source
 
-        return ParsedProtoNode(ProtoRange(min, max), proto_source.strip())
+        proto_range = ProtoRange(min=min, max=max, parent=parent)
+        min.parent = proto_range
+        if isinstance(max, ProtoNode):
+            max.parent = proto_range
+        return ParsedProtoRangeNode(proto_range, proto_source.strip())
 
     def serialize(self) -> str:
         if self.max is not None:

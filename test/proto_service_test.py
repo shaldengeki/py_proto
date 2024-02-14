@@ -35,7 +35,7 @@ class ServiceTest(unittest.TestCase):
                 rpc ThreeRPC (ThreeRPCRequest) returns (ThreeRPCResponse) { option java_package = "com.example.foo"; option (foo.bar).baz = false; }
             }
         """.strip()
-            )
+            ),
         )
         self.assertEqual(
             test_service_all_features.node,
@@ -60,7 +60,7 @@ class ServiceTest(unittest.TestCase):
                         True,
                     ),
                     ProtoMultiLineComment(
-                        "\n                multiple\n                line\n                comment\n                "
+                        "\n                multiple\n                line\n                comment\n                ",
                     ),
                     ProtoServiceRPC(
                         ProtoIdentifier("ThreeRPC"),
@@ -114,11 +114,12 @@ class ServiceTest(unittest.TestCase):
 
             }
         """.strip()
-            )
+            ),
         )
         self.assertIsNotNone(parsed_spaced_service)
         self.assertEqual(
-            parsed_spaced_service.node, ProtoService(ProtoIdentifier("FooService"), [])
+            parsed_spaced_service.node,
+            ProtoService(ProtoIdentifier("FooService"), []),
         )
 
     def test_service_empty_statements(self):
@@ -130,7 +131,7 @@ class ServiceTest(unittest.TestCase):
                 ;
             }
         """.strip()
-            )
+            ),
         )
         self.assertIsNotNone(empty_statement_service)
         self.assertEqual(
@@ -146,7 +147,7 @@ class ServiceTest(unittest.TestCase):
                 option (foo.bar).baz = "bat";
             }
         """.strip()
-            )
+            ),
         )
         self.assertEqual(
             service_with_options.node.nodes,
@@ -168,7 +169,7 @@ class ServiceTest(unittest.TestCase):
                 rpc ThreeRPC (ThreeRPCRequest) returns (ThreeRPCResponse);
             }
         """.strip()
-            )
+            ),
         )
         self.assertEqual(
             service_with_options.node.nodes,
@@ -200,7 +201,7 @@ class ServiceTest(unittest.TestCase):
                 rpc TwoRPC (TwoRPCRequest) returns (stream TwoRPCResponse);
             }
         """.strip()
-            )
+            ),
         )
         self.assertEqual(
             service_with_options.node.nodes,
@@ -231,7 +232,7 @@ class ServiceTest(unittest.TestCase):
                 rpc TwoRPC (TwoRPCRequest) returns (TwoRPCResponse) { option java_package = "com.example.foo"; option (foo.bar).baz = false; }
             }
         """.strip()
-            )
+            ),
         )
         self.assertEqual(
             service_with_options.node.nodes,
@@ -277,7 +278,7 @@ class ServiceTest(unittest.TestCase):
                 rpc ThreeRPC (ThreeRPCRequest) returns (ThreeRPCResponse);
             }
         """.strip()
-            )
+            ),
         )
         self.assertEqual(
             service_with_comments.node.nodes,
@@ -294,7 +295,7 @@ class ServiceTest(unittest.TestCase):
                     ProtoEnumOrMessageIdentifier("TwoRPCResponse"),
                 ),
                 ProtoMultiLineComment(
-                    "\n                multiple\n                line\n                comment\n                "
+                    "\n                multiple\n                line\n                comment\n                ",
                 ),
                 ProtoServiceRPC(
                     ProtoIdentifier("ThreeRPC"),
@@ -320,7 +321,7 @@ class ServiceTest(unittest.TestCase):
                 rpc ThreeRPC (ThreeRPCRequest) returns (ThreeRPCResponse);
             }
         """.strip()
-            )
+            ),
         ).node.normalize()
         self.assertEqual(
             normalized_service.nodes,

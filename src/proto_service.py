@@ -5,8 +5,12 @@ from src.proto_comment import (
     ProtoMultiLineComment,
     ProtoSingleLineComment,
 )
-from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
-from src.proto_node import ParsedProtoNode, ProtoNode
+from src.proto_identifier import (
+    ParsedProtoIdentifierNode,
+    ProtoEnumOrMessageIdentifier,
+    ProtoIdentifier,
+)
+from src.proto_node import ParsedProtoNode, ProtoContainerNode, ProtoNode
 from src.proto_option import ProtoOption
 
 
@@ -19,16 +23,24 @@ class ProtoServiceRPC(ProtoNode):
         request_stream: bool = False,
         response_stream: bool = False,
         options: Optional[list[ProtoOption]] = None,
+        *args,
+        **kwargs,
     ):
+        super().__init__(*args, **kwargs)
         self.name = name
+        self.name.parent = self
         self.request_type = request_type
+        self.request_type.parent = self
         self.response_type = response_type
+        self.response_type.parent = self
         self.request_stream = request_stream
         self.response_stream = response_stream
 
         if options is None:
             options = []
         self.options = options
+        for option in self.options:
+            option.parent = self
 
     def __eq__(self, other) -> bool:
         return (
@@ -54,10 +66,13 @@ class ProtoServiceRPC(ProtoNode):
             request_stream=self.request_stream,
             response_stream=self.response_stream,
             options=sorted(self.options, key=lambda o: str(o.normalize())),
+            parent=self.parent,
         )
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(
+        cls, proto_source: str, parent: Optional[ProtoNode] = None
+    ) -> Optional["ParsedProtoNode"]:
         if not proto_source.startswith("rpc "):
             return None
         proto_source = proto_source[4:].strip()
@@ -142,10 +157,9 @@ class ProtoServiceRPC(ProtoNode):
         proto_source = proto_source[1:].strip()
 
         # Try to parse options.
-        options = []
+        options: list[ProtoOption] = []
         if proto_source.startswith("{"):
             proto_source = proto_source[1:].strip()
-            options = []
             while proto_source:
                 # Remove empty statements.
                 if proto_source.startswith(";"):
@@ -168,12 +182,13 @@ class ProtoServiceRPC(ProtoNode):
 
         return ParsedProtoNode(
             ProtoServiceRPC(
-                name,
-                request_name,
-                response_name,
-                request_stream,
-                response_stream,
-                options,
+                name=name,
+                request_type=request_name,
+                response_type=response_name,
+                request_stream=request_stream,
+                response_stream=response_stream,
+                options=options,
+                parent=parent,
             ),
             proto_source.strip(),
         )
@@ -207,13 +222,14 @@ class ProtoServiceRPC(ProtoNode):
             return " ".join(serialized_parts) + ";"
 
 
-class ProtoService(ProtoNode):
-    def __init__(self, name: ProtoIdentifier, nodes: list[ProtoNode]):
+class ProtoService(ProtoContainerNode):
+    def __init__(self, name: ProtoIdentifier, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.name = name
-        self.nodes = nodes
+        self.name.parent = self
 
     def __eq__(self, other) -> bool:
-        return self.name == other.name and self.nodes == other.nodes
+        return super().__eq__(other) and self.name == other.name
 
     def __str__(self) -> str:
         return f"<ProtoService name={self.name}, nodes={self.nodes}>"
@@ -228,30 +244,15 @@ class ProtoService(ProtoNode):
         return ProtoService(
             name=self.name,
             nodes=sorted(non_comment_nodes, key=lambda n: str(n.normalize())),
-        )
-
-    @staticmethod
-    def parse_partial_content(partial_service_content: str) -> ParsedProtoNode:
-        for node_type in (
-            ProtoOption,
-            ProtoServiceRPC,
-            ProtoSingleLineComment,
-            ProtoMultiLineComment,
-        ):
-            try:
-                match_result = node_type.match(partial_service_content)
-            except (ValueError, IndexError, TypeError):
-                raise ValueError(
-                    f"Could not parse partial service content:\n{partial_service_content}"
-                )
-            if match_result is not None:
-                return match_result
-        raise ValueError(
-            f"Could not parse partial service content:\n{partial_service_content}"
+            parent=self.parent,
         )
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match_header(
+        cls,
+        proto_source: str,
+        parent: Optional["ProtoNode"] = None,
+    ) -> Optional["ParsedProtoIdentifierNode"]:
         if not proto_source.startswith("service "):
             return None
 
@@ -260,7 +261,7 @@ class ProtoService(ProtoNode):
         if match is None:
             raise ValueError(f"Proto has invalid service name: {proto_source}")
 
-        enum_name = match.node
+        service_name = match.node
         proto_source = match.remaining_source.strip()
 
         if not proto_source.startswith("{"):
@@ -268,23 +269,29 @@ class ProtoService(ProtoNode):
                 f"Proto service has invalid syntax, expecting opening curly brace: {proto_source}"
             )
 
-        proto_source = proto_source[1:].strip()
-        parsed_tree = []
-        while proto_source:
-            # Remove empty statements.
-            if proto_source.startswith(";"):
-                proto_source = proto_source[1:].strip()
-                continue
+        return ParsedProtoIdentifierNode(service_name, proto_source[1:].strip())
 
-            if proto_source.startswith("}"):
-                proto_source = proto_source[1:].strip()
-                break
+    @classmethod
+    def container_types(cls) -> list[type[ProtoNode]]:
+        return [
+            ProtoOption,
+            ProtoServiceRPC,
+            ProtoSingleLineComment,
+            ProtoMultiLineComment,
+        ]
 
-            match_result = ProtoService.parse_partial_content(proto_source)
-            parsed_tree.append(match_result.node)
-            proto_source = match_result.remaining_source.strip()
-
-        return ParsedProtoNode(ProtoService(enum_name, nodes=parsed_tree), proto_source)
+    @classmethod
+    def construct(
+        cls,
+        header_match: ParsedProtoNode,
+        contained_nodes: list[ProtoNode],
+        footer_match: str,
+        parent: Optional[ProtoNode] = None,
+    ) -> ProtoNode:
+        assert isinstance(header_match, ParsedProtoIdentifierNode)
+        return ProtoService(
+            name=header_match.node, nodes=contained_nodes, parent=parent
+        )
 
     @property
     def options(self) -> list[ProtoOption]:

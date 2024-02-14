@@ -1,7 +1,6 @@
 import unittest
 from textwrap import dedent
 
-from src.parser import ParseError, Parser
 from src.proto_bool import ProtoBool
 from src.proto_comment import ProtoSingleLineComment
 from src.proto_constant import ProtoConstant
@@ -16,15 +15,12 @@ from src.proto_identifier import (
 )
 from src.proto_import import ProtoImport
 from src.proto_int import ProtoInt, ProtoIntSign
-from src.proto_message import (
-    ProtoMap,
-    ProtoMapKeyTypesEnum,
-    ProtoMapValueTypesEnum,
-    ProtoMessage,
+from src.proto_map import ProtoMap, ProtoMapKeyTypesEnum, ProtoMapValueTypesEnum
+from src.proto_message import ProtoMessage, ProtoOneOf
+from src.proto_message_field import (
     ProtoMessageField,
     ProtoMessageFieldOption,
     ProtoMessageFieldTypesEnum,
-    ProtoOneOf,
 )
 from src.proto_option import ProtoOption
 from src.proto_range import ProtoRange, ProtoRangeEnum
@@ -32,6 +28,7 @@ from src.proto_reserved import ProtoReserved
 from src.proto_service import ProtoService, ProtoServiceRPC
 from src.proto_string_literal import ProtoStringLiteral
 from src.proto_syntax import ProtoSyntaxType
+from src.util.parser import ParseError, Parser
 
 
 class IntTest(unittest.TestCase):
@@ -126,7 +123,8 @@ class IntTest(unittest.TestCase):
                 ProtoIdentifier("MyAwesomeEnum"),
                 [
                     ProtoOption(
-                        ProtoIdentifier("allow_alias"), ProtoConstant(ProtoBool(True))
+                        ProtoIdentifier("allow_alias"),
+                        ProtoConstant(ProtoBool(True)),
                     ),
                     ProtoEnumValue(
                         ProtoIdentifier("MAE_UNSPECIFIED"),
@@ -152,7 +150,7 @@ class IntTest(unittest.TestCase):
                 ProtoIdentifier("MyAwesomeMessage"),
                 [
                     ProtoOption(
-                        ProtoIdentifier("(bar).baz"),
+                        ProtoFullIdentifier("(bar).baz"),
                         ProtoConstant(ProtoFloat(1.2, ProtoFloatSign.POSITIVE)),
                     ),
                     ProtoEnum(
@@ -179,7 +177,7 @@ class IntTest(unittest.TestCase):
                                 ProtoInt(1, ProtoIntSign.POSITIVE),
                                 ProtoInt(3, ProtoIntSign.POSITIVE),
                             )
-                        ]
+                        ],
                     ),
                     ProtoReserved(fields=[ProtoIdentifier("yay")]),
                     ProtoSingleLineComment(" testing nested comment"),
@@ -231,7 +229,7 @@ class IntTest(unittest.TestCase):
                                     ProtoMessageFieldOption(
                                         ProtoIdentifier("baz.bat"),
                                         ProtoConstant(
-                                            ProtoInt(100, ProtoIntSign.NEGATIVE)
+                                            ProtoInt(100, ProtoIntSign.NEGATIVE),
                                         ),
                                     ),
                                 ],
@@ -300,7 +298,7 @@ class IntTest(unittest.TestCase):
                     ProtoMessageField(
                         ProtoMessageFieldTypesEnum.STRING,
                         ProtoIdentifier("some_extendable_field"),
-                        1,
+                        ProtoInt(1, ProtoIntSign.POSITIVE),
                     ),
                     ProtoSingleLineComment(" yay"),
                 ],

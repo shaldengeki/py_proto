@@ -6,10 +6,12 @@ from src.proto_extensions import ProtoExtensions
 class ExtensionsTest(unittest.TestCase):
     def test_extension_single_int(self):
         self.assertEqual(
-            ProtoExtensions.match("extensions 21;").node.serialize(), "extensions 21;"
+            ProtoExtensions.match("extensions 21;").node.serialize(),
+            "extensions 21;",
         )
         self.assertEqual(
-            ProtoExtensions.match("extensions -1;").node.serialize(), "extensions -1;"
+            ProtoExtensions.match("extensions -1;").node.serialize(),
+            "extensions -1;",
         )
 
     def test_extension_multiple_ints(self):

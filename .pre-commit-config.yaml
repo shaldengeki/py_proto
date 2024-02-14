@@ -1,5 +1,10 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
+ci:
+    skip:
+        - buildifier
+        - buildifier-lint
+
 repos:
     -   repo: https://github.com/pre-commit/pre-commit-hooks
         rev: v4.3.0
@@ -15,15 +20,16 @@ repos:
         hooks:
             -   id: black
     -   repo: https://github.com/pycqa/isort
-        rev: 5.10.1
+        rev: 5.13.2
         hooks:
             -   id: isort
                 name: isort (python)
-    -   repo: https://github.com/FelixSeptem/pre-commit-golang.git
-        rev: "12f5442f51377b10b26651ad745206bbe1500ad6"
+    -   repo: https://github.com/keith/pre-commit-buildifier
+        rev: 6.4.0
         hooks:
-            -   id: bazel-buildifier
-    # -   repo: https://github.com/pre-commit/mirrors-mypy
-    #     rev: v0.991
-    #     hooks:
-    #         -   id: mypy
+        -   id: buildifier
+        -   id: buildifier-lint
+    -   repo: https://github.com/pre-commit/mirrors-mypy
+        rev: v0.991
+        hooks:
+            -   id: mypy

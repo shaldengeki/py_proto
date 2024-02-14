@@ -18,24 +18,30 @@ class ConstantTest(unittest.TestCase):
         self.assertEqual(ProtoConstant.match("aa").node.value, ProtoIdentifier("aa"))
         self.assertEqual(ProtoConstant.match("ab").node.value, ProtoIdentifier("ab"))
         self.assertEqual(
-            ProtoConstant.match("a0b_f_aj").node.value, ProtoIdentifier("a0b_f_aj")
+            ProtoConstant.match("a0b_f_aj").node.value,
+            ProtoIdentifier("a0b_f_aj"),
         )
         self.assertEqual(
-            ProtoConstant.match("a.bar").node.value, ProtoIdentifier("a.bar")
+            ProtoConstant.match("a.bar").node.value,
+            ProtoIdentifier("a.bar"),
         )
         self.assertEqual(
-            ProtoConstant.match("a.bar.baz").node.value, ProtoIdentifier("a.bar.baz")
+            ProtoConstant.match("a.bar.baz").node.value,
+            ProtoIdentifier("a.bar.baz"),
         )
 
     def test_str(self):
         self.assertEqual(
-            ProtoConstant.match("'a'").node.value, ProtoStringLiteral("a", quote="'")
+            ProtoConstant.match("'a'").node.value,
+            ProtoStringLiteral("a", quote="'"),
         )
         self.assertEqual(
-            ProtoConstant.match("'.a'").node.value, ProtoStringLiteral(".a", quote="'")
+            ProtoConstant.match("'.a'").node.value,
+            ProtoStringLiteral(".a", quote="'"),
         )
         self.assertEqual(
-            ProtoConstant.match('"a"').node.value, ProtoStringLiteral("a", quote='"')
+            ProtoConstant.match('"a"').node.value,
+            ProtoStringLiteral("a", quote='"'),
         )
 
     def test_bool(self):
@@ -44,21 +50,24 @@ class ConstantTest(unittest.TestCase):
 
     def test_int(self):
         self.assertEqual(
-            ProtoConstant.match("1").node.value, ProtoInt(1, ProtoIntSign.POSITIVE)
+            ProtoConstant.match("1").node.value,
+            ProtoInt(1, ProtoIntSign.POSITIVE),
         )
         self.assertEqual(
             ProtoConstant.match("158912938471293847").node.value,
             ProtoInt(158912938471293847, ProtoIntSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoConstant.match("+1").node.value, ProtoInt(1, ProtoIntSign.POSITIVE)
+            ProtoConstant.match("+1").node.value,
+            ProtoInt(1, ProtoIntSign.POSITIVE),
         )
         self.assertEqual(
             ProtoConstant.match("+158912938471293847").node.value,
             ProtoInt(158912938471293847, ProtoIntSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoConstant.match("-1").node.value, ProtoInt(1, ProtoIntSign.NEGATIVE)
+            ProtoConstant.match("-1").node.value,
+            ProtoInt(1, ProtoIntSign.NEGATIVE),
         )
         self.assertEqual(
             ProtoConstant.match("-248713857").node.value,

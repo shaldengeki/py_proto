@@ -1,4 +1,4 @@
-load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@rules_python//python:defs.bzl", "py_library")
 
 py_library(
     name = "proto_node",
@@ -173,9 +173,38 @@ py_library(
         ":proto_extend",
         ":proto_extensions",
         ":proto_identifier",
+        ":proto_map",
+        ":proto_message_field",
         ":proto_node",
+        ":proto_oneof",
         ":proto_option",
         ":proto_reserved",
+    ],
+)
+
+py_library(
+    name = "proto_oneof",
+    srcs = ["proto_oneof.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":proto_comment",
+        ":proto_identifier",
+        ":proto_map",
+        ":proto_message_field",
+        ":proto_node",
+        ":proto_option",
+    ],
+)
+
+py_library(
+    name = "proto_map",
+    srcs = ["proto_map.py"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":proto_identifier",
+        ":proto_int",
+        ":proto_message_field",
+        ":proto_node",
     ],
 )
 
@@ -219,22 +248,9 @@ py_library(
     srcs = ["proto_file.py"],
     visibility = ["//visibility:public"],
     deps = [
-        ":proto_import",
-        ":proto_node",
-        ":proto_option",
-        ":proto_package",
-        ":proto_syntax",
-    ],
-)
-
-py_library(
-    name = "parser",
-    srcs = ["parser.py"],
-    visibility = ["//visibility:public"],
-    deps = [
+        ":proto_comment",
         ":proto_enum",
         ":proto_extend",
-        ":proto_file",
         ":proto_import",
         ":proto_message",
         ":proto_node",
@@ -243,12 +259,4 @@ py_library(
         ":proto_service",
         ":proto_syntax",
     ],
-)
-
-py_binary(
-    name = "parser_binary",
-    srcs = ["parser.py"],
-    main = "parser.py",
-    visibility = ["//visibility:public"],
-    deps = [":parser"],
 )

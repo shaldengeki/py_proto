@@ -10,10 +10,12 @@ class FloatTest(unittest.TestCase):
             ProtoFloat(2834.235928, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match(".0").node, ProtoFloat(0.0, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match(".0").node,
+            ProtoFloat(0.0, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match(".3265").node, ProtoFloat(0.3265, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match(".3265").node,
+            ProtoFloat(0.3265, ProtoFloatSign.POSITIVE),
         )
 
     def test_inf(self):
@@ -34,13 +36,16 @@ class FloatTest(unittest.TestCase):
             ProtoFloat(283400, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match("2834e2").node, ProtoFloat(283400, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match("2834e2").node,
+            ProtoFloat(283400, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match("2834.e0").node, ProtoFloat(2834, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match("2834.e0").node,
+            ProtoFloat(2834, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match("2834e0").node, ProtoFloat(2834, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match("2834e0").node,
+            ProtoFloat(2834, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
             ProtoFloat.match("2834.E3").node,
@@ -59,13 +64,16 @@ class FloatTest(unittest.TestCase):
             ProtoFloat(283400, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match(".0E1").node, ProtoFloat(0, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match(".0E1").node,
+            ProtoFloat(0, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match(".0E2").node, ProtoFloat(0, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match(".0E2").node,
+            ProtoFloat(0, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match(".3265e1").node, ProtoFloat(3.265, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match(".3265e1").node,
+            ProtoFloat(3.265, ProtoFloatSign.POSITIVE),
         )
 
     def test_exponential_negative(self):
@@ -74,10 +82,12 @@ class FloatTest(unittest.TestCase):
             ProtoFloat(28.34, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match("2834e-2").node, ProtoFloat(28.34, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match("2834e-2").node,
+            ProtoFloat(28.34, ProtoFloatSign.POSITIVE),
         )
         self.assertEqual(
-            ProtoFloat.match(".0e-1").node, ProtoFloat(0.00, ProtoFloatSign.POSITIVE)
+            ProtoFloat.match(".0e-1").node,
+            ProtoFloat(0.00, ProtoFloatSign.POSITIVE),
         )
 
 

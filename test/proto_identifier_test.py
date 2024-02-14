@@ -44,7 +44,8 @@ class IdentifierTest(unittest.TestCase):
             ProtoFullIdentifier.match("a.bar.b0").node.identifier, "a.bar.b0"
         )
         self.assertEqual(
-            ProtoFullIdentifier.match("a.bar.b0.c_2a").node.identifier, "a.bar.b0.c_2a"
+            ProtoFullIdentifier.match("a.bar.b0.c_2a").node.identifier,
+            "a.bar.b0.c_2a",
         )
 
     def test_full_ident_invalid_periods(self):

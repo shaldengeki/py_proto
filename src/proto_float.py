@@ -11,13 +11,19 @@ class ProtoFloatSign(Enum):
     NEGATIVE = "-"
 
 
+class ParsedProtoFloatNode(ParsedProtoNode):
+    node: "ProtoFloat"
+    remaining_source: str
+
+
 class ProtoFloat(ProtoNode):
     SIGNS = set("+-")
     DIGITS = ProtoInt.DECIMAL
     DECIMAL = DIGITS | set(".")
     EXPONENTIAL = set("eE")
 
-    def __init__(self, value: float, sign: ProtoFloatSign):
+    def __init__(self, value: float, sign: ProtoFloatSign, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.value = value
         self.sign = sign
 
@@ -38,15 +44,20 @@ class ProtoFloat(ProtoNode):
         return self
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(
+        cls, proto_source: str, parent: Optional[ProtoNode] = None
+    ) -> Optional["ParsedProtoFloatNode"]:
         if proto_source.startswith("inf"):
             proto_source = proto_source[3:]
             if proto_source and proto_source[0] in ProtoIdentifier.ALL:
                 raise ValueError(
                     f"Proto has invalid float, invalid post-inf character: {proto_source}"
                 )
-            return ParsedProtoNode(
-                ProtoFloat(float("inf"), ProtoFloatSign.POSITIVE), proto_source.strip()
+            return ParsedProtoFloatNode(
+                ProtoFloat(
+                    value=float("inf"), sign=ProtoFloatSign.POSITIVE, parent=parent
+                ),
+                proto_source.strip(),
             )
 
         if proto_source.startswith("nan"):
@@ -55,8 +66,11 @@ class ProtoFloat(ProtoNode):
                 raise ValueError(
                     f"Proto has invalid float, invalid post-nan character: {proto_source}"
                 )
-            return ParsedProtoNode(
-                ProtoFloat(float("nan"), ProtoFloatSign.POSITIVE), proto_source.strip()
+            return ParsedProtoFloatNode(
+                ProtoFloat(
+                    value=float("nan"), sign=ProtoFloatSign.POSITIVE, parent=parent
+                ),
+                proto_source.strip(),
             )
 
         if not proto_source[0] in ProtoFloat.DECIMAL:
@@ -107,8 +121,9 @@ class ProtoFloat(ProtoNode):
             base *= pow(10, sign * int(proto_source[: i + 1]))
             proto_source = proto_source[i + 1 :]
 
-        return ParsedProtoNode(
-            ProtoFloat(base, ProtoFloatSign.POSITIVE), proto_source.strip()
+        return ParsedProtoFloatNode(
+            ProtoFloat(value=base, sign=ProtoFloatSign.POSITIVE, parent=parent),
+            proto_source.strip(),
         )
 
     def serialize(self) -> str:

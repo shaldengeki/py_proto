@@ -4,7 +4,7 @@ set -euo pipefail
 function compare_proto() {
     # Takes one argument, the relative path to the proto to compare.
     echo $1
-    ./src/parser_binary $1 > "${1}_serialized.proto"
+    ./src/util/parser_binary $1 > "${1}_serialized.proto"
     diff --side-by-side --ignore-all-space --ignore-blank-lines $1 "${1}_serialized.proto"
 }
 

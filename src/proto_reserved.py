@@ -19,7 +19,10 @@ class ProtoReserved(ProtoNode):
         quote_type: Optional[
             ProtoReservedFieldQuoteEnum
         ] = ProtoReservedFieldQuoteEnum.DOUBLE,
+        *args,
+        **kwargs,
     ):
+        super().__init__(*args, **kwargs)
         if (not ranges and not fields) or (ranges and fields):
             raise ValueError(
                 "Exactly one of ranges or fields must be set in a ProtoReserved"
@@ -30,11 +33,17 @@ class ProtoReserved(ProtoNode):
             if quote_type is None:
                 raise ValueError("Quote type must be specified when reserving fields")
 
+        self.ranges = ranges
+        for range in self.ranges:
+            range.parent = self
+
         if fields is None:
             fields = []
 
-        self.ranges = ranges
         self.fields = fields
+        for field in self.fields:
+            field.parent = self
+
         self.quote_type = quote_type
 
     def __eq__(self, other) -> bool:
@@ -49,13 +58,23 @@ class ProtoReserved(ProtoNode):
     def normalize(self) -> "ProtoReserved":
         # sort the ranges.
         return ProtoReserved(
-            sorted(self.ranges, key=lambda r: r.min),
-            sorted(self.fields),
-            self.quote_type,
+            parent=self.parent,
+            ranges=sorted(self.ranges, key=lambda r: int(r.min)),
+            fields=sorted(self.fields, key=lambda f: str(f)),
+            quote_type=self.quote_type,
         )
 
+    @property
+    def min(self) -> str | int:
+        if self.ranges:
+            return int(min(self.ranges, key=lambda r: int(r.min)).min)
+        else:
+            return str(min(self.fields, key=lambda f: str(f)))
+
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(
+        cls, proto_source: str, parent: Optional[ProtoNode] = None
+    ) -> Optional["ParsedProtoNode"]:
         if not proto_source.startswith("reserved "):
             return None
 
@@ -74,10 +93,10 @@ class ProtoReserved(ProtoNode):
                 )
             if proto_source[0] == ",":
                 proto_source = proto_source[1:].strip()
-            match = ProtoRange.match(proto_source)
-            if match is not None:
-                ranges.append(match.node)
-                proto_source = match.remaining_source
+            range_match = ProtoRange.match(proto_source)
+            if range_match is not None:
+                ranges.append(range_match.node)
+                proto_source = range_match.remaining_source
             else:
                 # Maybe this is a field identifier.
                 quote_types = [
@@ -106,7 +125,10 @@ class ProtoReserved(ProtoNode):
                 proto_source = proto_source[1:].strip()
 
         return ParsedProtoNode(
-            ProtoReserved(ranges, fields, quote_type), proto_source.strip()
+            ProtoReserved(
+                ranges=ranges, fields=fields, quote_type=quote_type, parent=parent
+            ),
+            proto_source.strip(),
         )
 
     def serialize(self) -> str:
@@ -116,6 +138,7 @@ class ProtoReserved(ProtoNode):
             + ", ".join(
                 f"{self.quote_type.value}{f.serialize()}{self.quote_type.value}"
                 for f in self.fields
+                if self.quote_type is not None
             ),
         ]
         return " ".join(serialize_parts) + ";"

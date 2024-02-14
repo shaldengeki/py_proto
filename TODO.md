@@ -59,22 +59,22 @@
 - [ ] Diffs
   - [x] Normalizing
   - [ ] Complete diffs
-    - [ ] Proto file-level diffs
-      - [ ] Syntax changes
-      - [ ] Import changes
-      - [ ] Package changes
-      - [ ] Option changes
+    - [x] Proto file-level diffs
+      - [x] Syntax changes
+      - [x] Import changes
+      - [x] Package changes
+      - [x] Option changes
     - [ ] Enum-level diffs
-      - [ ] Additions/removals
-      - [ ] Option changes
-      - [ ] Field changes
-        - [ ] Value changes
-        - [ ] Option changes
+      - [x] Additions/removals
+      - [x] Option changes
+      - [x] Field changes
+        - [x] Value changes
+        - [x] Option changes
       - [ ] Reserveds changes
     - [ ] Message-level diffs
-      - [ ] Additions/removals
-      - [ ] Option changes
-      - [ ] Field changes
+      - [x] Additions/removals
+      - [x] Option changes
+      - [x] Field changes
       - [ ] Reserved changes
       - [ ] Nested enum changes
       - [ ] Nested message changes
@@ -84,4 +84,20 @@
       - [ ] RPC changes
         - [ ] Additions/removals
         - [ ] Option changes
+    - [ ] Comment diffs
   - [ ] Backwards-compatibility check
+  - [ ] __eq__ should enforce parent equality
+  - [ ] Scoping of diffs under containing objects
+    - [ ] Enum options under enums
+    - [ ] Enum value changes under enums
+    - [ ] Enum value option changes under enum values
+    - [ ] Enum reserved changes under enums
+    - [ ] Message option changes under messages
+    - [ ] Message field changes under messages
+    - [ ] Message reserved changes under messages
+    - [ ] Message nested enum changes under messages
+    - [ ] Message nested message changes under messages
+- [ ] (Perf) use iterators
+  - [ ] In parsing
+  - [ ] In properties
+- [ ] Remove Proto* and proto_ from everything

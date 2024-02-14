@@ -6,7 +6,13 @@ from src.proto_identifier import (
     ProtoIdentifier,
 )
 from src.proto_int import ProtoInt, ProtoIntSign
-from src.proto_message_field import ProtoMessageField, ProtoMessageFieldTypesEnum
+from src.proto_message_field import (
+    ProtoMessageField,
+    ProtoMessageFieldAdded,
+    ProtoMessageFieldNameChanged,
+    ProtoMessageFieldRemoved,
+    ProtoMessageFieldTypesEnum,
+)
 
 
 class MessageFieldTest(unittest.TestCase):
@@ -66,7 +72,7 @@ class MessageFieldTest(unittest.TestCase):
         self.assertEqual(
             parsed_double_undescored_field.node,
             ProtoMessageField(
-                ProtoMessageFieldTypesEnum.STRING,
+                ProtoMessageFieldTypesEnum.BOOL,
                 ProtoIdentifier("__test_field"),
                 ProtoInt(1, ProtoIntSign.POSITIVE),
             ),
@@ -117,3 +123,248 @@ class MessageFieldTest(unittest.TestCase):
                 ProtoEnumOrMessageIdentifier(".google.proto.FooType"),
             ),
         )
+
+    def test_diff_same_field_returns_empty(self):
+        pmf1 = ProtoMessageField(
+            ProtoMessageFieldTypesEnum.FLOAT,
+            ProtoIdentifier("my_message_field"),
+            ProtoInt(10, ProtoIntSign.POSITIVE),
+        )
+        pmf2 = ProtoMessageField(
+            ProtoMessageFieldTypesEnum.FLOAT,
+            ProtoIdentifier("my_message_field"),
+            ProtoInt(10, ProtoIntSign.POSITIVE),
+        )
+        self.assertEqual(ProtoMessageField.diff(None, pmf1, pmf2), [])
+
+    def test_diff_different_field_name_same_number_returns_field_diff(self):
+        pmf1 = ProtoMessageField(
+            ProtoMessageFieldTypesEnum.FLOAT,
+            ProtoIdentifier("foo"),
+            ProtoInt(10, ProtoIntSign.POSITIVE),
+        )
+        pmf2 = ProtoMessageField(
+            ProtoMessageFieldTypesEnum.FLOAT,
+            ProtoIdentifier("bar"),
+            ProtoInt(10, ProtoIntSign.POSITIVE),
+        )
+        self.assertEqual(
+            [
+                ProtoMessageFieldNameChanged(
+                    None,
+                    pmf1,
+                    pmf2.name,
+                )
+            ],
+            ProtoMessageField.diff(None, pmf1, pmf2),
+        )
+
+    def test_diff_field_removed(self):
+        pmf1 = ProtoMessageField(
+            ProtoMessageFieldTypesEnum.FLOAT,
+            ProtoIdentifier("foo"),
+            ProtoInt(10, ProtoIntSign.POSITIVE),
+        )
+        pmf2 = None
+        self.assertEqual(
+            [
+                ProtoMessageFieldRemoved(None, pmf1),
+            ],
+            ProtoMessageField.diff(None, pmf1, pmf2),
+        )
+
+    def test_diff_sets_empty_returns_empty(self):
+        set1 = []
+        set2 = []
+        self.assertEqual(ProtoMessageField.diff_sets(None, set1, set2), [])
+
+    def test_diff_sets_no_change(self):
+        set1 = [
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("foo"),
+                ProtoInt(1, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("bar"),
+                ProtoInt(2, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("baz"),
+                ProtoInt(3, ProtoIntSign.POSITIVE),
+            ),
+        ]
+        self.assertEqual([], ProtoMessageField.diff_sets(None, set1, set1))
+
+    def test_diff_sets_all_removed(self):
+        set1 = []
+        set2 = [
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("foo"),
+                ProtoInt(1, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("bar"),
+                ProtoInt(2, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("baz"),
+                ProtoInt(3, ProtoIntSign.POSITIVE),
+            ),
+        ]
+        diff = ProtoMessageField.diff_sets(None, set1, set2)
+
+        for pmf in set2:
+            self.assertIn(
+                ProtoMessageFieldRemoved(None, pmf),
+                diff,
+            )
+        self.assertEqual(3, len(diff))
+
+    def test_diff_sets_all_added(self):
+        set1 = [
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("foo"),
+                ProtoInt(1, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("bar"),
+                ProtoInt(2, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("baz"),
+                ProtoInt(3, ProtoIntSign.POSITIVE),
+            ),
+        ]
+        set2 = []
+        diff = ProtoMessageField.diff_sets(None, set1, set2)
+
+        for pmf in set1:
+            self.assertIn(
+                ProtoMessageFieldAdded(None, pmf),
+                diff,
+            )
+
+        self.assertEqual(3, len(diff))
+
+    def test_diff_sets_mutually_exclusive(self):
+        set1 = [
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("foo"),
+                ProtoInt(1, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("bar"),
+                ProtoInt(2, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("baz"),
+                ProtoInt(3, ProtoIntSign.POSITIVE),
+            ),
+        ]
+        set2 = [
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("foo2"),
+                ProtoInt(4, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("bar2"),
+                ProtoInt(5, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("baz2"),
+                ProtoInt(6, ProtoIntSign.POSITIVE),
+            ),
+        ]
+
+        diff = ProtoMessageField.diff_sets(None, set1, set2)
+
+        for pmf in set1:
+            self.assertIn(
+                ProtoMessageFieldAdded(None, pmf),
+                diff,
+            )
+
+        for pmf in set2:
+            self.assertIn(
+                ProtoMessageFieldRemoved(None, pmf),
+                diff,
+            )
+
+        self.assertEqual(6, len(diff))
+
+    def test_diff_sets_overlap(self):
+        set1 = [
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("foo"),
+                ProtoInt(1, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("bar"),
+                ProtoInt(2, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("baz"),
+                ProtoInt(3, ProtoIntSign.POSITIVE),
+            ),
+        ]
+        set2 = [
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("foo2"),
+                ProtoInt(4, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("bar"),
+                ProtoInt(2, ProtoIntSign.POSITIVE),
+            ),
+            ProtoMessageField(
+                ProtoMessageFieldTypesEnum.FLOAT,
+                ProtoIdentifier("baz2"),
+                ProtoInt(6, ProtoIntSign.POSITIVE),
+            ),
+        ]
+
+        diff = ProtoMessageField.diff_sets(None, set1, set2)
+
+        self.assertIn(
+            ProtoMessageFieldRemoved(None, set1[0]),
+            diff,
+        )
+
+        self.assertIn(
+            ProtoMessageFieldRemoved(None, set1[2]),
+            diff,
+        )
+        self.assertIn(
+            ProtoMessageFieldAdded(None, set2[0]),
+            diff,
+        )
+        self.assertIn(
+            ProtoMessageFieldAdded(None, set2[2]),
+            diff,
+        )
+
+        self.assertEqual(4, len(diff))
+
+
+if __name__ == "__main__":
+    unittest.main()

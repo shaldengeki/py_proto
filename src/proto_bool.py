@@ -4,8 +4,14 @@ from src.proto_identifier import ProtoFullIdentifier
 from src.proto_node import ParsedProtoNode, ProtoNode
 
 
+class ParsedProtoBoolNode(ParsedProtoNode):
+    node: "ProtoBool"
+    remaining_source: str
+
+
 class ProtoBool(ProtoNode):
-    def __init__(self, value: bool):
+    def __init__(self, value: bool, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.value = value
 
     def __bool__(self) -> bool:
@@ -24,15 +30,21 @@ class ProtoBool(ProtoNode):
         return self
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(
+        cls, proto_source: str, parent: Optional[ProtoNode] = None
+    ) -> Optional["ParsedProtoBoolNode"]:
         if proto_source.startswith("true") and (
             len(proto_source) == 4 or proto_source[4] not in ProtoFullIdentifier.ALL
         ):
-            return ParsedProtoNode(ProtoBool(True), proto_source[4:].strip())
+            return ParsedProtoBoolNode(
+                ProtoBool(value=True, parent=parent), proto_source[4:].strip()
+            )
         elif proto_source.startswith("false") and (
             len(proto_source) == 5 or proto_source[5] not in ProtoFullIdentifier.ALL
         ):
-            return ParsedProtoNode(ProtoBool(False), proto_source[5:].strip())
+            return ParsedProtoBoolNode(
+                ProtoBool(value=False, parent=parent), proto_source[5:].strip()
+            )
         return None
 
     def serialize(self) -> str:

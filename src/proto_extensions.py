@@ -10,8 +10,13 @@ class ProtoExtensions(ProtoNode):
     def __init__(
         self,
         ranges: list[ProtoRange],
+        *args,
+        **kwargs,
     ):
+        super().__init__(*args, **kwargs)
         self.ranges = ranges
+        for range in self.ranges:
+            range.parent = self
 
     def __eq__(self, other) -> bool:
         return self.ranges == other.ranges
@@ -25,12 +30,14 @@ class ProtoExtensions(ProtoNode):
     def normalize(self) -> "ProtoExtensions":
         # sort the ranges.
         return ProtoExtensions(
-            sorted(self.ranges, key=lambda r: r.min),
-            self.quote_type,
+            ranges=sorted(self.ranges, key=lambda r: int(r.min)),
+            parent=self.parent,
         )
 
     @classmethod
-    def match(cls, proto_source: str) -> Optional["ParsedProtoNode"]:
+    def match(
+        cls, proto_source: str, parent: Optional[ProtoNode] = None
+    ) -> Optional["ParsedProtoNode"]:
         if not proto_source.startswith("extensions "):
             return None
 
@@ -53,7 +60,9 @@ class ProtoExtensions(ProtoNode):
             ranges.append(match.node)
             proto_source = match.remaining_source
 
-        return ParsedProtoNode(ProtoExtensions(ranges), proto_source.strip())
+        return ParsedProtoNode(
+            ProtoExtensions(ranges=ranges, parent=parent), proto_source.strip()
+        )
 
     def serialize(self) -> str:
         serialize_parts = ["extensions", ", ".join(r.serialize() for r in self.ranges)]

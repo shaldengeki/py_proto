@@ -4,7 +4,7 @@ from textwrap import dedent
 from src.proto_extend import ProtoExtend
 from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
 from src.proto_int import ProtoInt, ProtoIntSign
-from src.proto_message import ProtoMessageField, ProtoMessageFieldTypesEnum
+from src.proto_message_field import ProtoMessageField, ProtoMessageFieldTypesEnum
 
 
 class ExtendTest(unittest.TestCase):
@@ -14,7 +14,8 @@ class ExtendTest(unittest.TestCase):
         parsed_empty_extend = ProtoExtend.match("""extend FooMessage {}""")
         self.assertIsNotNone(parsed_empty_extend)
         self.assertEqual(
-            parsed_empty_extend.node.name, ProtoEnumOrMessageIdentifier("FooMessage")
+            parsed_empty_extend.node.name,
+            ProtoEnumOrMessageIdentifier("FooMessage"),
         )
         self.assertEqual(parsed_empty_extend.node.serialize(), "extend FooMessage {\n}")
 
@@ -25,11 +26,12 @@ class ExtendTest(unittest.TestCase):
 
             }
         """.strip()
-            )
+            ),
         )
         self.assertIsNotNone(parsed_spaced_extend)
         self.assertEqual(
-            parsed_spaced_extend.node.name, ProtoEnumOrMessageIdentifier("FooMessage")
+            parsed_spaced_extend.node.name,
+            ProtoEnumOrMessageIdentifier("FooMessage"),
         )
         self.assertEqual(
             parsed_spaced_extend.node.serialize(), "extend FooMessage {\n}"
@@ -42,7 +44,7 @@ class ExtendTest(unittest.TestCase):
 
             }
         """.strip()
-            )
+            ),
         )
         self.assertIsNotNone(parsed_scoped_extend)
         self.assertEqual(
@@ -63,7 +65,7 @@ class ExtendTest(unittest.TestCase):
                 ;
             }
         """.strip()
-            )
+            ),
         )
         self.assertIsNotNone(empty_statement_message)
         self.assertEqual(
@@ -82,7 +84,7 @@ class ExtendTest(unittest.TestCase):
                 string single_field = 1;
             }
         """.strip()
-            )
+            ),
         )
         self.assertEqual(
             parsed_extend_with_single_field.node,
