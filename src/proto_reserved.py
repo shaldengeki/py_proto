@@ -1,9 +1,9 @@
 from enum import Enum
 from typing import Optional
 
-from src.proto_identifier import ProtoIdentifier
-from src.proto_node import ParsedProtoNode, ProtoNode
-from src.proto_range import ProtoRange
+from .proto_identifier import ProtoIdentifier
+from .proto_node import ParsedProtoNode, ProtoNode
+from .proto_range import ProtoRange
 
 
 class ProtoReservedFieldQuoteEnum(Enum):

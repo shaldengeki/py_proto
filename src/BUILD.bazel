@@ -1,4 +1,6 @@
 load("@rules_python//python:defs.bzl", "py_library")
+load("@rules_python//python:packaging.bzl", "py_wheel")
+
 
 py_library(
     name = "proto_node",
@@ -255,5 +257,27 @@ py_library(
         ":proto_option",
         ":proto_package",
         ":proto_syntax",
+    ],
+)
+
+py_wheel(
+    name = "py_proto_wheel",
+    distribution = "py_proto",
+    python_tag = "py3",
+    version = "0.0.1",
+    author = "Charles OuGuo",
+    author_email = "shaldengeki@gmail.com",
+    entry_points = {
+        'console_scripts': ['parser = src.util.parser:main', 'compatibility_checker = src.util.compatibility_checker:main']
+    },
+    classifiers = [
+        "Development Status :: 2 - Pre-Alpha",
+        "License :: OSI Approved :: MIT License"
+    ],
+    strip_path_prefixes = ["src"],
+    homepage = "https://github.com/shaldengeki/py_proto",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//src/util:all_package"
     ],
 )

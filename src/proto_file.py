@@ -1,12 +1,12 @@
 from typing import Optional, Sequence
 
-from src.proto_enum import ProtoEnum
-from src.proto_import import ProtoImport
-from src.proto_message import ProtoMessage
-from src.proto_node import ProtoNode, ProtoNodeDiff
-from src.proto_option import ProtoOption
-from src.proto_package import ProtoPackage
-from src.proto_syntax import ProtoSyntax
+from .proto_enum import ProtoEnum
+from .proto_import import ProtoImport
+from .proto_message import ProtoMessage
+from .proto_node import ProtoNode, ProtoNodeDiff
+from .proto_option import ProtoOption
+from .proto_package import ProtoPackage
+from .proto_syntax import ProtoSyntax
 
 
 class ProtoFile:

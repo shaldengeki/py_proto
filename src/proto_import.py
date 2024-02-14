@@ -1,7 +1,7 @@
 from typing import Optional
 
-from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
-from src.proto_string_literal import ProtoStringLiteral
+from .proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
+from .proto_string_literal import ProtoStringLiteral
 
 
 class ProtoImport(ProtoNode):

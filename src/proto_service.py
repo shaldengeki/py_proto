@@ -1,13 +1,13 @@
 from typing import Optional
 
-from src.proto_comment import (
+from .proto_comment import (
     ProtoComment,
     ProtoMultiLineComment,
     ProtoSingleLineComment,
 )
-from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
-from src.proto_node import ParsedProtoNode, ProtoNode
-from src.proto_option import ProtoOption
+from .proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
+from .proto_node import ParsedProtoNode, ProtoNode
+from .proto_option import ProtoOption
 
 
 class ProtoServiceRPC(ProtoNode):

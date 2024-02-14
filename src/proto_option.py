@@ -1,12 +1,12 @@
 from typing import Optional, Sequence
 
-from src.proto_constant import ProtoConstant
-from src.proto_identifier import (
+from .proto_constant import ProtoConstant
+from .proto_identifier import (
     ProtoEnumOrMessageIdentifier,
     ProtoFullIdentifier,
     ProtoIdentifier,
 )
-from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
+from .proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
 
 
 class ParsedProtoOptionNode(ParsedProtoNode):

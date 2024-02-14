@@ -1,4 +1,5 @@
 load("@rules_python//python:defs.bzl", "py_binary", "py_library")
+load("@rules_python//python:packaging.bzl", "py_package")
 
 py_library(
     name = "parser",
@@ -43,4 +44,11 @@ py_binary(
     main = "compatibility_checker.py",
     visibility = ["//visibility:public"],
     deps = [":compatibility_checker"],
+)
+
+py_package(
+    name = "all_package",
+    packages = ["src"],
+    deps = [":parser", ":compatibility_checker"],
+    visibility = ["//visibility:public"],
 )

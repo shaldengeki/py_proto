@@ -1,10 +1,10 @@
 from enum import Enum
 from typing import Optional, Sequence
 
-from src.proto_enum import ParsedProtoEnumValueOptionNode, ProtoEnumValueOption
-from src.proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
-from src.proto_int import ProtoInt
-from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
+from .proto_enum import ParsedProtoEnumValueOptionNode, ProtoEnumValueOption
+from .proto_identifier import ProtoEnumOrMessageIdentifier, ProtoIdentifier
+from .proto_int import ProtoInt
+from .proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
 
 
 class ParsedProtoMessageFieldOptionNode(ParsedProtoEnumValueOptionNode):

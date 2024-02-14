@@ -1,7 +1,7 @@
 import abc
 from typing import Optional
 
-from src.proto_node import ParsedProtoNode, ProtoNode
+from .proto_node import ParsedProtoNode, ProtoNode
 
 
 class ParsedProtoCommentNode(ParsedProtoNode):

@@ -1,21 +1,21 @@
 import sys
 from typing import Sequence
 
-from src.proto_comment import (
+from ..proto_comment import (
     ProtoComment,
     ProtoMultiLineComment,
     ProtoSingleLineComment,
 )
-from src.proto_enum import ProtoEnum
-from src.proto_extend import ProtoExtend
-from src.proto_file import ProtoFile
-from src.proto_import import ProtoImport
-from src.proto_message import ProtoMessage
-from src.proto_node import ParsedProtoNode, ProtoNode
-from src.proto_option import ProtoOption
-from src.proto_package import ProtoPackage
-from src.proto_service import ProtoService
-from src.proto_syntax import ProtoSyntax
+from ..proto_enum import ProtoEnum
+from ..proto_extend import ProtoExtend
+from ..proto_file import ProtoFile
+from ..proto_import import ProtoImport
+from ..proto_message import ProtoMessage
+from ..proto_node import ParsedProtoNode, ProtoNode
+from ..proto_option import ProtoOption
+from ..proto_package import ProtoPackage
+from ..proto_service import ProtoService
+from ..proto_syntax import ProtoSyntax
 
 
 class ParseError(ValueError):
@@ -95,8 +95,11 @@ class Parser:
 
         return ProtoFile(syntax, new_tree)
 
-
-if __name__ == "__main__":
+def main() -> int:
     with open(sys.argv[1], "r") as proto_file:
         parsed_proto = Parser.loads(proto_file.read())
     print(parsed_proto.serialize())
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())

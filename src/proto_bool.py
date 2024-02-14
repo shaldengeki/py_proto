@@ -1,7 +1,7 @@
 from typing import Optional
 
-from src.proto_identifier import ProtoFullIdentifier
-from src.proto_node import ParsedProtoNode, ProtoNode
+from .proto_identifier import ProtoFullIdentifier
+from .proto_node import ParsedProtoNode, ProtoNode
 
 
 class ParsedProtoBoolNode(ParsedProtoNode):

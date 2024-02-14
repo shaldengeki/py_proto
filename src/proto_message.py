@@ -1,20 +1,20 @@
 from typing import Optional, Sequence
 
-from src.proto_comment import (
+from .proto_comment import (
     ProtoComment,
     ProtoMultiLineComment,
     ProtoSingleLineComment,
 )
-from src.proto_enum import ProtoEnum
-from src.proto_extend import ProtoExtend
-from src.proto_extensions import ProtoExtensions
-from src.proto_identifier import ProtoIdentifier
-from src.proto_map import ProtoMap
-from src.proto_message_field import ProtoMessageField
-from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
-from src.proto_oneof import ProtoOneOf
-from src.proto_option import ProtoOption
-from src.proto_reserved import ProtoReserved
+from .proto_enum import ProtoEnum
+from .proto_extend import ProtoExtend
+from .proto_extensions import ProtoExtensions
+from .proto_identifier import ProtoIdentifier
+from .proto_map import ProtoMap
+from .proto_message_field import ProtoMessageField
+from .proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
+from .proto_oneof import ProtoOneOf
+from .proto_option import ProtoOption
+from .proto_reserved import ProtoReserved
 
 
 class ProtoMessage(ProtoNode):

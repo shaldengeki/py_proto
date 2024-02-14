@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import Optional
 
-from src.proto_int import ProtoInt, ProtoIntSign
-from src.proto_node import ParsedProtoNode, ProtoNode
+from .proto_int import ProtoInt, ProtoIntSign
+from .proto_node import ParsedProtoNode, ProtoNode
 
 
 class ParsedProtoRangeNode(ParsedProtoNode):

@@ -1,9 +1,9 @@
 from enum import Enum
 from typing import Optional
 
-from src.proto_identifier import ProtoIdentifier
-from src.proto_int import ProtoInt
-from src.proto_node import ParsedProtoNode, ProtoNode
+from .proto_identifier import ProtoIdentifier
+from .proto_int import ProtoInt
+from .proto_node import ParsedProtoNode, ProtoNode
 
 
 class ProtoFloatSign(Enum):

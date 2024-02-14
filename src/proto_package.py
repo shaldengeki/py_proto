@@ -1,6 +1,6 @@
 from typing import Optional
 
-from src.proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
+from .proto_node import ParsedProtoNode, ProtoNode, ProtoNodeDiff
 
 
 class ProtoPackage(ProtoNode):

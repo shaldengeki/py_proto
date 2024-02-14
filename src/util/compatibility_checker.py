@@ -2,10 +2,10 @@ import sys
 from dataclasses import dataclass
 from typing import Type
 
-from src.proto_file import ProtoFile
-from src.proto_message import ProtoMessageAdded
-from src.proto_node import ProtoNodeDiff
-from src.util.parser import Parser
+from ..proto_file import ProtoFile
+from ..proto_message import ProtoMessageAdded
+from ..proto_node import ProtoNodeDiff
+from ..util.parser import Parser
 
 
 @dataclass
