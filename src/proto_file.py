@@ -136,9 +136,9 @@ class ProtoFile(ProtoContainerNode):
     @staticmethod
     def parse_syntax_and_preceding_comments(
         proto_content: str,
-    ) -> tuple[ProtoSyntax, Sequence[ProtoComment], str]:
+    ) -> tuple[ProtoSyntax, Sequence[ProtoNode], str]:
         # First, parse any preceding comments.
-        parsed_tree = []
+        parsed_tree: list[ProtoNode] = []
         while True:
             for node_type in [ProtoSingleLineComment, ProtoMultiLineComment]:
                 try:
@@ -161,6 +161,7 @@ class ProtoFile(ProtoContainerNode):
             raise ValueError(f"Proto doesn't have parseable syntax:\n{proto_content}")
         syntax = syntax_match.node
         proto_content = syntax_match.remaining_source.strip()
+        parsed_tree.append(syntax)
 
         return syntax, parsed_tree, proto_content
 
@@ -172,7 +173,7 @@ class ProtoFile(ProtoContainerNode):
         )
 
     def serialize(self) -> str:
-        serialized_parts = [self.syntax.serialize()]
+        serialized_parts = []
         previous_type: type[ProtoNode] = self.syntax.__class__
         for node in self.nodes:
             # Attempt to group up lines of the same type.
